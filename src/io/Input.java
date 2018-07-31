@@ -91,7 +91,6 @@ public class Input {
 
 			// Add edge to graph
 			int newEdge = outputGraph.addSimpleEdge(srcNode, destNode, true);
-
 			// Update the edge's width with the weight
 			outputGraph.getEdgeWidthProperty().setValue(newEdge, weight);
 

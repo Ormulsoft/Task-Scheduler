@@ -11,6 +11,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import alg.AlgorithmStub;
 import grph.Grph;
+import grph.in_memory.InMemoryGrph;
 
 /**
  * Entry point for the task scheduling assignment
@@ -55,7 +56,9 @@ public class Main {
 		String outputPath = "exp";
 		int cores = 1;
 
-		Grph in = Input.readDotInput(inputPath);
+		InMemoryGrph in = (InMemoryGrph) Input.readDotInput(inputPath);
+		log.info(in.getEdges().toString());
+		log.info(in.getNavigation().toString());
 		Grph out = new AlgorithmStub().runAlg(in, cores);
 
 		try {
