@@ -1,6 +1,5 @@
 package io;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,26 +9,28 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import alg.Algorithm;
+import alg.AlgorithmStub;
 import grph.Grph;
 
 /**
  * Entry point for the task scheduling assignment
- * @author 
+ * 
+ * @author
  *
  */
 public class Main {
 
 	final static Logger log = Logger.getLogger(Main.class);
-	
+
 	/**
 	 * Inital setup / entry point
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		Properties props = new Properties();
-		
-		//try log properties load from file, otherwise use basic
+
+		// try log properties load from file, otherwise use basic
 		try {
 			props.load(new FileInputStream("src/resources/log4j.properties"));
 			PropertyConfigurator.configure(props);
@@ -39,28 +40,28 @@ public class Main {
 		} catch (IOException e) {
 			BasicConfigurator.configure();
 			e.printStackTrace();
-		}           
+		}
 
 		startProcess();
 	}
-	
+
 	/**
 	 * begins the task scheduling process
 	 */
-	private static void startProcess(){
+	private static void startProcess() {
 		log.info("Started scheduling");
 
 		String inputPath = "Nodes_7_OutTree.dot";
-		String outputPath = "";
-		int cores = 1;  		
+		String outputPath = "exp";
+		int cores = 1;
 
 		Grph in = Input.readDotInput(inputPath);
-		Grph out = Algorithm.runAlg(in,cores);
+		Grph out = new AlgorithmStub().runAlg(in, cores);
 
 		try {
 			Output.export(out, outputPath);
 		} catch (IOException e) {
-			log.error("Failed to export file",e);
+			log.error("Failed to export file", e);
 		}
 	}
 }
