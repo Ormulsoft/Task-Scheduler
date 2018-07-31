@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>Softeng-306-Group-15</groupId>
+  <artifactId>Softeng-306-Group-15</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>SOFTENG306-A1</name>
+  <description>Task scheduling assignment for 306</description>
+  <repositories>
+  <repository>
+	<id>lhogie.i3s.maven.repo</id>
+	  <name>Luc Hogie Maven repository</name>
+	  <url>http://www.i3s.unice.fr/~hogie/maven_repository/</url>
+    </repository>
+  </repositories>  
+  <dependencies>
+  <dependency>
+	<groupId>grph</groupId>
+	<artifactId>grph</artifactId>
+	<version>2.1.2</version>
+  </dependency> 
+	<dependency>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+		<version>1.2.17</version>
+	</dependency>
+
+  <dependency>
+			<artifactId>gs-core</artifactId>
+			<groupId>org.graphstream</groupId>
+			<version>1.0</version>
+			<optional>false</optional>
+		</dependency>
+
+		<!-- The new dependency : -->
+		<dependency>
+			<artifactId>commons-math</artifactId>
+			<groupId>org.apache.commons</groupId>
+			<version>2.1</version>
+			<optional>false</optional>
+		</dependency>
+  </dependencies>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <source/>
+          <target/>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>
