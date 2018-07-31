@@ -10,6 +10,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import alg.Algorithm;
 import grph.Grph;
 
 /**
@@ -51,10 +52,10 @@ public class Main {
 
 		String inputPath = "Nodes_7_OutTree.dot";
 		String outputPath = "";
-		int cores = 1;  
-		
+		int cores = 1;  		
+
 		Grph in = Input.readDotInput(inputPath);
-		Grph out = alg.Algorithm.runAlg(in,cores);
+		Grph out = Algorithm.runAlg(in,cores);
 
 		try {
 			Output.export(out, outputPath);
