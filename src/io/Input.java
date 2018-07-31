@@ -71,7 +71,6 @@ public class Input {
 		}
 
 		// Add each edge from input file
-		System.out.println("Edges to be added: ");
 		for (String e : edgesList) {
 
 			// Split on whitespace
@@ -80,20 +79,27 @@ public class Input {
 			int srcNode = Integer.parseInt(String.valueOf(e.trim().charAt(0)));
 			int destNode = Integer.parseInt(splitStr[2]);
 
-			// Retrieve the substring between the '=' and ']' characters, this
-			// is the weight of the edge.
+			// Retrieve and parse the substring between the '=' and ']'
+			// characters, this is the weight of the edge.
 			e = e.substring(e.indexOf("=") + 1);
 			e = e.substring(0, e.indexOf("]"));
 
 			int weight = Integer.parseInt(e);
 
-			System.out.println(
-					"Source node is: " + srcNode + " Destination node is: " + destNode + " and weight is: " + weight);
+			// System.out.println("Source node is: " + srcNode + " Destination
+			// node is: " + destNode + " and weight is: " + weight);
 
-			// Add edge to graph TODO
-			// outputGraph.addSimpleEdge(srcNode, destNode, true);
+			// Add edge to graph
+			int newEdge = outputGraph.addSimpleEdge(srcNode, destNode, true);
+
+			// Update the edge's width with the weight
+			outputGraph.getEdgeWidthProperty().setValue(newEdge, weight);
 
 		}
+
+		// System.out.println("Edge indices are: " + outputGraph.getEdges());
+		// System.out.println(outputGraph.getEdgeWidthProperty().getValue(5));
+		// //Cost of edge with index 5.
 
 		return outputGraph;
 	}
