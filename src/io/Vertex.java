@@ -6,7 +6,7 @@ public class Vertex {
     private int _index;
     private boolean _start;
     private boolean _finish;
-    private ArrayList<Edge> EdgeSet;
+    private ArrayList<Edge> EdgeSet = new ArrayList<Edge>();
 
     Vertex(int _name,boolean start,boolean finish) {
         _index = _name;
@@ -17,7 +17,10 @@ public class Vertex {
     public ArrayList<Edge> getEdgeSet() {
         return EdgeSet;
     }
-
+    public void addEdge(Vertex dest,int weight) {
+        Edge e = new Edge(weight,this,dest);
+        EdgeSet.add(e);
+    }
     public int get_index() {
         return _index;
     }

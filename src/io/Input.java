@@ -103,4 +103,91 @@ public class Input {
 		return outputGraph;
 	}
 
+	public static Graph readDotInputbranch(String path) {
+		log.info("Reading input DOT file");
+		File file = new File(path);
+		Scanner input = null;
+
+		try {
+			input = new Scanner(file);
+		} catch (FileNotFoundException e) {
+			log.error("File was not found!", e);
+		}
+
+		List<String> list = new ArrayList<String>();
+
+		// Read .DOT file line by line, only consider useful lines
+		while (input.hasNextLine()) {
+
+			String currentLine = input.nextLine();
+
+			// Only add if it doesn't contain '{', '}', or only whitespace.
+			if ((currentLine.indexOf('{') == -1) && (currentLine.indexOf('}') == -1)) {
+				if (!currentLine.trim().isEmpty()) {
+					// String is not empty and not just whitespace
+					list.add(currentLine);
+				}
+			}
+		}
+
+		// Distinguish between edges and nodes within input
+		List<String> nodesList = new ArrayList<String>();
+		List<String> edgesList = new ArrayList<String>();
+
+		for (String l : list) {
+
+			if (l.indexOf('>') >= 0) {
+				// It must be an edge
+				edgesList.add(l);
+
+			} else {
+				nodesList.add(l);
+			}
+		}
+
+		// Creates an empty graph
+		Graph outputGraph = new Graph();
+
+		// Add each vertex from input file
+		for (String n : nodesList) {
+            int a = Integer.parseInt(String.valueOf(n.trim().charAt(0)));
+			outputGraph.addVertex(Integer.parseInt(String.valueOf(n.trim().charAt(0))),false,false);
+
+			/* TODO: Grph object should also represent weight of each vertex */
+          
+			for(Vertex v:outputGraph.getVertexSet()) {
+			    System.out.println(v.get_index());
+            }
+		}
+
+		// Add each edge from input file
+		for (String e : edgesList) {
+
+			// Split on whitespace
+			String[] splitStr = e.trim().split("\\s+");
+
+			int srcNode = Integer.parseInt(String.valueOf(e.trim().charAt(0)));
+			int destNode = Integer.parseInt(splitStr[2]);
+
+			// Retrieve and parse the substring between the '=' and ']'
+			// characters, this is the weight of the edge.
+			e = e.substring(e.indexOf("=") + 1);
+			e = e.substring(0, e.indexOf("]"));
+
+			int weight = Integer.parseInt(e);
+
+			// System.out.println("Source node is: " + srcNode + " Destination
+			// node is: " + destNode + " and weight is: " + weight);
+
+			// Add edge to graph
+			outputGraph.getVertex(srcNode).addEdge(outputGraph.getVertex(destNode),weight);
+
+		}
+
+		// System.out.println("Edge indices are: " + outputGraph.getEdges());
+		// System.out.println(outputGraph.getEdgeWidthProperty().getValue(5));
+		// //Cost of edge with index 5.
+
+		return outputGraph;
+	}
 }

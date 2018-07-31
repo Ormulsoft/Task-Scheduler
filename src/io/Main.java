@@ -57,8 +57,7 @@ public class Main {
 		int cores = 1;
 
 		InMemoryGrph in = (InMemoryGrph) Input.readDotInput(inputPath);
-		log.info(in.getEdges().toString());
-		log.info(in.getNavigation().toString());
+		Graph in2 = Input.readDotInputbranch(inputPath);
 		Grph out = new AlgorithmStub().runAlg(in, cores);
 
 		try {
