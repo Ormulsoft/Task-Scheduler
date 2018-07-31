@@ -23,7 +23,7 @@ public class Input {
 		
         List<String> list = new ArrayList<String>();
 
-        // Read .DOT file line by line
+        // Read .DOT file line by line, only consider useful lines
         while (input.hasNextLine()) {
         	
         	String currentLine = input.nextLine();
@@ -36,19 +36,28 @@ public class Input {
         			list.add(currentLine);
         		} 
         		
-            	
         	}
             
         }
         
         
-        
+        // Distinguish between edges and nodes within input
+        List<String> nodesList = new ArrayList<String>();
+        List<String> edgesList = new ArrayList<String>();
         
         for (String l : list) {
-        	System.out.println(l);
-        	System.out.println("end");
+        	
+        	if (l.indexOf('>') >= 0) {       		
+        		// It must be an edge
+        		edgesList.add(l);
+        		
+        	} else {
+        		nodesList.add(l);
+        	}
         }
 
+        
+        
         return null;
     }
 

@@ -16,7 +16,6 @@ public class Main {
 
         
         
-        
 		Grph in = Input.readDotInput(inputPath);
 		Grph out = alg.Algorithm.runAlg(in,cores);
 		Output.export(out, outputPath);
