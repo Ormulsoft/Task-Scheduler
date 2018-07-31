@@ -3,6 +3,7 @@ package io;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -64,8 +65,35 @@ public class Input {
         for (String n : nodesList) {
         	
         	outputGraph.addVertex(Integer.parseInt(String.valueOf(n.trim().charAt(0))));
+        	
+        	/* TODO: Grph object should also represent weight of each vertex */
 
         	System.out.println("Graph contains: " + outputGraph.getVertices());
+        }
+        
+        
+        // Add each edge from input file
+        System.out.println("Edges to be added: ");
+        for (String e : edgesList) {
+        	
+        	// Split on whitespace
+        	String[] splitStr = e.trim().split("\\s+");
+        	
+        	int srcNode = Integer.parseInt(String.valueOf(e.trim().charAt(0)));     	       	
+        	int destNode = Integer.parseInt(splitStr[2]);
+        	
+        	// Retrieve the substring between the '=' and ']' characters, this is the weight of the edge. 
+        	e = e.substring(e.indexOf("=") + 1);
+        	e = e.substring(0, e.indexOf("]"));
+        	
+        	int weight = Integer.parseInt(e);
+        	
+        	System.out.println("Source node is: " + srcNode + " Destination node is: " + destNode + " and weight is: " + weight);
+        	
+        	// Add edge to graph TODO
+        	//outputGraph.addSimpleEdge(srcNode, destNode, true);
+        	
+        	
         }
         
         
