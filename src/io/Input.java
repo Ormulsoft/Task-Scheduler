@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import grph.Grph;
+import grph.in_memory.InMemoryGrph;
 
 public class Input {
 
@@ -55,7 +56,17 @@ public class Input {
         		nodesList.add(l);
         	}
         }
+        
+        // Creates an empty graph
+        Grph outputGraph = new InMemoryGrph();
+        
+        // Add each vertex from input file
+        for (String n : nodesList) {
+        	
+        	outputGraph.addVertex(Integer.parseInt(String.valueOf(n.trim().charAt(0))));
 
+        	System.out.println("Graph contains: " + outputGraph.getVertices());
+        }
         
         
         return null;
