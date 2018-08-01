@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import alg.AlgorithmStubv2;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -58,6 +59,7 @@ public class Main {
 
 		InMemoryGrph in = (InMemoryGrph) Input.readDotInput(inputPath);
 		Graph in2 = Input.readDotInputbranch(inputPath);
+		int out2 = new AlgorithmStubv2().runAlg(in2,1);
 		Grph out = new AlgorithmStub().runAlg(in, cores);
 
 		try {

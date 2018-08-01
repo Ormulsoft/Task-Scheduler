@@ -15,8 +15,11 @@ public class Graph {
     public Graph () {
 
     };
-    public void addVertex(int _name,boolean start,boolean finish) {
-        Vertex name = new Vertex(_name, start, finish);
+    public void addVertex(int _name,boolean start,boolean finish,int weight) {
+        Vertex name = new Vertex(_name, start, finish,weight);
+        if(name.is_start() == true) {
+            this._startVertex = name;
+        }
         VertexSet.add(name);
     }
 

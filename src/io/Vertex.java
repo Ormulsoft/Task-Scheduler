@@ -6,12 +6,19 @@ public class Vertex {
     private int _index;
     private boolean _start;
     private boolean _finish;
+    private int _weight;
     private ArrayList<Edge> EdgeSet = new ArrayList<Edge>();
 
-    Vertex(int _name,boolean start,boolean finish) {
+    Vertex(int _name,boolean start,boolean finish,int weight) {
         _index = _name;
         _start =start;
         _finish = finish;
+        _weight = weight;
+
+    }
+
+    public int get_weight() {
+        return _weight;
     }
 
     public ArrayList<Edge> getEdgeSet() {
