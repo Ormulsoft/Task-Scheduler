@@ -1,0 +1,156 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 1048576 bytes for AllocateHeap
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   In 32 bit mode, the process size limit was hit
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Use 64 bit Java on a 64 bit OS
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (memory/allocation.inline.hpp:61), pid=10344, tid=0x000000000000240c
+#
+# JRE version:  (8.0_152-b15) (build )
+# Java VM: OpenJDK 64-Bit Server VM (25.152-b15 mixed mode windows-amd64 compressed oops)
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000000002ba2800):  JavaThread "Unknown thread" [_thread_in_vm, id=9228, stack(0x00000000029e0000,0x0000000002ae0000)]
+
+Stack: [0x00000000029e0000,0x0000000002ae0000]
+[error occurred during error reporting (printing stack bounds), id 0xc0000005]
+
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+
+Other Threads:
+
+=>0x0000000002ba2800 (exited) JavaThread "Unknown thread" [_thread_in_vm, id=9228, stack(0x00000000029e0000,0x0000000002ae0000)]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap:
+ PSYoungGen      total 38400K, used 665K [0x00000000d5c00000, 0x00000000d8680000, 0x0000000100000000)
+  eden space 33280K, 2% used [0x00000000d5c00000,0x00000000d5ca6670,0x00000000d7c80000)
+  from space 5120K, 0% used [0x00000000d8180000,0x00000000d8180000,0x00000000d8680000)
+  to   space 5120K, 0% used [0x00000000d7c80000,0x00000000d7c80000,0x00000000d8180000)
+ ParOldGen       total 87552K, used 0K [0x0000000081400000, 0x0000000086980000, 0x00000000d5c00000)
+  object space 87552K, 0% used [0x0000000081400000,0x0000000081400000,0x0000000086980000)
+ Metaspace       used 772K, capacity 4480K, committed 4480K, reserved 1056768K
+  class space    used 73K, capacity 384K, committed 384K, reserved 1048576K
+
+Card table byte_map: [0x0000000012060000,0x0000000012460000] byte_map_base: 0x0000000011c56000
+
+Marking Bits: (ParMarkBitMap*) 0x00000000744d5970
+ Begin Bits: [0x0000000012b10000, 0x0000000014ac0000)
+ End Bits:   [0x0000000014ac0000, 0x0000000016a70000)
+
+Polling page: 0x0000000000c60000
+
+CodeCache: size=245760Kb used=328Kb max_used=328Kb free=245431Kb
+ bounds [0x0000000002ca0000, 0x0000000002f10000, 0x0000000011ca0000]
+ total_blobs=57 nmethods=0 adapters=38
+ compilation: enabled
+
+Compilation events (0 events):
+No events
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+Events (10 events):
+Event: 0.025 loading class java/lang/Short
+Event: 0.025 loading class java/lang/Short done
+Event: 0.025 loading class java/lang/Integer
+Event: 0.025 loading class java/lang/Integer done
+Event: 0.025 loading class java/lang/Long
+Event: 0.025 loading class java/lang/Long done
+Event: 0.026 loading class java/lang/NullPointerException
+Event: 0.026 loading class java/lang/NullPointerException done
+Event: 0.026 loading class java/lang/ArithmeticException
+Event: 0.026 loading class java/lang/ArithmeticException done
+
+
+Dynamic libraries:
+0x00007ff7eddc0000 - 0x00007ff7eddf1000 	C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2017.3.5\jre64\bin\java.exe
+0x00007ff9d14f0000 - 0x00007ff9d16d1000 	C:\WINDOWS\SYSTEM32\ntdll.dll
+0x00007ff9d1040000 - 0x00007ff9d10f2000 	C:\WINDOWS\System32\KERNEL32.DLL
+0x00007ff9cdb30000 - 0x00007ff9cdda3000 	C:\WINDOWS\System32\KERNELBASE.dll
+0x00007ff9d0ae0000 - 0x00007ff9d0b81000 	C:\WINDOWS\System32\ADVAPI32.dll
+0x00007ff9cefc0000 - 0x00007ff9cf05e000 	C:\WINDOWS\System32\msvcrt.dll
+0x00007ff9ce980000 - 0x00007ff9ce9db000 	C:\WINDOWS\System32\sechost.dll
+0x00007ff9cf070000 - 0x00007ff9cf194000 	C:\WINDOWS\System32\RPCRT4.dll
+0x00007ff9d0db0000 - 0x00007ff9d0f40000 	C:\WINDOWS\System32\USER32.dll
+0x00007ff9cd970000 - 0x00007ff9cd990000 	C:\WINDOWS\System32\win32u.dll
+0x00007ff9d0d80000 - 0x00007ff9d0da8000 	C:\WINDOWS\System32\GDI32.dll
+0x00007ff9cd990000 - 0x00007ff9cdb22000 	C:\WINDOWS\System32\gdi32full.dll
+0x00007ff9ce8e0000 - 0x00007ff9ce97f000 	C:\WINDOWS\System32\msvcp_win.dll
+0x00007ff9ce080000 - 0x00007ff9ce17a000 	C:\WINDOWS\System32\ucrtbase.dll
+0x00007ff9bf750000 - 0x00007ff9bf9b9000 	C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.17134.165_none_fb429645306569ac\COMCTL32.dll
+0x00007ff9cec90000 - 0x00007ff9cefb3000 	C:\WINDOWS\System32\combase.dll
+0x00007ff9cddb0000 - 0x00007ff9cde2a000 	C:\WINDOWS\System32\bcryptPrimitives.dll
+0x00007ff9d1200000 - 0x00007ff9d122d000 	C:\WINDOWS\System32\IMM32.DLL
+0x0000000074580000 - 0x0000000074652000 	C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2017.3.5\jre64\bin\msvcr100.dll
+0x0000000073d10000 - 0x0000000074550000 	C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2017.3.5\jre64\bin\server\jvm.dll
+0x00007ff9d1030000 - 0x00007ff9d1038000 	C:\WINDOWS\System32\PSAPI.DLL
+0x00007ff9c4fc0000 - 0x00007ff9c4fc9000 	C:\WINDOWS\SYSTEM32\WSOCK32.dll
+0x00007ff9c8f60000 - 0x00007ff9c8f6a000 	C:\WINDOWS\SYSTEM32\VERSION.dll
+0x00007ff9c8a40000 - 0x00007ff9c8a63000 	C:\WINDOWS\SYSTEM32\WINMM.dll
+0x00007ff9d0d10000 - 0x00007ff9d0d7c000 	C:\WINDOWS\System32\WS2_32.dll
+0x00007ff9c8a10000 - 0x00007ff9c8a3a000 	C:\WINDOWS\SYSTEM32\winmmbase.dll
+0x00007ff9ce890000 - 0x00007ff9ce8d9000 	C:\WINDOWS\System32\cfgmgr32.dll
+0x00007ff9c8ea0000 - 0x00007ff9c8eaf000 	C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2017.3.5\jre64\bin\verify.dll
+0x00007ff9c36a0000 - 0x00007ff9c36c9000 	C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2017.3.5\jre64\bin\java.dll
+0x00007ff9c5790000 - 0x00007ff9c57a6000 	C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2017.3.5\jre64\bin\zip.dll
+
+VM Arguments:
+java_command: org.jetbrains.git4idea.http.GitAskPassApp Username for 'https://github.com': 
+java_class_path (initial): C:/Program Files/JetBrains/IntelliJ IDEA Community Edition 2017.3.5/plugins/git4idea/lib/git4idea-rt.jar;C:/Program Files/JetBrains/IntelliJ IDEA Community Edition 2017.3.5/lib/xmlrpc-2.0.jar;C:/Program Files/JetBrains/IntelliJ IDEA Community Edition 2017.3.5/lib/commons-codec-1.9.jar;C:/Program Files/JetBrains/IntelliJ IDEA Community Edition 2017.3.5/lib/util.jar
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\Java\jdk1.8.0_131
+PATH=C:\Program Files\Git\mingw64/libexec/git-core;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Nikhil\bin;C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\Oracle\Java\javapath;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files\MATLAB\R2016a\runtime\win64;C:\Program Files\MATLAB\R2016a\bin;C:\Program Files\MATLAB\R2016a\polyspace\bin;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files (x86)\Skype\Phone\;C:\Program Files\Git\cmd;C:\Program Files\nodejs\;C:\Program Files\Java\jdk1.8.0_131\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Brackets\command;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Users\Nikhil\Desktop\Softeng325 Labs\apache-maven-3.5.4\bin;C:\Users\Nikhil\AppData\Local\Microsoft\WindowsApps;C:\Users\Nikhil\AppData\Roaming\Dashlane\4.6.8.25848\bin\Firefox_Extension\{442718d9-475e-452a-b3e1-fb1ee16b8e9f}\components;C:\Users\Nikhil\AppData\Roaming\npm;C:\Python27;C:\Users\Nikhil\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\;C:\Program Files\Microsoft VS Code\bin;C:\Program Files\Docker Toolbox;C:\Users\Nikhil\Desktop\Softeng325 Labs\apache-maven-3.5.4\bin;
+USERNAME=Nikhil
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 61 Stepping 4, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 10.0 , 64 bit Build 17134 (10.0.17134.1)
+
+CPU:total 4 (initial active 4) (2 cores per cpu, 2 threads per core) family 6 model 61 stepping 4, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, avx2, aes, clmul, erms, 3dnowpref, lzcnt, ht, tsc, tscinvbit, bmi1, bmi2, adx
+
+Memory: 4k page, physical 8301000k(1145976k free), swap 10255816k(5224k free)
+
+vm_info: OpenJDK 64-Bit Server VM (25.152-b15) for windows-amd64 JRE (1.8.0_152-release-1024-b15), built on Feb 12 2018 14:08:48 by "builduser" with MS VC++ 10.0 (VS2010)
+
+time: Wed Aug 01 22:06:07 2018
+elapsed time: 0 seconds (0d 0h 0m 0s)
+
