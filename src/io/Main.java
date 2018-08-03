@@ -21,6 +21,8 @@ import util.ScheduleGrph;
 public class Main {
 
 	final static Logger log = Logger.getLogger(Main.class);
+	
+	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
 
 	/**
 	 * Inital setup / entry point
@@ -41,20 +43,23 @@ public class Main {
 			BasicConfigurator.configure();
 			e.printStackTrace();
 		}
-
-		startProcess();
+		// TODO parse CLI arguments here into these variables
+		
+		String inputFile = ""; // MUST be set by CLI		
+		
+		String outputFile = false ?  "" : String.format(DEFAULT_OUTPUT_TEMPLATE, inputFile); // either use CLI value or default ;
+		startProcess(inputFile, outputFile);
 	}
 
 	/**
 	 * begins the task scheduling process
 	 */
-	private static void startProcess() {
+	private static void startProcess(String inputFile, String outputFile) {
 		log.info("Started scheduling");
 
+		int cores = 1;
 		String inputPath = "src/resources/Nodes_7_OutTree.dot";
 		String outputPath = "test_output/exp";
-		int cores = 1;
-
 		ScheduleGrph in = Input.readDotInput(inputPath);
 		ScheduleGrph out = new AlgorithmStub().runAlg(in, cores);
 
