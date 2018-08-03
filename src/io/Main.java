@@ -23,7 +23,14 @@ public class Main {
 
 	final static Logger log = Logger.getLogger(Main.class);
 	
-	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
+	//private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
+	
+	private static String inputFile;	
+	private static String outputFile = "out";
+	
+	private static int numProcessors = 1;
+	
+	
 
 	/**
 	 * Inital setup / entry point
@@ -45,11 +52,7 @@ public class Main {
 			BasicConfigurator.configure();
 			e.printStackTrace();
 		}
-		// TODO parse CLI arguments here into these variables
 		
-		String inputFile = ""; // MUST be set by CLI		
-		
-		String outputFile = false ?  "" : String.format(DEFAULT_OUTPUT_TEMPLATE, inputFile); // either use CLI value or default ;
 
 		parseCLIArgs(args);
 		startProcess(inputFile, outputFile);
@@ -58,7 +61,8 @@ public class Main {
 
 	private static void parseCLIArgs(String[] args) {
 		
-		System.out.println("Input filename is : " + args[0] + " Number of processors to use: " + args[1]); 
+		inputFile = args[0];		
+		numProcessors = Integer.parseInt(args[1]);
 		
 	}
 
