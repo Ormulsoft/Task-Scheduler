@@ -12,12 +12,14 @@ import org.apache.log4j.Logger;
 
 import grph.Grph;
 import grph.in_memory.InMemoryGrph;
+import grph.properties.NumericalProperty;
+import util.ScheduleGrph;
 
 public class Input {
 
 	final static Logger log = Logger.getLogger(Input.class);
 
-	public static Grph readDotInput(String path) {
+	public static ScheduleGrph readDotInput(String path) {
 		log.info("Reading input DOT file");
 		File file = new File(path);
 		Scanner input = null;
@@ -60,23 +62,28 @@ public class Input {
 		}
 
 		// Creates an empty graph
-		Grph outputGraph = new InMemoryGrph();
+		ScheduleGrph outputGraph = new ScheduleGrph();
 
+		NumericalProperty vertWeights = new NumericalProperty("Weight");
+		
 		// Add each vertex from input file
 		for (String n : nodesList) {
-
-			outputGraph.addVertex(Integer.parseInt(String.valueOf(n.trim().charAt(0))));
+			
+			String label = String.valueOf(n.trim().charAt(0));
+			int vert = outputGraph.addVertex();
+			
 			// Used to get the weight of vertex
 			Pattern p = Pattern.compile("-?\\d+");
 			Matcher m = p.matcher(n);
-			ArrayList<Integer> numbers = new ArrayList<Integer>();
 			while (m.find()) {
-				numbers.add(Integer.parseInt(m.group()));
+				vertWeights.setValue(vert, Integer.parseInt(m.group()));
 			}
 
+			
 			System.out.println("Graph contains: " + outputGraph.getVertices());
 		}
 
+		outputGraph.setVertexWeightProperty(vertWeights);
 		// Add each edge from input file
 		for (String e : edgesList) {
 
