@@ -1,46 +1,44 @@
 package util;
 
 import grph.in_memory.InMemoryGrph;
-import grph.properties.NumericalProperty;;
+import grph.properties.NumericalProperty;
 
-public class ScheduleGrph extends InMemoryGrph{
+/**
+ * This extends the InMemoryGrph to provide additional fields.
+ * 
+ * 
+ * @author Gino
+ *
+ */
+public class ScheduleGrph extends InMemoryGrph {
 
-
+	private static final long serialVersionUID = 1L;
 	private NumericalProperty verticesWeight;
 	private NumericalProperty verticesStart;
 	private NumericalProperty verticesProcessor;
-	
-	public void setVertexStartProperty(NumericalProperty vertStarts)
-	{
+
+	public void setVertexStartProperty(NumericalProperty vertStarts) {
 		this.verticesStart = vertStarts;
 	}
-	
-	public void setVertexWeightProperty(NumericalProperty vertWeights)
-	{
-		this.verticesStart = vertWeights;
+
+	public void setVertexWeightProperty(NumericalProperty vertWeights) {
+		this.verticesWeight = vertWeights;
 	}
-	
-	public void setVertexProcessorProperty(NumericalProperty vertProcs)
-	{
-		this.verticesStart = vertProcs;
+
+	public void setVertexProcessorProperty(NumericalProperty vertProcs) {
+		this.verticesProcessor = vertProcs;
 	}
-	
-	
-	public NumericalProperty getVertexStartProperty()
-	{
+
+	public NumericalProperty getVertexStartProperty() {
 		return verticesStart;
 	}
-	
-	public NumericalProperty getVertexWeightProperty()
-	{
+
+	public NumericalProperty getVertexWeightProperty() {
 		return verticesWeight;
 	}
-	
-	public NumericalProperty getVertexProcessorProperty()
-	{
+
+	public NumericalProperty getVertexProcessorProperty() {
 		return verticesProcessor;
 	}
-	
-	
-	
+
 }

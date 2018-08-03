@@ -8,14 +8,13 @@ import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
-import grph.Grph;
-import grph.in_memory.InMemoryGrph;
+import util.ScheduleGrph;
 
 public class Input {
 
 	final static Logger log = Logger.getLogger(Input.class);
 
-	public static Grph readDotInput(String path) {
+	public static ScheduleGrph readDotInput(String path) {
 		log.info("Reading input DOT file");
 		File file = new File(path);
 		Scanner input = null;
@@ -58,7 +57,7 @@ public class Input {
 		}
 
 		// Creates an empty graph
-		Grph outputGraph = new InMemoryGrph();
+		ScheduleGrph outputGraph = new ScheduleGrph();
 
 		// Add each vertex from input file
 		for (String n : nodesList) {
@@ -67,7 +66,7 @@ public class Input {
 
 			/* TODO: Grph object should also represent weight of each vertex */
 
-			System.out.println("Graph contains: " + outputGraph.getVertices());
+			log.info("Graph contains: " + outputGraph.getVertices().toString());
 		}
 
 		// Add each edge from input file
