@@ -6,6 +6,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
 
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -28,7 +34,11 @@ public class Main {
 	private static String inputFile;	
 	private static String outputFile = "out";
 	
-	private static int numProcessors = 1;
+	private static int numProcessors;
+	
+	private static boolean visualization = false; // By default, no visualization should be shown.
+	
+	private static int numCores = 1; // 1 core implies sequential scheduling, (i.e. no parallelization)
 	
 	
 
@@ -61,8 +71,44 @@ public class Main {
 
 	private static void parseCLIArgs(String[] args) {
 		
+		// Get input file name and number of processors.
 		inputFile = args[0];		
 		numProcessors = Integer.parseInt(args[1]);
+		
+		// Get various options. 
+		CommandLineParser parser = new DefaultParser();
+		Options options = new Options();
+		
+		options.addOption("p", true, "The number of cores used for execution in parallel.");
+		options.addOption("v", false, "Visualize the scheduling process");
+		options.addOption("o", true, "The intended output file name");
+		
+		try {
+			CommandLine commandLine = parser.parse(options, args);
+			
+			if (commandLine.hasOption('p')) {				
+				numCores = Integer.parseInt(commandLine.getOptionValue('p'));
+			}
+			
+			if (commandLine.hasOption('v')) {				
+				visualization = true;
+			}
+			
+			if (commandLine.hasOption('o')) {				
+				outputFile = commandLine.getOptionValue('o');
+			}
+			
+
+		} catch (ParseException e) {
+			System.out.println("There was an processing your command line options.");
+			
+			// TODO display the usage help function 
+			
+			//e.printStackTrace();
+		}
+
+
+		
 		
 	}
 
