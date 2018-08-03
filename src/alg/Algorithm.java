@@ -9,6 +9,6 @@ public interface Algorithm {
 
 	final static Logger log = Logger.getLogger(Algorithm.class);
 
-	public ScheduleGrph runAlg(Grph input, int numCores);
+	public ScheduleGrph runAlg(ScheduleGrph input, int numCores);
 
 }

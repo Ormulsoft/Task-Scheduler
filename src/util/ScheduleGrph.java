@@ -1,7 +1,12 @@
 package util;
 
+import grph.Grph;
 import grph.in_memory.InMemoryGrph;
 import grph.properties.NumericalProperty;
+import toools.collections.primitive.LucIntSet;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * This extends the InMemoryGrph to provide additional fields.
@@ -41,4 +46,19 @@ public class ScheduleGrph extends InMemoryGrph {
 		return verticesProcessor;
 	}
 
+	public ArrayList<Integer> getAllStartVertexIndices() {
+		ArrayList<Integer> _StartVertices = new ArrayList<Integer>();
+		Object[] a = this.getVertices().toArray();
+		for(int i =0; i<this.getVertices().size(); i++) {
+			int index = Integer.parseInt(a[i].toString());
+			if(this.getInEdges(index).size() == 0) {
+				_StartVertices.add(index);
+			}
+			else {
+			 break;
+			}
+		}
+		return _StartVertices;
+
+	}
 }

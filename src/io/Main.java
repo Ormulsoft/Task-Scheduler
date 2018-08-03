@@ -31,8 +31,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
-		Properties props = new Properties();
+	/*	Properties props = new Properties();
 
 		// try log properties load from file, otherwise use basic
 		try {
@@ -52,6 +51,9 @@ public class Main {
 		String outputFile = false ?  "" : String.format(DEFAULT_OUTPUT_TEMPLATE, inputFile); // either use CLI value or default ;
 
 		parseCLIArgs(args);
+		*/
+		String inputFile = "src\\resources\\Nodes_7_OutTree.dot";
+		String outputFile = "exp";
 		startProcess(inputFile, outputFile);
 	}
 	
