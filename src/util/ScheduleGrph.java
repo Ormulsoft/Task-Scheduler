@@ -7,6 +7,8 @@ import toools.collections.primitive.LucIntSet;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * This extends the InMemoryGrph to provide additional fields.
@@ -60,5 +62,24 @@ public class ScheduleGrph extends InMemoryGrph {
 		}
 		return _StartVertices;
 
+	}
+
+	public ArrayList<Integer> getAllEndVertexIndices() {
+		ArrayList<Integer> _endVertices = new ArrayList<Integer>();
+		Object[] a = this.getVertices().toArray();
+		for(int i =0; i<this.getVertices().size(); i++) {
+			int index = Integer.parseInt(a[i].toString());
+			if(this.getOutEdges(index).size() == 0) {
+				_endVertices .add(index);
+			}
+			else {
+				break;
+			}
+		}
+		return _endVertices;
+
+	}
+	public int getupperBound() {
+        return 1;
 	}
 }
