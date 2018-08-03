@@ -5,9 +5,12 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
+import grph.properties.NumericalProperty;
 import util.ScheduleGrph;
 
 public class Input {
@@ -59,16 +62,37 @@ public class Input {
 		// Creates an empty graph
 		ScheduleGrph outputGraph = new ScheduleGrph();
 
+		NumericalProperty vertWeights = new NumericalProperty("Weight");
+		NumericalProperty vertLabels = new NumericalProperty("Labels");
+
+		
 		// Add each vertex from input file
 		for (String n : nodesList) {
+			
+			String label = String.valueOf(n.trim().charAt(0));			
+			int vert = outputGraph.addVertex();
+			
+			vertLabels.setValue(vert, label);
+
+			
+			// Used to get the weight of vertex
+			Pattern p = Pattern.compile("-?\\d+");
+			Matcher m = p.matcher(n);
+			while (m.find()) {
+				vertWeights.setValue(vert, Integer.parseInt(m.group()));
+			}
 
 			outputGraph.addVertex(Integer.parseInt(String.valueOf(n.trim().charAt(0))));
 
 			/* TODO: Grph object should also represent weight of each vertex */
 
 			log.info("Graph contains: " + outputGraph.getVertices().toString());
+
 		}
 
+		outputGraph.setVertexWeightProperty(vertWeights);
+		outputGraph.setVerticesLabel(vertLabels);
+		
 		// Add each edge from input file
 		for (String e : edgesList) {
 
