@@ -6,6 +6,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
 
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -23,7 +29,18 @@ public class Main {
 
 	final static Logger log = Logger.getLogger(Main.class);
 	
-	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
+	//private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
+	
+	private static String inputFile;	
+	private static String outputFile = "out";
+	
+	private static int numProcessors;
+	
+	private static boolean visualization = false; // By default, no visualization should be shown.
+	
+	private static int numCores = 1; // 1 core implies sequential scheduling, (i.e. no parallelization)
+	
+	
 
 	/**
 	 * Inital setup / entry point
@@ -44,11 +61,7 @@ public class Main {
 			BasicConfigurator.configure();
 			e.printStackTrace();
 		}
-		// TODO parse CLI arguments here into these variables
 		
-		String inputFile = ""; // MUST be set by CLI		
-		
-		String outputFile = false ?  "" : String.format(DEFAULT_OUTPUT_TEMPLATE, inputFile); // either use CLI value or default ;
 
 		parseCLIArgs(args);
 		*/
@@ -60,7 +73,44 @@ public class Main {
 
 	private static void parseCLIArgs(String[] args) {
 		
-		System.out.println("Input filename is : " + args[0] + " Number of processors to use: " + args[1]); 
+		// Get input file name and number of processors.
+		inputFile = args[0];		
+		numProcessors = Integer.parseInt(args[1]);
+		
+		// Get various options. 
+		CommandLineParser parser = new DefaultParser();
+		Options options = new Options();
+		
+		options.addOption("p", true, "The number of cores used for execution in parallel.");
+		options.addOption("v", false, "Visualize the scheduling process");
+		options.addOption("o", true, "The intended output file name");
+		
+		try {
+			CommandLine commandLine = parser.parse(options, args);
+			
+			if (commandLine.hasOption('p')) {				
+				numCores = Integer.parseInt(commandLine.getOptionValue('p'));
+			}
+			
+			if (commandLine.hasOption('v')) {				
+				visualization = true;
+			}
+			
+			if (commandLine.hasOption('o')) {				
+				outputFile = commandLine.getOptionValue('o');
+			}
+			
+
+		} catch (ParseException e) {
+			System.out.println("There was an processing your command line options.");
+			
+			// TODO display the usage help function 
+			
+			//e.printStackTrace();
+		}
+
+
+		
 		
 	}
 
