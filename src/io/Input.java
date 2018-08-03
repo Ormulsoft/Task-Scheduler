@@ -65,12 +65,17 @@ public class Input {
 		ScheduleGrph outputGraph = new ScheduleGrph();
 
 		NumericalProperty vertWeights = new NumericalProperty("Weight");
+		NumericalProperty vertLabels = new NumericalProperty("Labels");
+
 		
 		// Add each vertex from input file
 		for (String n : nodesList) {
 			
-			String label = String.valueOf(n.trim().charAt(0));
+			String label = String.valueOf(n.trim().charAt(0));			
 			int vert = outputGraph.addVertex();
+			
+			vertLabels.setValue(vert, label);
+
 			
 			// Used to get the weight of vertex
 			Pattern p = Pattern.compile("-?\\d+");
@@ -84,6 +89,8 @@ public class Input {
 		}
 
 		outputGraph.setVertexWeightProperty(vertWeights);
+		outputGraph.setVerticesLabel(vertLabels);
+		
 		// Add each edge from input file
 		for (String e : edgesList) {
 
