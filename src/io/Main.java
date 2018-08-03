@@ -3,6 +3,7 @@ package io;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
@@ -30,6 +31,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
 		Properties props = new Properties();
 
 		// try log properties load from file, otherwise use basic
@@ -48,11 +50,23 @@ public class Main {
 		String inputFile = ""; // MUST be set by CLI		
 		
 		String outputFile = false ?  "" : String.format(DEFAULT_OUTPUT_TEMPLATE, inputFile); // either use CLI value or default ;
+
+		parseCLIArgs(args);
 		startProcess(inputFile, outputFile);
 	}
+	
+
+	private static void parseCLIArgs(String[] args) {
+		
+		System.out.println("Input filename is : " + args[0] + " Number of processors to use: " + args[1]); 
+		
+	}
+
+
+
 
 	/**
-	 * begins the task scheduling process
+	 * Begins the task scheduling process
 	 */
 	private static void startProcess(String inputFile, String outputFile) {
 		log.info("Started scheduling");
