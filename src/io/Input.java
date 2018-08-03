@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -64,8 +66,13 @@ public class Input {
 		for (String n : nodesList) {
 
 			outputGraph.addVertex(Integer.parseInt(String.valueOf(n.trim().charAt(0))));
-
-			/* TODO: Grph object should also represent weight of each vertex */
+			// Used to get the weight of vertex
+			Pattern p = Pattern.compile("-?\\d+");
+			Matcher m = p.matcher(n);
+			ArrayList<Integer> numbers = new ArrayList<Integer>();
+			while (m.find()) {
+				numbers.add(Integer.parseInt(m.group()));
+			}
 
 			System.out.println("Graph contains: " + outputGraph.getVertices());
 		}
