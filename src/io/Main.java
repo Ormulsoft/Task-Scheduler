@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import alg.AlgorithmStub;
-import grph.Grph;
+import util.ScheduleGrph;
 
 /**
  * Entry point for the task scheduling assignment
@@ -64,12 +64,12 @@ public class Main {
 	private static void startProcess() {
 		log.info("Started scheduling");
 
-		String inputPath = "Nodes_7_OutTree.dot";
-		String outputPath = "exp";
+		String inputPath = "src/resources/Nodes_7_OutTree.dot";
+		String outputPath = "test_output/exp";
 		int cores = 1;
 
-		Grph in = Input.readDotInput(inputPath);
-		Grph out = new AlgorithmStub().runAlg(in, cores);
+		ScheduleGrph in = Input.readDotInput(inputPath);
+		ScheduleGrph out = new AlgorithmStub().runAlg(in, cores);
 
 		try {
 			Output.export(out, outputPath);

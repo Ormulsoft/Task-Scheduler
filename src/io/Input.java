@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import grph.Grph;
-import grph.in_memory.InMemoryGrph;
 import grph.properties.NumericalProperty;
 import util.ScheduleGrph;
 
@@ -84,8 +82,12 @@ public class Input {
 				vertWeights.setValue(vert, Integer.parseInt(m.group()));
 			}
 
-			
-			System.out.println("Graph contains: " + outputGraph.getVertices());
+			outputGraph.addVertex(Integer.parseInt(String.valueOf(n.trim().charAt(0))));
+
+			/* TODO: Grph object should also represent weight of each vertex */
+
+			log.info("Graph contains: " + outputGraph.getVertices().toString());
+
 		}
 
 		outputGraph.setVertexWeightProperty(vertWeights);

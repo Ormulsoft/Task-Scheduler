@@ -53,6 +53,8 @@ public class AlgorithmStub implements Algorithm {
 		g.setVertexProcessorProperty(processors);
 		g.setEdgesWidth(weightEdge);
 
+		// log.info(g.getVertexProcessorProperty());
+
 		return g;
 
 	}

@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import grph.Grph;
-import grph.io.DotWriter;
 import toools.io.file.RegularFile;
+import util.ScheduleDotWriter;
+import util.ScheduleGrph;
 
 /**
  * This class outputs a dotfile representation of a graph
@@ -15,15 +15,13 @@ import toools.io.file.RegularFile;
  *
  */
 public class Output {
+
 	final static Logger log = Logger.getLogger(Output.class);
 
-	public static void export(Grph outputGraph, String outputPath) throws IOException {
+	public static void export(ScheduleGrph outputGraph, String outputPath) throws IOException {
 
 		log.info("Exporting graph");
-		DotWriter d = new DotWriter();
-		// outputGraph.display();
-		// convert graph to *.dot file
+		ScheduleDotWriter d = new ScheduleDotWriter();
 		d.writeGraph(outputGraph, new RegularFile(outputPath));
-
 	}
 }
