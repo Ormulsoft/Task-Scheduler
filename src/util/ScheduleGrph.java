@@ -51,13 +51,12 @@ public class ScheduleGrph extends InMemoryGrph {
 	public ArrayList<Integer> getAllStartVertexIndices() {
 		ArrayList<Integer> _StartVertices = new ArrayList<Integer>();
 		Object[] a = this.getVertices().toArray();
-		for(int i =0; i<this.getVertices().size(); i++) {
+		for (int i = 0; i < this.getVertices().size(); i++) {
 			int index = Integer.parseInt(a[i].toString());
-			if(this.getInEdges(index).size() == 0) {
+			if (this.getInEdges(index).size() == 0) {
 				_StartVertices.add(index);
-			}
-			else {
-			 break;
+			} else {
+				break;
 			}
 		}
 		return _StartVertices;
@@ -67,19 +66,45 @@ public class ScheduleGrph extends InMemoryGrph {
 	public ArrayList<Integer> getAllEndVertexIndices() {
 		ArrayList<Integer> _endVertices = new ArrayList<Integer>();
 		Object[] a = this.getVertices().toArray();
-		for(int i =0; i<this.getVertices().size(); i++) {
+		for (int i = 0; i < this.getVertices().size(); i++) {
 			int index = Integer.parseInt(a[i].toString());
-			if(this.getOutEdges(index).size() == 0) {
-				_endVertices .add(index);
-			}
-			else {
+			if (this.getOutEdges(index).size() == 0) {
+				_endVertices.add(index);
+			} else {
 				break;
 			}
 		}
 		return _endVertices;
 
 	}
+
 	public int getupperBound() {
-        return 1;
+
+		int startVertex = this.getAllStartVertexIndices().get(0);
+		int upperBound = (int) this.getVertexWeightProperty().getValue(startVertex);
+		HashMap<Integer, Boolean> Visted = new HashMap<Integer, Boolean>();
+		for (int i = 0; i < this.getVertices().size(); i++) {
+			Visted.put(i, false);
+		}
+		Visted.put(startVertex, true);
+
+		while (Visted.values().contains(false)) {
+			int vertex = 0;
+			for (int i = 0; i < Visted.size(); i++) {
+				if (Visted.get(i).booleanValue() == true) {
+					vertex = i;
+					int[] edgeSet = this.getOutEdges(vertex).toIntArray();
+					for(int j = 0;j<edgeSet.length;j++) {
+						if(Visted.get(this.getTheOtherVertex(edgeSet[j],vertex)).booleanValue() == false) {
+							upperBound = (int) this.getEdgeWidthProperty().getValue(edgeSet[j]) + upperBound;
+							Visted.put(this.getTheOtherVertex(edgeSet[j],vertex),true);
+						}
+					}
+				}
+			}
+
+		}
+		return upperBound;
 	}
+
 }

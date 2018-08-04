@@ -15,6 +15,7 @@ public class AlgorithmStub implements Algorithm {
 		log.info(input);
 		input.getAllStartVertexIndices();
 		input.getAllStartVertexIndices();
+		input.getupperBound();
 		return input;
 
 	}
