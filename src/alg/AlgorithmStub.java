@@ -29,7 +29,7 @@ public class AlgorithmStub implements Algorithm {
 		weightVerts.setValue(c, 3);
 		weightVerts.setValue(d, 2);
 
-		NumericalProperty weightEdge = new NumericalProperty("Weight");
+		NumericalProperty weightEdge = input.getVertexWeightProperty();
 		weightEdge.setValue(ab, 1);
 		weightEdge.setValue(ac, 2);
 		weightEdge.setValue(bd, 2);
