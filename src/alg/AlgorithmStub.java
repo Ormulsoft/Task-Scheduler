@@ -9,7 +9,7 @@ import util.ScheduleGrph;
  */
 public class AlgorithmStub implements Algorithm {
 
-	public ScheduleGrph runAlg(Grph input, int numCores) {
+	public ScheduleGrph runAlg(ScheduleGrph input, int numCores) {
 		log.info("Running stub algorithm");
 
 		ScheduleGrph g = new ScheduleGrph();
@@ -51,7 +51,7 @@ public class AlgorithmStub implements Algorithm {
 		g.setVertexWeightProperty(weightVerts);
 		g.setVertexStartProperty(starts);
 		g.setVertexProcessorProperty(processors);
-		g.setEdgesWidth(weightEdge);
+		g.setEdgeWeightProperty(weightEdge);
 
 		// log.info(g.getVertexProcessorProperty());
 

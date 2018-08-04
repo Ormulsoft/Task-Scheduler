@@ -77,7 +77,7 @@ public class ScheduleDotWriter extends DotWriter {
 				Map<String, Object> map = new HashMap<String, Object>();
 
 				if (writeEdgeLabels) {
-					map.put("Weight", sg.getEdgeWidthProperty().getValueAsInt(e));
+					map.put("Weight", sg.getEdgeWeightProperty().getValueAsInt(e));
 				}
 				// remove all " chars
 				text.append(to(map).replaceAll("\"", ""));
