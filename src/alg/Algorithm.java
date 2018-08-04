@@ -10,4 +10,5 @@ public interface Algorithm {
 
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors);
 
+
 }
