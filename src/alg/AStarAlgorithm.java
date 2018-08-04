@@ -7,8 +7,6 @@ import java.util.PriorityQueue;
 import org.apache.commons.lang.SerializationUtils;
 
 import alg.cost.CostFunction;
-import grph.Grph;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import util.PartialScheduleGrph;
 import util.ScheduleDotWriter;
 import util.ScheduleGrph;
@@ -58,7 +56,6 @@ public class AStarAlgorithm implements Algorithm {
 
 			PartialScheduleGrph s = states.poll();
 			// if is a leaf, return the partial.
-			IntSet endVertices = s.getVerticesOfDegree(0, Grph.DIRECTION.out);
 			ArrayList<Integer> freeVerts = getFree(input, s);
 			if (freeVerts.size() == 0) {
 				return s;
@@ -101,6 +98,10 @@ public class AStarAlgorithm implements Algorithm {
 							}
 						}
 
+						/**
+						 * find the latest finishing process on the same
+						 * processor, and factor into the timing
+						 */
 						int processorUpperBound = 0;
 						for (int i : next.getVertices()) {
 							if (next.getVertexProcessorProperty().getValue(i) == pc) {
@@ -126,7 +127,7 @@ public class AStarAlgorithm implements Algorithm {
 		return null;
 	}
 
-	//
+	// select all the free vertices based on a current partial schedule
 	private ArrayList<Integer> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg) {
 		ArrayList<Integer> a = new ArrayList<Integer>();
 		for (int i : pg.getVertices()) {
