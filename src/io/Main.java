@@ -29,7 +29,7 @@ public class Main {
 
 	final static Logger log = Logger.getLogger(Main.class);
 
-	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
+	private static final String DEFAULT_OUTPUT_TEMPLATE = "test_output/%s-OUTPUT.dot";
 
 	/**
 	 * Inital setup / entry point
@@ -109,12 +109,12 @@ public class Main {
 		log.info("Started scheduling");
 
 		ScheduleGrph in = Input.readDotInput(inputFile);
-		ScheduleGrph out = new AlgorithmStub().runAlg(in, numCores);
+		ScheduleGrph out = new AlgorithmStub().runAlg(in, numCores, numProcessors);
 
 		try {
 			Output.export(out, outputFile);
 		} catch (IOException e) {
-			log.error("Failed to export file", e);
+			log.error("Failed to export file - is your filepath invalid?", e);
 		}
 	}
 }
