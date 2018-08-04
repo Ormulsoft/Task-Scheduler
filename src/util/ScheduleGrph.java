@@ -16,6 +16,7 @@ public class ScheduleGrph extends InMemoryGrph {
 	private NumericalProperty verticesWeight;
 	private NumericalProperty verticesStart;
 	private NumericalProperty verticesProcessor;
+	private NumericalProperty edgeWeightProperty;
 
 	public ScheduleGrph() {
 		super();
@@ -35,6 +36,10 @@ public class ScheduleGrph extends InMemoryGrph {
 	public void setVertexProcessorProperty(NumericalProperty vertProcs) {
 		this.verticesProcessor = vertProcs;
 	}
+	
+	public void setEdgeWeightProperty(NumericalProperty edgeWeights) {
+		this.edgeWeightProperty = edgeWeights;
+	}
 
 	public NumericalProperty getVertexStartProperty() {
 		return verticesStart;
@@ -48,4 +53,8 @@ public class ScheduleGrph extends InMemoryGrph {
 		return verticesProcessor;
 	}
 
+	public NumericalProperty getEdgeWeightProperty() {
+		return edgeWeightProperty;
+	}
+	
 }
