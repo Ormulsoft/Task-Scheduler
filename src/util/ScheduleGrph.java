@@ -104,9 +104,10 @@ public class ScheduleGrph extends InMemoryGrph {
                 if (Visted.get(i).booleanValue() == true) {
                     vertex = i;
                     int[] edgeSet = this.getOutEdges(vertex).toIntArray();
+
                     for (int j = 0; j < edgeSet.length; j++) {
                         if (Visted.get(this.getTheOtherVertex(edgeSet[j], vertex)).booleanValue() == false) {
-                            upperBound = (int) this.getEdgeWidthProperty().getValue(edgeSet[j]) + upperBound;
+                            upperBound = this.getEdgeWeightProperty().getValueAsInt(edgeSet[j])+ upperBound;
                             Visted.put(this.getTheOtherVertex(edgeSet[j], vertex), true);
                         }
                     }
@@ -117,8 +118,6 @@ public class ScheduleGrph extends InMemoryGrph {
         return upperBound;
     }
 
-	public NumericalProperty getEdgeWeightProperty() {
-		return edgeWeightProperty;
-	}
+
 
 }
