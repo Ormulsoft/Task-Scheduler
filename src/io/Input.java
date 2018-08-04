@@ -93,6 +93,7 @@ public class Input {
 		outputGraph.setVertexWeightProperty(vertWeights);
 		outputGraph.setVerticesLabel(vertLabels);
 		
+		NumericalProperty edgeWeights = new NumericalProperty("Weight");
 		// Add each edge from input file
 		for (String e : edgesList) {
 
@@ -116,10 +117,11 @@ public class Input {
 			int newEdge = outputGraph.addSimpleEdge(srcNode, destNode, true);
 
 			// Update the edge's width with the weight
-			outputGraph.getEdgeWidthProperty().setValue(newEdge, weight);
+			edgeWeights.setValue(newEdge, weight);
 
 		}
 
+		outputGraph.setEdgeWeightProperty(edgeWeights);
 		// System.out.println("Edge indices are: " + outputGraph.getEdges());
 		// System.out.println(outputGraph.getEdgeWidthProperty().getValue(5));
 		// //Cost of edge with index 5.
