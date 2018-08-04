@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+import org.apache.commons.lang.SerializationUtils;
+
 import alg.cost.CostFunction;
 import grph.Grph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import util.PartialScheduleGrph;
+import util.ScheduleDotWriter;
 import util.ScheduleGrph;
 
 /**
@@ -34,7 +37,6 @@ public class AStarAlgorithm implements Algorithm {
 	}
 
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
-		ScheduleGrph inputSaved = (ScheduleGrph) input.clone();
 
 		PriorityQueue<PartialScheduleGrph> states = new PriorityQueue<PartialScheduleGrph>(1, new WeightChecker());
 
@@ -52,14 +54,12 @@ public class AStarAlgorithm implements Algorithm {
 			}
 		}
 
-		input.removeVertices(input.getSources());
-
 		while (states.size() > 0) {
 
 			PartialScheduleGrph s = states.poll();
 			// if is a leaf, return the partial.
 			IntSet endVertices = s.getVerticesOfDegree(0, Grph.DIRECTION.out);
-			ArrayList<Integer> freeVerts = getFree(inputSaved, s);
+			ArrayList<Integer> freeVerts = getFree(input, s);
 			if (freeVerts.size() == 0) {
 				return s;
 			} else {
@@ -68,11 +68,10 @@ public class AStarAlgorithm implements Algorithm {
 				for (int vert : freeVerts) {
 					for (int pc = 1; pc <= numProcessors; pc++) {
 
-						PartialScheduleGrph next = (PartialScheduleGrph) s.clone();
+						PartialScheduleGrph next = (PartialScheduleGrph) SerializationUtils.clone(s);
 						// add vertex to the
 						next.addVertex(vert);
-						next.getVertexWeightProperty().setValue(vert,
-								inputSaved.getVertexWeightProperty().getValue(vert));
+						next.getVertexWeightProperty().setValue(vert, input.getVertexWeightProperty().getValue(vert));
 
 						next.getVertexProcessorProperty().setValue(vert, pc);
 
@@ -85,11 +84,18 @@ public class AStarAlgorithm implements Algorithm {
 						// dependency. starting time would be the maximum\
 						// of the two.
 						int dependencyUpperBound = 0;
-						for (int i : inputSaved.getInNeighbours(vert)) {
-							int edgeTime = (int) inputSaved.getEdgeWidthProperty()
-									.getValue(inputSaved.getSomeEdgeConnecting(i, vert));
-							int totalTime = (int) (inputSaved.getVertexWeightProperty().getValue(i)
-									+ inputSaved.getVertexStartProperty().getValue(i) + edgeTime);
+						for (int i : input.getInNeighbours(vert)) {
+							// add an if statement here to check if on different
+							// processors!
+							int edgeTime = 0;
+							if (next.getVertexProcessorProperty().getValue(i) != pc) {
+								edgeTime = (int) input.getEdgeWeightProperty()
+										.getValue(input.getSomeEdgeConnecting(i, vert));
+							}
+
+							int totalTime = (int) (input.getVertexWeightProperty().getValue(i)
+									+ input.getVertexStartProperty().getValue(i) + edgeTime);
+							log.info("" + i + " to " + vert + " time = " + totalTime);
 							if (totalTime > dependencyUpperBound) {
 								dependencyUpperBound = totalTime;
 							}
@@ -98,9 +104,10 @@ public class AStarAlgorithm implements Algorithm {
 						int processorUpperBound = 0;
 						for (int i : next.getVertices()) {
 							if (next.getVertexProcessorProperty().getValue(i) == pc) {
-								int totalTime = (int) (inputSaved.getVertexWeightProperty().getValue(i)
-										+ inputSaved.getVertexStartProperty().getValue(i));
-								if (totalTime > dependencyUpperBound) {
+								int totalTime = (int) (input.getVertexWeightProperty().getValue(i)
+										+ next.getVertexStartProperty().getValue(i));
+								log.info("" + i + " time = " + totalTime);
+								if (totalTime > processorUpperBound) {
 									processorUpperBound = totalTime;
 								}
 							}
@@ -109,10 +116,13 @@ public class AStarAlgorithm implements Algorithm {
 						next.getVertexStartProperty().setValue(vert,
 								Math.max(processorUpperBound, dependencyUpperBound));
 						cost.applyCost(next);
+						log.info(new ScheduleDotWriter().createDotText(next, false));
+						states.add(next);
 					}
 				}
 			}
 		}
+
 		return null;
 	}
 

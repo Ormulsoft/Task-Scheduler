@@ -21,8 +21,8 @@ public class PartialScheduleGrph extends ScheduleGrph {
 		this.score = score;
 	}
 
-	public void addProcess() {
-
+	public PartialScheduleGrph cloneSelf() {
+		return (PartialScheduleGrph) super.clone();
 	}
 
 }
