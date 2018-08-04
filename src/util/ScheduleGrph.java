@@ -17,6 +17,13 @@ public class ScheduleGrph extends InMemoryGrph {
 	private NumericalProperty verticesStart;
 	private NumericalProperty verticesProcessor;
 
+	public ScheduleGrph() {
+		super();
+		verticesWeight = new NumericalProperty("Weight");
+		verticesStart = new NumericalProperty("Start");
+		verticesProcessor = new NumericalProperty("Processor");
+	}
+
 	public void setVertexStartProperty(NumericalProperty vertStarts) {
 		this.verticesStart = vertStarts;
 	}

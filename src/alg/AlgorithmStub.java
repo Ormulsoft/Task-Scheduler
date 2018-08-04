@@ -1,6 +1,5 @@
 package alg;
 
-import grph.Grph;
 import grph.properties.NumericalProperty;
 import util.ScheduleGrph;
 
@@ -9,7 +8,7 @@ import util.ScheduleGrph;
  */
 public class AlgorithmStub implements Algorithm {
 
-	public ScheduleGrph runAlg(Grph input, int numCores) {
+	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
 		log.info("Running stub algorithm");
 
 		ScheduleGrph g = new ScheduleGrph();

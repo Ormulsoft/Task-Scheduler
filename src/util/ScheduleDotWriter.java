@@ -26,8 +26,9 @@ public class ScheduleDotWriter extends DotWriter {
 	}
 
 	/**
-	 * Overrides the createDotText method in order to output the correctly formatted
-	 * dotfile IF a ScheduleGraph is inputted, otherwise use super method.
+	 * Overrides the createDotText method in order to output the correctly
+	 * formatted dotfile IF a ScheduleGraph is inputted, otherwise use super
+	 * method.
 	 */
 	@Override
 	public String createDotText(Grph graph, boolean writeEdgeLabels) {
@@ -47,11 +48,13 @@ public class ScheduleDotWriter extends DotWriter {
 				text.append(v);
 				text.append(' ');
 				Map<String, Object> map = new HashMap<String, Object>();
-				// map.put("label", sg.getVertexLabelProperty().getValueAsString(v));
-
-				map.put("Weight", sg.getVertexWeightProperty().getValueAsInt(v));
-				map.put("Start", sg.getVertexStartProperty().getValueAsInt(v));
-				map.put("Processor", sg.getVertexProcessorProperty().getValueAsInt(v));
+				try {
+					map.put("Weight", sg.getVertexWeightProperty().getValueAsInt(v));
+					map.put("Start", sg.getVertexStartProperty().getValueAsInt(v));
+					map.put("Processor", sg.getVertexProcessorProperty().getValueAsInt(v));
+				} catch (NullPointerException e) {
+					log.error(e);
+				}
 
 				// remove all " chars
 				text.append(to(map).replaceAll("\"", ""));

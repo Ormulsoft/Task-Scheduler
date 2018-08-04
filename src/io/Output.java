@@ -22,6 +22,7 @@ public class Output {
 
 		log.info("Exporting graph");
 		ScheduleDotWriter d = new ScheduleDotWriter();
+
 		d.writeGraph(outputGraph, new RegularFile(outputPath));
 	}
 }
