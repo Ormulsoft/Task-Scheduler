@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import alg.AlgorithmStub;
+import alg.SequentialAlg;
 import util.ScheduleGrph;
 
 /**
@@ -109,7 +110,7 @@ public class Main {
 		log.info("Started scheduling");
 
 		ScheduleGrph in = Input.readDotInput(inputFile);
-		ScheduleGrph out = new AlgorithmStub().runAlg(in, numCores, numProcessors);
+		ScheduleGrph out = new SequentialAlg().runAlg(in, numCores, numProcessors);
 
 		try {
 			Output.export(out, outputFile);
