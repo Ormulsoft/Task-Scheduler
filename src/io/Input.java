@@ -65,16 +65,14 @@ public class Input {
 		NumericalProperty vertWeights = new NumericalProperty("Weight");
 		NumericalProperty vertLabels = new NumericalProperty("Labels");
 
-		
 		// Add each vertex from input file
 		for (String n : nodesList) {
-			
-			String label = String.valueOf(n.trim().charAt(0));			
+
+			String label = String.valueOf(n.trim().charAt(0));
 			int vert = outputGraph.addVertex();
-			
+
 			vertLabels.setValue(vert, label);
 
-			
 			// Used to get the weight of vertex
 			Pattern p = Pattern.compile("-?\\d+");
 			Matcher m = p.matcher(n);
@@ -92,7 +90,7 @@ public class Input {
 
 		outputGraph.setVertexWeightProperty(vertWeights);
 		outputGraph.setVerticesLabel(vertLabels);
-		
+
 		NumericalProperty edgeWeights = new NumericalProperty("Weight");
 		// Add each edge from input file
 		for (String e : edgesList) {
@@ -122,8 +120,6 @@ public class Input {
 		}
 
 		outputGraph.setEdgeWeightProperty(edgeWeights);
-		// System.out.println("Edge indices are: " + outputGraph.getEdges());
-		// System.out.println(outputGraph.getEdgeWidthProperty().getValue(5));
 		// //Cost of edge with index 5.
 
 		return outputGraph;

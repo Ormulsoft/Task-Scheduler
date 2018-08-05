@@ -35,7 +35,7 @@ public class ScheduleDotWriter extends DotWriter {
 		ScheduleGrph sg = null;
 
 		// downcast to ScheduleGrph
-		if (graph.getClass().equals(ScheduleGrph.class)) {
+		if (true) {
 
 			sg = (ScheduleGrph) graph;
 
