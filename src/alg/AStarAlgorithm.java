@@ -45,7 +45,7 @@ public class AStarAlgorithm implements Algorithm {
 	}
 
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
-
+		long startTime = System.currentTimeMillis();
 		PriorityQueue<PartialScheduleGrph> states = new PriorityQueue<PartialScheduleGrph>(1, new WeightChecker());
 
 		// initially, all the sources have no dependencies, so are scheduled
@@ -64,7 +64,7 @@ public class AStarAlgorithm implements Algorithm {
 		g.setVerticesLabel(input.getVertexLabelProperty());
 		//}
 		//}
-
+		int totalVertices = input.getNumberOfVertices();
 		while (states.size() > 0) {
 
 			PartialScheduleGrph s = states.poll();
@@ -73,6 +73,7 @@ public class AStarAlgorithm implements Algorithm {
 
 				// if is a leaf, return the partial.
 				ArrayList<Integer> freeVerts = getFree(input, s);
+				// if 10 minutes, output valid, but non optimal solution
 				if (freeVerts.size() == 0) {
 					for (int edge : input.getEdges()) {
 						int head = input.getDirectedSimpleEdgeHead(edge);
@@ -141,13 +142,19 @@ public class AStarAlgorithm implements Algorithm {
 
 							next.getVertexStartProperty().setValue(vert,
 									Math.max(processorUpperBound, dependencyUpperBound));
-
-							cost.applyCost(next, vert);
+							long timeRunning = System.currentTimeMillis()- startTime;
+							if( timeRunning > 10*60*1000) {
+								next.setScore(totalVertices);
+								totalVertices--;
+								log.info("here");
+							}else {
+								cost.applyCost(next, vert);
+							}
 							log.info(next.toDot());
 							if(!storedInClosedSet(next)) {							
 								states.add(next);
-							}else {
-								//log.info("ignored stored object");
+							}else{
+
 							}
 						}
 					}
@@ -169,8 +176,19 @@ public class AStarAlgorithm implements Algorithm {
 		for (int i : pg.getVertices()) {
 			for (int outEdge : inputSaved.getOutEdges(i)) {
 				int otherVert = inputSaved.getTheOtherVertex(outEdge, i);
+
 				if (!pg.containsVertex(otherVert)) {
-					a.add(otherVert);
+					boolean add = true;
+					for(int e : inputSaved.getInEdges(otherVert)) {
+
+						if(!pg.containsVertex(inputSaved.getTheOtherVertex(e, otherVert))) {
+							add = false;
+							break;
+						}
+						
+					}
+					if (add)
+						a.add(otherVert);
 				}
 			}
 		}
@@ -178,3 +196,5 @@ public class AStarAlgorithm implements Algorithm {
 	}
 
 }
+
+	
