@@ -68,7 +68,7 @@ public class Input {
 		// Add each vertex from input file
 		for (String n : nodesList) {
 
-			String label = String.valueOf(n.trim().split("\\s+"));
+			String label = String.valueOf(n.trim().split("\\s+")[0]);
 			int vert = outputGraph.addVertex();
 
 			vertLabels.setValue(vert, label);
