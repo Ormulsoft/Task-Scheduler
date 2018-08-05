@@ -2,6 +2,7 @@ package alg;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 
 import org.apache.commons.lang.SerializationUtils;
@@ -33,7 +34,16 @@ public class AStarAlgorithm implements Algorithm {
 	public AStarAlgorithm(CostFunction cost) {
 		this.cost = cost;
 	}
-
+	HashSet<String> closedStates = new HashSet<String>();
+	
+	private void storeInClosedSet(PartialScheduleGrph g) {
+		String serialized = new ScheduleDotWriter().createDotText(g, false);
+		closedStates.add(serialized);
+	}
+	private boolean storedInClosedSet(PartialScheduleGrph g) {
+		return closedStates.contains(new ScheduleDotWriter().createDotText(g, false));
+	}
+	
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
 
 		PriorityQueue<PartialScheduleGrph> states = new PriorityQueue<PartialScheduleGrph>(1, new WeightChecker());
@@ -48,6 +58,7 @@ public class AStarAlgorithm implements Algorithm {
 				g.getVertexStartProperty().setValue(i, 0);
 				g.getVertexProcessorProperty().setValue(i, j + 1);
 				g.getVertexWeightProperty().setValue(i, input.getVertexWeightProperty().getValue(i));
+				g.setVerticesLabel(input.getVertexLabelProperty());
 				states.add(g);
 			}
 		}
@@ -55,6 +66,9 @@ public class AStarAlgorithm implements Algorithm {
 		while (states.size() > 0) {
 
 			PartialScheduleGrph s = states.poll();
+			if(!storedInClosedSet(s)) {
+				storeInClosedSet(s);
+
 			// if is a leaf, return the partial.
 			ArrayList<Integer> freeVerts = getFree(input, s);
 			if (freeVerts.size() == 0) {
@@ -74,6 +88,7 @@ public class AStarAlgorithm implements Algorithm {
 						PartialScheduleGrph next = (PartialScheduleGrph) SerializationUtils.clone(s);
 						// add vertex to the
 						next.addVertex(vert);
+
 						next.getVertexWeightProperty().setValue(vert, input.getVertexWeightProperty().getValue(vert));
 
 						next.getVertexProcessorProperty().setValue(vert, pc);
@@ -125,11 +140,17 @@ public class AStarAlgorithm implements Algorithm {
 						next.getVertexStartProperty().setValue(vert,
 								Math.max(processorUpperBound, dependencyUpperBound));
 
-						cost.applyCost(next);
-						//log.info(new ScheduleDotWriter().createDotText(next, false));
-						states.add(next);
+						cost.applyCost(next, vert);
+						log.info(next.getScore());
+						log.info(next.toDot());
+						if(!storedInClosedSet(next)) {							
+							states.add(next);
+						}else {
+							//log.info("ignored stored object");
+						}
 					}
 				}
+			}
 			}
 		}
 

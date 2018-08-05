@@ -70,7 +70,6 @@ public class Input {
 
 			String label = String.valueOf(n.trim().charAt(0));
 			int vert = outputGraph.addVertex();
-
 			vertLabels.setValue(vert, label);
 
 			// Used to get the weight of vertex
