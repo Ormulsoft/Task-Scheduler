@@ -28,7 +28,7 @@ public class Output {
 	 */
 	public static void export(ScheduleGrph outputGraph, String outputPath) throws IOException {
 
-		log.info("Exporting graph");
+		log.debug("Exporting graph");
 		ScheduleDotWriter d = new ScheduleDotWriter();
 
 		d.writeGraph(outputGraph, new RegularFile(outputPath));

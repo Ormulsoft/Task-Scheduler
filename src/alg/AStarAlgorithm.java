@@ -22,9 +22,9 @@ import util.ScheduleGrph;
  */
 public class AStarAlgorithm implements Algorithm {
 
-	// define a timeout (10 mins) for it to return a "valid" but not optimal
+	// define a timeout (2 mins) for it to return a "valid" but not optimal
 	// solution
-	private static final int ALGORITHM_TIMEOUT = 10 * 60 * 1000;
+	private static final int ALGORITHM_TIMEOUT = 2 * 60 * 1000;
 
 	private final CostFunction cost;
 

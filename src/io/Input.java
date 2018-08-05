@@ -31,7 +31,7 @@ public class Input {
 	 * @return
 	 */
 	public static ScheduleGrph readDotInput(String path) {
-		log.info("Reading input DOT file");
+		log.debug("Reading input DOT file");
 		File file = new File(path);
 		Scanner input = null;
 

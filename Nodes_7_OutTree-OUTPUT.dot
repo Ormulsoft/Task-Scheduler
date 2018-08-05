@@ -1,0 +1,16 @@
+digraph {
+	0 [Processor=1, Start=0, Weight=5];
+	1 [Processor=1, Start=5, Weight=6];
+	2 [Processor=1, Start=25, Weight=5];
+	3 [Processor=1, Start=30, Weight=6];
+	4 [Processor=1, Start=36, Weight=4];
+	5 [Processor=1, Start=18, Weight=7];
+	6 [Processor=1, Start=11, Weight=7];
+
+	0 -> 1 [Weight=15];
+	0 -> 2 [Weight=11];
+	0 -> 3 [Weight=11];
+	1 -> 4 [Weight=19];
+	1 -> 5 [Weight=4];
+	1 -> 6 [Weight=21];
+}
