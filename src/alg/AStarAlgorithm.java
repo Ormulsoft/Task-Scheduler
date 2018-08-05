@@ -23,7 +23,7 @@ public class AStarAlgorithm implements Algorithm {
 	private class WeightChecker implements Comparator<PartialScheduleGrph> {
 
 		public int compare(PartialScheduleGrph grph1, PartialScheduleGrph grph2) {
-			if (grph1.getScore() > grph2.getScore())
+			if (grph1.getScore() < grph2.getScore())
 				return -1;
 			else
 				return 1;
@@ -97,8 +97,9 @@ public class AStarAlgorithm implements Algorithm {
 							}
 
 							int totalTime = (int) (input.getVertexWeightProperty().getValue(i)
-									+ input.getVertexStartProperty().getValue(i) + edgeTime);
-							log.info("" + i + " to " + vert + " time = " + totalTime);
+									//needs to be next, not input for start
+									+ next.getVertexStartProperty().getValue(i) + edgeTime);
+							//log.info("" + i + " to " + vert + " time = " + totalTime);
 							if (totalTime > dependencyUpperBound) {
 								dependencyUpperBound = totalTime;
 							}
@@ -108,12 +109,13 @@ public class AStarAlgorithm implements Algorithm {
 						 * find the latest finishing process on the same
 						 * processor, and factor into the timing
 						 */
+
 						int processorUpperBound = 0;
 						for (int i : next.getVertices()) {
-							if (next.getVertexProcessorProperty().getValue(i) == pc) {
+							if (next.getVertexProcessorProperty().getValue(i) == pc && i != vert) {
 								int totalTime = (int) (input.getVertexWeightProperty().getValue(i)
 										+ next.getVertexStartProperty().getValue(i));
-								log.info("" + i + " time = " + totalTime);
+								//log.info("" + i + " time = " + totalTime);
 								if (totalTime > processorUpperBound) {
 									processorUpperBound = totalTime;
 								}
@@ -122,8 +124,9 @@ public class AStarAlgorithm implements Algorithm {
 
 						next.getVertexStartProperty().setValue(vert,
 								Math.max(processorUpperBound, dependencyUpperBound));
+
 						cost.applyCost(next);
-						log.info(new ScheduleDotWriter().createDotText(next, false));
+						//log.info(new ScheduleDotWriter().createDotText(next, false));
 						states.add(next);
 					}
 				}
