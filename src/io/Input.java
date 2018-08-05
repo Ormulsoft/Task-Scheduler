@@ -50,12 +50,15 @@ public class Input {
 
 		for (String l : list) {
 
-			if (l.indexOf('>') >= 0) {
-				// It must be an edge
-				edgesList.add(l);
-
-			} else {
-				nodesList.add(l);
+			if (l.contains("[Weight=")) {
+				
+				if (l.indexOf('>') >= 0) {
+					// It must be an edge
+					edgesList.add(l);
+	
+				} else {
+					nodesList.add(l);
+				}
 			}
 		}
 
@@ -68,7 +71,7 @@ public class Input {
 		// Add each vertex from input file
 		for (String n : nodesList) {
 
-			String label = String.valueOf(n.trim().charAt(0));
+			String label = String.valueOf(n.trim().split("\\s+")[0]);
 			int vert = outputGraph.addVertex();
 			vertLabels.setValue(vert, label);
 
@@ -97,7 +100,7 @@ public class Input {
 			// Split on whitespace
 			String[] splitStr = e.trim().split("\\s+");
 
-			int srcNode = Integer.parseInt(String.valueOf(e.trim().charAt(0)));
+			int srcNode = Integer.parseInt(splitStr[0]);
 			int destNode = Integer.parseInt(splitStr[2]);
 
 			// Retrieve and parse the substring between the '=' and ']'
