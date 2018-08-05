@@ -14,7 +14,7 @@ The design of this system uses dedicated IO classes, and OOP heirarchial structu
 The currently implemented algorithm is the standard A/* algorithm. The current cost function uses computational bottom level, and
 lastest finishing time.
 
-# Installing
+# Running
 To install this project, please download a runnable JAR File submitted.
 CLI input is java -jar <filename.jar> \[input_filename\] \[num_processors\] <options...>
 
