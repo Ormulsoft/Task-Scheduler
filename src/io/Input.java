@@ -50,12 +50,15 @@ public class Input {
 
 		for (String l : list) {
 
-			if (l.indexOf('>') >= 0) {
-				// It must be an edge
-				edgesList.add(l);
-
-			} else {
-				nodesList.add(l);
+			if (l.contains("[Weight=")) {
+				
+				if (l.indexOf('>') >= 0) {
+					// It must be an edge
+					edgesList.add(l);
+	
+				} else {
+					nodesList.add(l);
+				}
 			}
 		}
 
