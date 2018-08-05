@@ -127,8 +127,11 @@ public class Main {
 		log.info("Started scheduling");
 
 		ScheduleGrph in = Input.readDotInput(inputFile);
-		log.info(new ScheduleDotWriter().createDotText(in, false));
+		
+		//log.info(new ScheduleDotWriter().createDotText(in, false));
+		log.info("Started Schedule");
 		ScheduleGrph out = new AStarAlgorithm(new TestCostFunction(in)).runAlg(in, numCores, numProcessors);
+		log.info("Finshed Running");
 
 		try {
 			Output.export(out, outputFile);

@@ -32,10 +32,10 @@ public class TestCostFunction implements CostFunction {
 			}			
 		}		
 		
-		g.setScore(maxFinish + getComputationalBottomLevel(addedVertex));
+		g.setScore(maxFinish + getBottomLevel(addedVertex));
 	}
 
-	/*
+	
 	private int getBottomLevel(int addedVertex) {
 		
 		if(input.getOutEdgeDegree(addedVertex) > 0) {
@@ -51,7 +51,7 @@ public class TestCostFunction implements CostFunction {
 			return (int)( input.getVertexStartProperty().getValue(addedVertex) +input.getVertexWeightProperty().getValue(addedVertex));
 		}
 	}
-	*/
+	
 	public int  getComputationalBottomLevel(int addedvertex) {
 		boolean holder = true;
 		int bottomlevel = 0;
