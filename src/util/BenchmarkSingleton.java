@@ -3,7 +3,10 @@ package util;
 import java.util.LinkedHashMap;
 
 public class BenchmarkSingleton {
-
+/**
+ * Benchmarking class to time events such as algorithm runs
+ */
+	
 	LinkedHashMap<String, Long> timeList = new LinkedHashMap<String, Long>();	
 	
 	private static BenchmarkSingleton instance;

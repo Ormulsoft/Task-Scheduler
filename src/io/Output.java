@@ -20,7 +20,7 @@ public class Output {
 
 	public static void export(ScheduleGrph outputGraph, String outputPath) throws IOException {
 
-		log.info("Exporting graph");
+		log.info("Exporting graph DOT file to " + outputPath);
 		ScheduleDotWriter d = new ScheduleDotWriter();
 
 		d.writeGraph(outputGraph, new RegularFile(outputPath));

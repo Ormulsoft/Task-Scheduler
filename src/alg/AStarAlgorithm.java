@@ -117,7 +117,7 @@ public class AStarAlgorithm implements Algorithm {
 								int totalTime = (int) (input.getVertexWeightProperty().getValue(i)
 										//needs to be next, not input for start
 										+ next.getVertexStartProperty().getValue(i) + edgeTime);
-								//log.info("" + i + " to " + vert + " time = " + totalTime);
+								//log.debug("" + i + " to " + vert + " time = " + totalTime);
 								if (totalTime > dependencyUpperBound) {
 									dependencyUpperBound = totalTime;
 								}
@@ -133,7 +133,7 @@ public class AStarAlgorithm implements Algorithm {
 								if (next.getVertexProcessorProperty().getValue(i) == pc && i != vert) {
 									int totalTime = (int) (input.getVertexWeightProperty().getValue(i)
 											+ next.getVertexStartProperty().getValue(i));
-									//log.info("" + i + " time = " + totalTime);
+									//log.debug("" + i + " time = " + totalTime);
 									if (totalTime > processorUpperBound) {
 										processorUpperBound = totalTime;
 									}
@@ -146,11 +146,11 @@ public class AStarAlgorithm implements Algorithm {
 							if( timeRunning > 2*60*1000) {
 								next.setScore(totalVertices);
 								totalVertices--;
-								log.info("here");
+								log.debug("here");
 							}else {
 								cost.applyCost(next, vert);
 							}
-							log.info(next.toDot());
+							log.debug(next.toDot());
 							if(!storedInClosedSet(next)) {							
 								states.add(next);
 							}else{

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -20,6 +18,11 @@ public class Input {
 
 	final static Logger log = Logger.getLogger(Input.class);
 
+	/**
+	 * Read the dot file specified and create a ScheduleGrph representing it
+	 * @param path The path to the dotfile
+	 * @return The graph representing the input file
+	 */
 	public static ScheduleGrph readDotInput(String path) {
 		log.info("Reading input DOT file");
 		File file = new File(path);

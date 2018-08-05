@@ -4,8 +4,8 @@ import grph.in_memory.InMemoryGrph;
 import grph.properties.NumericalProperty;
 
 /**
- * This extends the InMemoryGrph to provide additional fields.
- * 
+ * This extends the InMemoryGrph to provide additional fields, such as the properties we need 
+ * for this particular problem 
  * 
  * @author Gino
  *
@@ -13,9 +13,12 @@ import grph.properties.NumericalProperty;
 public class ScheduleGrph extends InMemoryGrph {
 
 	private static final long serialVersionUID = 1L;
+	
+	// Object keeps track of weight (runtime), start, and assigned processor for each vertex (task)
 	private NumericalProperty verticesWeight;
 	private NumericalProperty verticesStart;
 	private NumericalProperty verticesProcessor;
+	// Keeps track of the weight (data transfer time) of each dependency
 	private NumericalProperty edgeWeightProperty;
 
 	public ScheduleGrph() {
@@ -25,6 +28,8 @@ public class ScheduleGrph extends InMemoryGrph {
 		verticesProcessor = new NumericalProperty("Processor");
 	}
 
+	
+	// Getters and setters
 	public void setVertexStartProperty(NumericalProperty vertStarts) {
 		this.verticesStart = vertStarts;
 	}

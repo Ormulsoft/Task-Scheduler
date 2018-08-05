@@ -1,6 +1,6 @@
 package io;
 
-import java.io.FileInputStream;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -19,7 +19,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
 import alg.cost.TestCostFunction;
-import util.ScheduleDotWriter;
 import util.ScheduleGrph;
 
 /**
@@ -48,22 +47,27 @@ public class Main {
 
 		boolean visualization = DEFAULT_VISUALISATION;
 		int numCores = DEFAULT_CORES;
-
+		
+		// interpret CLI options and args
 		try {
 			int numProcessors = Integer.parseInt(args[1]);
 			String inputFile = args[0];
 
+			// Input file argument
 			String outputFile = String.format(DEFAULT_OUTPUT_TEMPLATE, FilenameUtils.getBaseName(inputFile));
 
 			CommandLine cli = parseCLIArgs(args);
+			// Number of cores
 			if (cli.hasOption('p')) {
 				numCores = Integer.parseInt(cli.getOptionValue('p'));
 			}
-
+			
+			// Whether or not to enable visualization
 			if (cli.hasOption('v')) {
 				visualization = true;
 			}
 
+			// Specific output location
 			if (cli.hasOption('o')) {
 				outputFile = cli.getOptionValue('o') + ".dot";
 			}
@@ -83,7 +87,7 @@ public class Main {
 		Properties props = new Properties();
 		// try log properties load from file, otherwise use basic
 		try {
-			props.load(new FileInputStream("src/resources/log4j.properties"));
+			props.load(Main.class.getResourceAsStream("/resources/log4j.properties"));
 			PropertyConfigurator.configure(props);
 			return;
 		} catch (FileNotFoundException e) {
@@ -132,7 +136,7 @@ public class Main {
 		//in.display();
 
 		//log.info(new ScheduleDotWriter().createDotText(in, false));
-		log.info("Started Schedule");
+		log.info("Started scheduling algorithm");
 		ScheduleGrph out = new AStarAlgorithm(new TestCostFunction(in)).runAlg(in, numCores, numProcessors);
 		log.info("Finshed Running");
 
