@@ -1,12 +1,15 @@
 package alg;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 
+import org.apache.commons.lang.SerializationUtils;
+
 import alg.cost.CostFunction;
-import grph.Grph;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import util.PartialScheduleGrph;
+import util.ScheduleDotWriter;
 import util.ScheduleGrph;
 
 /**
@@ -31,65 +34,167 @@ public class AStarAlgorithm implements Algorithm {
 	public AStarAlgorithm(CostFunction cost) {
 		this.cost = cost;
 	}
+	HashSet<String> closedStates = new HashSet<String>();
+
+	private void storeInClosedSet(PartialScheduleGrph g) {
+		String serialized = new ScheduleDotWriter().createDotText(g, false);
+		closedStates.add(serialized);
+	}
+	private boolean storedInClosedSet(PartialScheduleGrph g) {
+		return closedStates.contains(new ScheduleDotWriter().createDotText(g, false));
+	}
 
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
-
+		long startTime = System.currentTimeMillis();
 		PriorityQueue<PartialScheduleGrph> states = new PriorityQueue<PartialScheduleGrph>(1, new WeightChecker());
 
-		for (int i : input.getSources()) {
-			PartialScheduleGrph g = new PartialScheduleGrph(0);
-			g.addVertex(i);
-			g.getVertexStartProperty().setValue(i, 0);
-			g.getVertexWeightProperty().setValue(i, input.getVertexWeightProperty().getValue(i));
-			states.add(g);
-		}
+		// initially, all the sources have no dependencies, so are scheduled
+		// first.
 
-		input.removeVertices(input.getSources());
-
+		//for (int i : input.getSources()) {
+		//for (int j = 1; j <= numProcessors; j++) {
+		PartialScheduleGrph g = new PartialScheduleGrph(0);
+		//g.addVertex(i);
+		//g.getVertexStartProperty().setValue(i, 0);
+		//g.getVertexProcessorProperty().setValue(i, j);
+		//g.getVertexWeightProperty().setValue(i, input.getVertexWeightProperty().getValue(i));
+		//g.setVerticesLabel(input.getVertexLabelProperty());
+		//cost.applyCost(g, i);
+		states.add(g);
+		g.setVerticesLabel(input.getVertexLabelProperty());
+		//}
+		//}
+		int totalVertices = input.getNumberOfVertices();
 		while (states.size() > 0) {
 
 			PartialScheduleGrph s = states.poll();
-			// if is a leaf, return the partial.
-			IntSet endVertices = s.getVerticesOfDegree(0, Grph.DIRECTION.out);
-			if (target(endVertices, input)) {
-				return s;
-			} else {
-				// expand all new states
-				IntSet sourceVerts = input.getSources();
-				for (int i : sourceVerts) {
-					// create new
-					for (int j = 0; j < numProcessors; j++) {
-						PartialScheduleGrph next = (PartialScheduleGrph) s.clone();
-						next.addVertex(i);
-						next.getVertexProcessorProperty().setValue(i, j);
-						next.getVertexWeightProperty().setValue(i, input.getVertexWeightProperty().getValue(i));
-						int minStart = 0;
-						for (int nb : next.getInNeighbours(i)) {
-							int nextStart = (int) next.getVertexStartProperty().getValue(nb);
-							if (next.getVertexStartProperty().getValue(nb) > minStart) {
-								minStart = nextStart;
+			if(!storedInClosedSet(s)) {
+				storeInClosedSet(s);
+
+				// if is a leaf, return the partial.
+				ArrayList<Integer> freeVerts = getFree(input, s);
+				// if 10 minutes, output valid, but non optimal solution
+				if (freeVerts.size() == 0) {
+					for (int edge : input.getEdges()) {
+						int head = input.getDirectedSimpleEdgeHead(edge);
+						int tail = input.getTheOtherVertex(edge, head);
+						s.addDirectedSimpleEdge(tail, head);
+					}
+					s.setEdgeWeightProperty(input.getEdgeWeightProperty());
+					return s;
+				} else {
+
+					// loop over all free vertices
+					for (int vert : freeVerts) {
+						for (int pc = 1; pc <= numProcessors; pc++) {
+
+							PartialScheduleGrph next = (PartialScheduleGrph) SerializationUtils.clone(s);
+							// add vertex to the
+							next.addVertex(vert);
+
+							next.getVertexWeightProperty().setValue(vert, input.getVertexWeightProperty().getValue(vert));
+
+							next.getVertexProcessorProperty().setValue(vert, pc);
+
+							// set the start time based on earliest first on a
+							// processor
+
+							// to get the start time, find the time of most recently
+							// finishing vertex on the same processor,
+							// and store that, also the finish time of the last
+							// dependency. starting time would be the maximum\
+							// of the two.
+							int dependencyUpperBound = 0;
+							for (int i : input.getInNeighbours(vert)) {
+								// add an if statement here to check if on different
+								// processors!
+								int edgeTime = 0;
+								if (next.getVertexProcessorProperty().getValue(i) != pc) {
+									edgeTime = (int) input.getEdgeWeightProperty()
+											.getValue(input.getSomeEdgeConnecting(i, vert));
+								}
+
+								int totalTime = (int) (input.getVertexWeightProperty().getValue(i)
+										//needs to be next, not input for start
+										+ next.getVertexStartProperty().getValue(i) + edgeTime);
+								//log.info("" + i + " to " + vert + " time = " + totalTime);
+								if (totalTime > dependencyUpperBound) {
+									dependencyUpperBound = totalTime;
+								}
+							}
+
+							/**
+							 * find the latest finishing process on the same
+							 * processor, and factor into the timing
+							 */
+
+							int processorUpperBound = 0;
+							for (int i : next.getVertices()) {
+								if (next.getVertexProcessorProperty().getValue(i) == pc && i != vert) {
+									int totalTime = (int) (input.getVertexWeightProperty().getValue(i)
+											+ next.getVertexStartProperty().getValue(i));
+									//log.info("" + i + " time = " + totalTime);
+									if (totalTime > processorUpperBound) {
+										processorUpperBound = totalTime;
+									}
+								}
+							}
+
+							next.getVertexStartProperty().setValue(vert,
+									Math.max(processorUpperBound, dependencyUpperBound));
+							long timeRunning = System.currentTimeMillis()- startTime;
+							if( timeRunning > 2*60*1000) {
+								next.setScore(totalVertices);
+								totalVertices--;
+								log.info("here");
+							}else {
+								cost.applyCost(next, vert);
+							}
+							log.info(next.toDot());
+							if(!storedInClosedSet(next)) {							
+								states.add(next);
+							}else{
+
 							}
 						}
-						next.getVertexStartProperty().setValue(i, minStart);
-						cost.applyCost(next);
-						states.add(next);
 					}
-
 				}
-				input.removeVertices(sourceVerts);
 			}
 		}
 
 		return null;
 	}
 
-	private boolean target(IntSet v, ScheduleGrph input) {
-		for (int i : v) {
-			if (input.getVertexDegree(i) > 0) {
-				return false;
+	// select all the free vertices based on a current partial schedule
+	private ArrayList<Integer> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg) {
+		ArrayList<Integer> a = new ArrayList<Integer>();
+		for(int i :inputSaved.getSources()) {
+			if(!pg.containsVertex(i)) {
+				a.add(i);
 			}
 		}
-		return true;
+		for (int i : pg.getVertices()) {
+			for (int outEdge : inputSaved.getOutEdges(i)) {
+				int otherVert = inputSaved.getTheOtherVertex(outEdge, i);
+
+				if (!pg.containsVertex(otherVert)) {
+					boolean add = true;
+					for(int e : inputSaved.getInEdges(otherVert)) {
+
+						if(!pg.containsVertex(inputSaved.getTheOtherVertex(e, otherVert))) {
+							add = false;
+							break;
+						}
+						
+					}
+					if (add)
+						a.add(otherVert);
+				}
+			}
+		}
+		return a;
 	}
 
 }
+
+	

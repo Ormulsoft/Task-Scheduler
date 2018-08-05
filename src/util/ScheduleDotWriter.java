@@ -35,8 +35,6 @@ public class ScheduleDotWriter extends DotWriter {
 		ScheduleGrph sg = null;
 
 		// downcast to ScheduleGrph
-		if (graph.getClass().equals(ScheduleGrph.class)) {
-
 			sg = (ScheduleGrph) graph;
 
 			StringBuilder text = new StringBuilder();
@@ -45,7 +43,7 @@ public class ScheduleDotWriter extends DotWriter {
 			for (IntCursor c : IntCursor.fromFastUtil(sg.getVertices())) {
 				int v = c.value;
 				text.append('\t');
-				text.append(v);
+				text.append(sg.getVertexLabelProperty().getValueAsString(v));
 				text.append(' ');
 				Map<String, Object> map = new HashMap<String, Object>();
 				try {
@@ -79,9 +77,8 @@ public class ScheduleDotWriter extends DotWriter {
 
 				Map<String, Object> map = new HashMap<String, Object>();
 
-				if (writeEdgeLabels) {
-					map.put("Weight", sg.getEdgeWeightProperty().getValueAsInt(e));
-				}
+				map.put("Weight", sg.getEdgeWeightProperty().getValueAsInt(e));
+
 				// remove all " chars
 				text.append(to(map).replaceAll("\"", ""));
 				text.append(';');
@@ -90,9 +87,5 @@ public class ScheduleDotWriter extends DotWriter {
 
 			text.append('}');
 			return text.toString();
-		} else {
-			// use super method if is not a ScheduleGrph
-			return super.createDotText(graph, writeEdgeLabels);
-		}
 	}
 }

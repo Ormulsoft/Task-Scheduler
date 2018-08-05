@@ -57,4 +57,7 @@ public class ScheduleGrph extends InMemoryGrph {
 		return edgeWeightProperty;
 	}
 	
+	public String toDot() {
+		return new ScheduleDotWriter().createDotText(this, false);
+	}
 }

@@ -16,8 +16,10 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import alg.AlgorithmStub;
-import alg.SequentialAlg;
+
+import alg.AStarAlgorithm;
+import alg.cost.TestCostFunction;
+import util.ScheduleDotWriter;
 import util.ScheduleGrph;
 
 /**
@@ -27,10 +29,12 @@ import util.ScheduleGrph;
  *
  */
 public class Main {
+	private static final int DEFAULT_CORES = 1;
+	private static final boolean DEFAULT_VISUALISATION = false;
 
 	final static Logger log = Logger.getLogger(Main.class);
 
-	private static final String DEFAULT_OUTPUT_TEMPLATE = "test_output/%s-OUTPUT.dot";
+	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
 
 	/**
 	 * Inital setup / entry point
@@ -42,32 +46,41 @@ public class Main {
 
 		loggerSetup();
 
-		boolean visualization = false;
-		int numCores = 1;
-		int numProcessors = Integer.parseInt(args[1]);
+		boolean visualization = DEFAULT_VISUALISATION;
+		int numCores = DEFAULT_CORES;
 
-		String inputFile = args[0];
-		String outputFile = String.format(DEFAULT_OUTPUT_TEMPLATE, FilenameUtils.getBaseName(inputFile));
+		try {
+			int numProcessors = Integer.parseInt(args[1]);
+			String inputFile = args[0];
 
-		CommandLine cli = parseCLIArgs(args);
-		if (cli.hasOption('p')) {
-			numCores = Integer.parseInt(cli.getOptionValue('p'));
+			String outputFile = String.format(DEFAULT_OUTPUT_TEMPLATE, FilenameUtils.getBaseName(inputFile));
+
+			CommandLine cli = parseCLIArgs(args);
+			if (cli.hasOption('p')) {
+				numCores = Integer.parseInt(cli.getOptionValue('p'));
+			}
+
+			if (cli.hasOption('v')) {
+				visualization = true;
+			}
+
+			if (cli.hasOption('o')) {
+				outputFile = cli.getOptionValue('o') + ".dot";
+			}
+			log.info(outputFile);
+			startScheduling(inputFile, outputFile, visualization, numCores, numProcessors);
+			
+		}catch (ArrayIndexOutOfBoundsException e) {
+			log.error("Please pass the required inputs - { <input file name> <number of processors> }");
+			System.exit(0);
 		}
-
-		if (cli.hasOption('v')) {
-			visualization = true;
-		}
-
-		if (cli.hasOption('o')) {
-			outputFile = cli.getOptionValue('o') + ".dot";
-		}
-		log.info(outputFile);
-		startScheduling(inputFile, outputFile, visualization, numCores, numProcessors);
 	}
 
+	/**
+	 * Defines logging properties
+	 */
 	private static void loggerSetup() {
 		Properties props = new Properties();
-
 		// try log properties load from file, otherwise use basic
 		try {
 			props.load(new FileInputStream("src/resources/log4j.properties"));
@@ -80,7 +93,12 @@ public class Main {
 		}
 		BasicConfigurator.configure();
 	}
-
+	
+	/**
+	 * Parse command line arguments and return CLI object
+	 * @param args
+	 * @return
+	 */
 	private static CommandLine parseCLIArgs(String[] args) {
 
 		// Get various options.
@@ -110,7 +128,13 @@ public class Main {
 		log.info("Started scheduling");
 
 		ScheduleGrph in = Input.readDotInput(inputFile);
-		ScheduleGrph out = new SequentialAlg().runAlg(in, numCores, numProcessors);
+
+		//in.display();
+
+		//log.info(new ScheduleDotWriter().createDotText(in, false));
+		log.info("Started Schedule");
+		ScheduleGrph out = new AStarAlgorithm(new TestCostFunction(in)).runAlg(in, numCores, numProcessors);
+		log.info("Finshed Running");
 
 		try {
 			Output.export(out, outputFile);
