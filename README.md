@@ -15,14 +15,13 @@ The currently implemented algorithm is the standard A* algorithm. The cost funct
 lastest finishing time.
 
 # Running
-To install this project, please download the runnable JAR File submitted.
-CLI input is java -jar <filename.jar> \[input_filename\] \[num_processors\] <options...>
+To install this project, please download the runnable JAR File submitted.<br/> Enter the following on the command line: `java -jar <filename.jar> <input_filename> <num_processors> <options...>`
 
 ## Options
 The following options are supported by the system: 
-- \-p <numberCores>       The number of processor cores to use
-- \-o <output_filename>   The file to output to.
-- \-v                     Flag to visualise or not.
+- `-p <numberCores>`       The number of processor cores to use
+- `-o <output_filename>`   The file to output to.
+- `-v`                     Flag to visualise or not.
 
 
 # Group Members
