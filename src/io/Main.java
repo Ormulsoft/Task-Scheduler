@@ -33,7 +33,7 @@ public class Main {
 
 	final static Logger log = Logger.getLogger(Main.class);
 
-	private static final String DEFAULT_OUTPUT_TEMPLATE = "test_output/%s-OUTPUT.dot";
+	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
 
 	/**
 	 * Inital setup / entry point

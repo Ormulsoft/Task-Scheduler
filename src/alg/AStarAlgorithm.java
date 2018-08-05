@@ -143,7 +143,7 @@ public class AStarAlgorithm implements Algorithm {
 							next.getVertexStartProperty().setValue(vert,
 									Math.max(processorUpperBound, dependencyUpperBound));
 							long timeRunning = System.currentTimeMillis()- startTime;
-							if( timeRunning > 10*60*1000) {
+							if( timeRunning > 2*60*1000) {
 								next.setScore(totalVertices);
 								totalVertices--;
 								log.info("here");
