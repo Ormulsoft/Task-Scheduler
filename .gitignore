@@ -1,7 +1,7 @@
 /bin/
 /target/
 <<<<<<< HEAD
-/test_output
+/test_output/*.dot
 =======
 .settings
 .classpath

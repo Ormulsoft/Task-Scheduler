@@ -16,6 +16,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+
 import alg.AStarAlgorithm;
 import alg.cost.TestCostFunction;
 import util.ScheduleDotWriter;
@@ -33,7 +34,7 @@ public class Main {
 
 	final static Logger log = Logger.getLogger(Main.class);
 
-	private static final String DEFAULT_OUTPUT_TEMPLATE = "test_output/%s-OUTPUT.dot";
+	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
 
 	/**
 	 * Inital setup / entry point
@@ -127,6 +128,7 @@ public class Main {
 		log.info("Started scheduling");
 
 		ScheduleGrph in = Input.readDotInput(inputFile);
+
 		//in.display();
 
 		//log.info(new ScheduleDotWriter().createDotText(in, false));

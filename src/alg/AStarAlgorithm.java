@@ -20,7 +20,7 @@ import util.ScheduleGrph;
  * @author matt frost
  *
  */
-public class AStarAlgorithm implements Algorithm { 
+public class AStarAlgorithm implements Algorithm {
 
 	// define a timeout (10 mins) for it to return a "valid" but not optimal
 	// solution
