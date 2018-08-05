@@ -16,8 +16,16 @@ import util.ScheduleGrph;
  */
 public class Output {
 
-	final static Logger log = Logger.getLogger(Output.class);
+	private final static Logger log = Logger.getLogger(Output.class);
 
+	/**
+	 * The main method of this class, takes a graph and an output path and exports
+	 * it to the file defined in the path variable.
+	 * 
+	 * @param outputGraph
+	 * @param outputPath
+	 * @throws IOException
+	 */
 	public static void export(ScheduleGrph outputGraph, String outputPath) throws IOException {
 
 		log.info("Exporting graph");
