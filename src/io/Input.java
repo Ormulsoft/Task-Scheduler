@@ -3,7 +3,6 @@ package io;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -14,14 +13,22 @@ import org.apache.log4j.Logger;
 import grph.properties.NumericalProperty;
 import util.ScheduleGrph;
 
+/**
+ * This class handles the input parsing of the DotFiles.
+ * 
+ * @author Shane Barboza
+ *
+ */
 public class Input {
 
-	final static Logger log = Logger.getLogger(Input.class);
+	private final static Logger log = Logger.getLogger(Input.class);
 
 	/**
-	 * Read the dot file specified and create a ScheduleGrph representing it
-	 * @param path The path to the dotfile
-	 * @return The graph representing the input file
+	 * The main method of this class, takes the filepath to the dot file, and
+	 * returns the parsed Grph Graph.
+	 * 
+	 * @param path
+	 * @return
 	 */
 	public static ScheduleGrph readDotInput(String path) {
 		log.info("Reading input DOT file");
@@ -51,25 +58,26 @@ public class Input {
 		}
 
 		// Distinguish between edges and nodes within input
-		List<String> nodesList = new ArrayList<String>();
 		List<String> edgesList = new ArrayList<String>();
-		
+		// maps the node ID to its Weight value, so that they can be put into
+		// the
+		// Grph library easily.
 		TreeMap<Integer, Integer> nodes = new TreeMap<Integer, Integer>();
 
 		for (String l : list) {
-
 			if (l.contains("[Weight=")) {
-				
 				if (l.indexOf('>') >= 0) {
 					// It must be an edge
 					edgesList.add(l);
-	
 				} else {
+					// get id/name of task
 					Integer label = Integer.parseInt(String.valueOf(l.trim().split("\\s+")[0]));
+
+					// get weight of task
 					l = l.substring(l.indexOf("=") + 1);
 					l = l.substring(0, l.indexOf("]"));
-
 					int weight = Integer.parseInt(l);
+
 					nodes.put(label, weight);
 				}
 			}
@@ -80,38 +88,17 @@ public class Input {
 
 		NumericalProperty vertWeights = new NumericalProperty("Weight");
 		NumericalProperty vertLabels = new NumericalProperty("Labels");
-		
-		Collections.sort(nodesList);
+
+		// Collections.sort(nodesList);
 		// Add each vertex from input file
-		for(Map.Entry<Integer,Integer> entry : nodes.entrySet()) {
-			  Integer key = entry.getKey();
-			  Integer weight = entry.getValue();
-			  int vert = outputGraph.addVertex();
-			  vertLabels.setValue(vert, key);
-			  vertWeights.setValue(vert, weight);
-			}
-		/*
-		for (String n : nodesList) {
+		for (Map.Entry<Integer, Integer> entry : nodes.entrySet()) {
+			Integer key = entry.getKey();
+			Integer weight = entry.getValue();
 
-			String label = String.valueOf(n.trim().split("\\s+")[0]);
 			int vert = outputGraph.addVertex();
-			vertLabels.setValue(vert, label);
-
-			// Used to get the weight of vertex
-			Pattern p = Pattern.compile("-?\\d+");
-			Matcher m = p.matcher(n);
-			while (m.find()) {
-				vertWeights.setValue(vert, Integer.parseInt(m.group()));
-			}
-
-			//outputGraph.addVertex(Integer.parseInt(String.valueOf(n.trim().charAt(0))));
-
-			
-
-			log.info("Graph contains: " + outputGraph.getVertices().toString());
-
+			vertLabels.setValue(vert, key);
+			vertWeights.setValue(vert, weight);
 		}
-	*/
 
 		outputGraph.setVertexWeightProperty(vertWeights);
 		outputGraph.setVerticesLabel(vertLabels);
@@ -133,9 +120,6 @@ public class Input {
 
 			int weight = Integer.parseInt(e);
 
-			// System.out.println("Source node is: " + srcNode + " Destination
-			// node is: " + destNode + " and weight is: " + weight);
-
 			// Add edge to graph
 			int newEdge = outputGraph.addSimpleEdge(srcNode, destNode, true);
 
@@ -145,7 +129,6 @@ public class Input {
 		}
 
 		outputGraph.setEdgeWeightProperty(edgeWeights);
-		// //Cost of edge with index 5.
 
 		return outputGraph;
 	}
