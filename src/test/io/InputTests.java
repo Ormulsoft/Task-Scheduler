@@ -9,7 +9,7 @@ public class InputTests {
 
     @Test
      public void correctInputVertices() {
-        ScheduleGrph in = Input.readDotInput("resources/Nodes_8_Random.dot");
+        ScheduleGrph in = Input.readDotInput("src/resources/Nodes_8_Random.dot");
         assertEquals(8,in.getVertices().size());
         int j = 0;
         for (int i : in.getVertices()) {
