@@ -18,6 +18,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
 import alg.cost.TestCostFunction;
+import util.ScheduleDotWriter;
 import util.ScheduleGrph;
 
 /**
