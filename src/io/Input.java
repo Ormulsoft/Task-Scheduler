@@ -80,7 +80,6 @@ public class Input {
 				vertWeights.setValue(vert, Integer.parseInt(m.group()));
 			}
 
-			log.debug(n);
 			//outputGraph.addVertex(Integer.parseInt(String.valueOf(n.trim().charAt(0))));
 
 			/* TODO: Grph object should also represent weight of each vertex */
