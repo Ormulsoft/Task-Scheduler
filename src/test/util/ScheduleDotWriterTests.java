@@ -1,4 +1,4 @@
-package util;
+package test.util;
 
 public class ScheduleDotWriterTests {
 

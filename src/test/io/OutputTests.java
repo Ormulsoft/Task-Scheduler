@@ -1,4 +1,4 @@
-package io;
+package test.io;
 
 public class OutputTests {
 

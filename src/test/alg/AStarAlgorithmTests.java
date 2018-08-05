@@ -1,4 +1,4 @@
-package alg;
+package test.alg;
 
 public class AStarAlgorithmTests {
 
