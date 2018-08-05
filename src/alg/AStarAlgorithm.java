@@ -58,6 +58,12 @@ public class AStarAlgorithm implements Algorithm {
 			// if is a leaf, return the partial.
 			ArrayList<Integer> freeVerts = getFree(input, s);
 			if (freeVerts.size() == 0) {
+				for (int edge : input.getEdges()) {
+					int head = input.getDirectedSimpleEdgeHead(edge);
+					int tail = input.getTheOtherVertex(edge, head);
+					s.addDirectedSimpleEdge(tail, head);
+				}
+				s.setEdgeWeightProperty(input.getEdgeWeightProperty());
 				return s;
 			} else {
 
