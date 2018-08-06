@@ -142,7 +142,7 @@ public class AStarAlgorithm implements Algorithm {
 								totalVertices--;
 								log.info("Out of time! Defaulting to valid only.");
 							} else {
-								cost.applyCost(next, task);
+								cost.applyCost(next, task, numProcessors);
 							}
 
 							// log.info(next.toDot());

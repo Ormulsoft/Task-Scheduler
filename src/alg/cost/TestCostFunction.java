@@ -28,7 +28,7 @@ public class TestCostFunction implements CostFunction {
 
 	}
 
-	public void applyCost(PartialScheduleGrph g, int addedVertex) {
+	public void applyCost(PartialScheduleGrph g, int addedVertex, int numProcessors) {
 
 		int maxFinish = 0;
 		for (int i : g.getVertices()) {
@@ -39,7 +39,7 @@ public class TestCostFunction implements CostFunction {
 			}
 		}
 
-		g.setScore(maxFinish + getComputationalBottomLevel(addedVertex));
+		g.setScore(Math.max(maxFinish + getComputationalBottomLevel(addedVertex),getIdleTimeFit(g,numProcessors)));
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class TestCostFunction implements CostFunction {
 	 * @param numProcessors The number of processors being used for task allocation
 	 * @return The idle time bound of this schedule
 	 */
-	public static double getIdleTimeFit(PartialScheduleGrph sched, int numProcessors) {
+	public static int getIdleTimeFit(PartialScheduleGrph sched, int numProcessors) {
 		int totalIdle = 0;
 		int totalWeight = 0;
 		NumericalProperty vertProcs = sched.getVertexProcessorProperty();
@@ -92,7 +92,7 @@ public class TestCostFunction implements CostFunction {
 			processors.get(vertProcs.getValueAsInt(task) - 1).add(task);
 			totalWeight += vertWeights.getValueAsInt(task);
 		}
-		log.debug("totalweight" + totalWeight);
+		//log.debug("totalweight" + totalWeight);
 		
 		// Add idle time of each processor to total
 		for (int i = 0; i < numProcessors; i++) {
@@ -107,7 +107,7 @@ public class TestCostFunction implements CostFunction {
 				}
 			
 			});
-			log.debug(list);
+			//log.debug(list);
 			int finishTime = 0;
 			
 			// If there is a gap between a previous task and this one, add the gap to idletime.
@@ -116,14 +116,14 @@ public class TestCostFunction implements CostFunction {
 					totalIdle += vertStarts.getValueAsInt(task) - finishTime;
 				}
 				finishTime = vertStarts.getValueAsInt(task) + vertWeights.getValueAsInt(task);
-				log.debug("task " + task + " proc " + i + " finishTime " + finishTime);
+				//log.debug("task " + task + " proc " + i + " finishTime " + finishTime);
 			}
 			
 		}
 		
 		log.debug("total idle " + totalIdle);
 		
-		return ((totalIdle + totalWeight) / (double)numProcessors);
+		return (int)Math.ceil((totalIdle + totalWeight) / (double)numProcessors);
 	}
 
 }

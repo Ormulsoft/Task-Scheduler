@@ -16,6 +16,6 @@ public interface CostFunction {
 	final static Logger log = Logger.getLogger(Algorithm.class);
 
 	
-	public void applyCost(PartialScheduleGrph g, int vertex);
+	public void applyCost(PartialScheduleGrph g, int vertex, int numProcessors);
 
 }
