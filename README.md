@@ -1,5 +1,7 @@
 # Group 15 - Task Scheduling Project
 
+This an implementation of the task scheduling system for SOFTENG306 Assignment 1.
+
 ## Brief
 
 The purpose of this project is to create a system that schedules a set of tasks onto an abitrary number of processors.
