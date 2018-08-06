@@ -137,7 +137,7 @@ public class AStarAlgorithm implements Algorithm {
 							 * If the algorithm timed out, default to a "valid" solution
 							 */
 							long timeRunning = System.currentTimeMillis() - startTime;
-							if (timeRunning > ALGORITHM_TIMEOUT) {
+							if (timeRunning > ALGORITHM_TIMEOUT && false) {
 								next.setScore(totalVertices);
 								totalVertices--;
 								log.info("Out of time! Defaulting to valid only.");
