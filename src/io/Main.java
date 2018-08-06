@@ -46,21 +46,26 @@ public class Main {
 		boolean visualization = DEFAULT_VISUALISATION;
 		int numCores = DEFAULT_CORES;
 
+		// interpret CLI options and args
 		try {
 			int numProcessors = Integer.parseInt(args[1]);
 			String inputFile = args[0];
 
+			// Input file argument
 			String outputFile = String.format(DEFAULT_OUTPUT_TEMPLATE, FilenameUtils.getBaseName(inputFile));
 
 			CommandLine cli = parseCLIArgs(args);
+			// Number of cores
 			if (cli.hasOption('p')) {
 				numCores = Integer.parseInt(cli.getOptionValue('p'));
 			}
 
+			// Whether or not to enable visualization
 			if (cli.hasOption('v')) {
 				visualization = true;
 			}
 
+			// Specific output location
 			if (cli.hasOption('o')) {
 				outputFile = cli.getOptionValue('o') + ".dot";
 			}
