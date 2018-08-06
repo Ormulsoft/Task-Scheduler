@@ -1,5 +1,7 @@
 # Group 15 - Task Scheduling Project
 
+This an implementation of the task scheduling system for SOFTENG306 Assignment 1.
+
 ## Brief
 
 The purpose of this project is to create a system that schedules a set of tasks onto an abitrary number of processors.
@@ -29,6 +31,6 @@ The following options are supported by the system:
 | --------------- | ---- | --- | ------ |
 | Eugene-Bulog | Eugene Bulog | ebul920 | 985903606 |
 | ShaneBarboza | Shane Barboza | sbar539 | 536431628 |
-| mfrost33 | Matthew Frost | mfro529 | 882530485 |
+| mfrost433 | Matthew Frost | mfro529 | 882530485 |
 | hpt09 | Harpreet Singh | hsin612 | 622623765 |
 | Nikhil-Dreddy | Nikhil Donthireddy | ndon616 | 497601419 |
