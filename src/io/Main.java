@@ -16,20 +16,23 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import alg.AlgorithmStub;
+import alg.AStarAlgorithm;
+import alg.cost.TestCostFunction;
 import util.ScheduleGrph;
 
 /**
  * Entry point for the task scheduling assignment
  * 
- * @author
+ * @author All
  *
  */
 public class Main {
+	private static final int DEFAULT_CORES = 1;
+	private static final boolean DEFAULT_VISUALISATION = false;
 
 	final static Logger log = Logger.getLogger(Main.class);
 
-	private static final String DEFAULT_OUTPUT_TEMPLATE = "test_output/%s-OUTPUT.dot";
+	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
 
 	/**
 	 * Inital setup / entry point
@@ -39,37 +42,44 @@ public class Main {
 	 */
 	public static void main(String[] args) throws URISyntaxException {
 
-		loggerSetup();
+		log.info("Task scheduler launched");
+		boolean visualization = DEFAULT_VISUALISATION;
+		int numCores = DEFAULT_CORES;
 
-		boolean visualization = false;
-		int numCores = 1;
-		int numProcessors = Integer.parseInt(args[1]);
+		try {
+			int numProcessors = Integer.parseInt(args[1]);
+			String inputFile = args[0];
 
-		String inputFile = args[0];
-		String outputFile = String.format(DEFAULT_OUTPUT_TEMPLATE, FilenameUtils.getBaseName(inputFile));
+			String outputFile = String.format(DEFAULT_OUTPUT_TEMPLATE, FilenameUtils.getBaseName(inputFile));
 
-		CommandLine cli = parseCLIArgs(args);
-		if (cli.hasOption('p')) {
-			numCores = Integer.parseInt(cli.getOptionValue('p'));
+			CommandLine cli = parseCLIArgs(args);
+			if (cli.hasOption('p')) {
+				numCores = Integer.parseInt(cli.getOptionValue('p'));
+			}
+
+			if (cli.hasOption('v')) {
+				visualization = true;
+			}
+
+			if (cli.hasOption('o')) {
+				outputFile = cli.getOptionValue('o') + ".dot";
+			}
+			startScheduling(inputFile, outputFile, visualization, numCores, numProcessors);
+
+		} catch (ArrayIndexOutOfBoundsException e) {
+			log.error("Please pass the required inputs - { <input file name> <number of processors> }");
+			System.exit(0);
 		}
-
-		if (cli.hasOption('v')) {
-			visualization = true;
-		}
-
-		if (cli.hasOption('o')) {
-			outputFile = cli.getOptionValue('o') + ".dot";
-		}
-		log.info(outputFile);
-		startScheduling(inputFile, outputFile, visualization, numCores, numProcessors);
 	}
 
+	/**
+	 * Defines logging properties
+	 */
 	private static void loggerSetup() {
 		Properties props = new Properties();
-
 		// try log properties load from file, otherwise use basic
 		try {
-			props.load(new FileInputStream("src/resources/log4j.properties"));
+			props.load(new FileInputStream("log4j.properties"));
 			PropertyConfigurator.configure(props);
 			return;
 		} catch (FileNotFoundException e) {
@@ -80,6 +90,12 @@ public class Main {
 		BasicConfigurator.configure();
 	}
 
+	/**
+	 * Parse command line arguments and return CLI object
+	 * 
+	 * @param args
+	 * @return
+	 */
 	private static CommandLine parseCLIArgs(String[] args) {
 
 		// Get various options.
@@ -106,15 +122,19 @@ public class Main {
 	private static void startScheduling(String inputFile, String outputFile, boolean visualization, int numCores,
 			int numProcessors) {
 
-		log.info("Started scheduling");
-
+		log.info("Reading input file");
 		ScheduleGrph in = Input.readDotInput(inputFile);
-		ScheduleGrph out = new AlgorithmStub().runAlg(in, numCores, numProcessors);
+		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
+				+ " core(s)");
+		ScheduleGrph out = new AStarAlgorithm(new TestCostFunction(in)).runAlg(in, numCores, numProcessors);
+		log.info("Outputting solution to file: " + outputFile);
 
 		try {
 			Output.export(out, outputFile);
 		} catch (IOException e) {
-			log.error("Failed to export file - is your filepath invalid?", e);
+			log.error("Failed to export file - is your output filepath valid?", e);
 		}
+
+		log.info("Finished!");
 	}
 }

@@ -4,21 +4,34 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
 import grph.properties.NumericalProperty;
 import util.ScheduleGrph;
 
+/**
+ * This class handles the input parsing of the DotFiles.
+ * 
+ * @author Shane Barboza
+ *
+ */
 public class Input {
 
-	final static Logger log = Logger.getLogger(Input.class);
+	private final static Logger log = Logger.getLogger(Input.class);
 
+	/**
+	 * The main method of this class, takes the filepath to the dot file, and
+	 * returns the parsed Grph Graph.
+	 * 
+	 * @param path
+	 * @return
+	 */
 	public static ScheduleGrph readDotInput(String path) {
-		log.info("Reading input DOT file");
+		log.debug("Reading input DOT file");
 		File file = new File(path);
 		Scanner input = null;
 
@@ -45,17 +58,28 @@ public class Input {
 		}
 
 		// Distinguish between edges and nodes within input
-		List<String> nodesList = new ArrayList<String>();
 		List<String> edgesList = new ArrayList<String>();
+		// maps the node ID to its Weight value, so that they can be put into
+		// the
+		// Grph library easily.
+		TreeMap<Integer, Integer> nodes = new TreeMap<Integer, Integer>();
 
 		for (String l : list) {
+			if (l.contains("[Weight=")) {
+				if (l.indexOf('>') >= 0) {
+					// It must be an edge
+					edgesList.add(l);
+				} else {
+					// get id/name of task
+					Integer label = Integer.parseInt(String.valueOf(l.trim().split("\\s+")[0]));
 
-			if (l.indexOf('>') >= 0) {
-				// It must be an edge
-				edgesList.add(l);
+					// get weight of task
+					l = l.substring(l.indexOf("=") + 1);
+					l = l.substring(0, l.indexOf("]"));
+					int weight = Integer.parseInt(l);
 
-			} else {
-				nodesList.add(l);
+					nodes.put(label, weight);
+				}
 			}
 		}
 
@@ -65,34 +89,20 @@ public class Input {
 		NumericalProperty vertWeights = new NumericalProperty("Weight");
 		NumericalProperty vertLabels = new NumericalProperty("Labels");
 
-		
+		// Collections.sort(nodesList);
 		// Add each vertex from input file
-		for (String n : nodesList) {
-			
-			String label = String.valueOf(n.trim().charAt(0));			
+		for (Map.Entry<Integer, Integer> entry : nodes.entrySet()) {
+			Integer key = entry.getKey();
+			Integer weight = entry.getValue();
+
 			int vert = outputGraph.addVertex();
-			
-			vertLabels.setValue(vert, label);
-
-			
-			// Used to get the weight of vertex
-			Pattern p = Pattern.compile("-?\\d+");
-			Matcher m = p.matcher(n);
-			while (m.find()) {
-				vertWeights.setValue(vert, Integer.parseInt(m.group()));
-			}
-
-			outputGraph.addVertex(Integer.parseInt(String.valueOf(n.trim().charAt(0))));
-
-			/* TODO: Grph object should also represent weight of each vertex */
-
-			log.info("Graph contains: " + outputGraph.getVertices().toString());
-
+			vertLabels.setValue(vert, key);
+			vertWeights.setValue(vert, weight);
 		}
 
 		outputGraph.setVertexWeightProperty(vertWeights);
 		outputGraph.setVerticesLabel(vertLabels);
-		
+
 		NumericalProperty edgeWeights = new NumericalProperty("Weight");
 		// Add each edge from input file
 		for (String e : edgesList) {
@@ -100,7 +110,7 @@ public class Input {
 			// Split on whitespace
 			String[] splitStr = e.trim().split("\\s+");
 
-			int srcNode = Integer.parseInt(String.valueOf(e.trim().charAt(0)));
+			int srcNode = Integer.parseInt(splitStr[0]);
 			int destNode = Integer.parseInt(splitStr[2]);
 
 			// Retrieve and parse the substring between the '=' and ']'
@@ -109,9 +119,6 @@ public class Input {
 			e = e.substring(0, e.indexOf("]"));
 
 			int weight = Integer.parseInt(e);
-
-			// System.out.println("Source node is: " + srcNode + " Destination
-			// node is: " + destNode + " and weight is: " + weight);
 
 			// Add edge to graph
 			int newEdge = outputGraph.addSimpleEdge(srcNode, destNode, true);
@@ -122,9 +129,6 @@ public class Input {
 		}
 
 		outputGraph.setEdgeWeightProperty(edgeWeights);
-		// System.out.println("Edge indices are: " + outputGraph.getEdges());
-		// System.out.println(outputGraph.getEdgeWidthProperty().getValue(5));
-		// //Cost of edge with index 5.
 
 		return outputGraph;
 	}

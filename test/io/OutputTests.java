@@ -1,19 +1,27 @@
-package alg;
+package io;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.junit.*;
 
 import grph.properties.NumericalProperty;
+import toools.io.file.RegularFile;
+import util.ScheduleDotWriter;
 import util.ScheduleGrph;
 
-/**
- * Stub algorithm that doesnt alter the input, simply returns it as is
- */
-public class AlgorithmStub implements Algorithm {
 
-	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
-
-		log.info("Running stub algorithm");
-
-		ScheduleGrph g = new ScheduleGrph();
-
+public class OutputTests {
+	
+public static ScheduleGrph g = new ScheduleGrph();;
+final static Logger log = Logger.getLogger(OutputTests.class);
+	
+	@BeforeClass
+	public static void before(){
 		int a = g.addVertex();
 		int b = g.addVertex();
 		int c = g.addVertex();
@@ -30,7 +38,7 @@ public class AlgorithmStub implements Algorithm {
 		weightVerts.setValue(c, 3);
 		weightVerts.setValue(d, 2);
 
-		NumericalProperty weightEdge = input.getVertexWeightProperty();
+		NumericalProperty weightEdge = g.getVertexWeightProperty();
 		weightEdge.setValue(ab, 1);
 		weightEdge.setValue(ac, 2);
 		weightEdge.setValue(bd, 2);
@@ -52,11 +60,20 @@ public class AlgorithmStub implements Algorithm {
 		g.setVertexStartProperty(starts);
 		g.setVertexProcessorProperty(processors);
 		g.setEdgeWeightProperty(weightEdge);
+	}
+	
+	@Test
+	public void testOutputFile() throws RemoteException {
+		String outputPath = "C:\\Users\\AmritPal\\Desktop";
+		try {
+			ScheduleDotWriter d = new ScheduleDotWriter();
 
-		// log.info(g.getVertexProcessorProperty());
-
-		return g;
-
+			d.writeGraph(g, new RegularFile(outputPath));
+		} catch (Exception e) {
+			log.error("Failed to export file - is your filepath invalid?", e);
+		}
+		
+		
 	}
 
 }
