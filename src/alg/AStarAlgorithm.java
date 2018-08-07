@@ -112,8 +112,6 @@ public class AStarAlgorithm implements Algorithm {
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
 		ScheduleGrph original = input;
 		input = initializeIdenticalTaskEdges(input);
-		// log.info(original.toDot());
-		log.info(input.toDot());
 		long startTime = System.currentTimeMillis();
 
 		// A Queue of states (Partial Schedules), that are ordered by their Cost
@@ -142,7 +140,6 @@ public class AStarAlgorithm implements Algorithm {
 					s.addDirectedSimpleEdge(tail, head);
 				}
 				s.setEdgeWeightProperty(original.getEdgeWeightProperty());
-				// log.info(s.toDot());
 				return s;
 			} else {
 
@@ -196,6 +193,7 @@ public class AStarAlgorithm implements Algorithm {
 								if (totalTime > processorUpperBound) {
 									processorUpperBound = totalTime;
 								}
+
 							}
 						}
 
@@ -209,19 +207,19 @@ public class AStarAlgorithm implements Algorithm {
 						 * solution
 						 */
 						long timeRunning = System.currentTimeMillis() - startTime;
-						if (timeRunning > ALGORITHM_TIMEOUT) {
+						if (timeRunning > ALGORITHM_TIMEOUT && false) {
 							next.setScore(totalVertices);
 							totalVertices--;
 							log.info("Out of time! Defaulting to valid only.");
 						} else {
-							cost.applyCost(next, task);
+							cost.applyCost(next, task, numProcessors);
 						}
 
 						// log.info(next.toDot());
 						if (!storedInClosedSet(next.getNormalizedCopy(), closedStates)) {
 
 							states.add(next);
-							log.info(next.toDot());
+							// log.info(next.toDot());
 							// storeInClosedSet(next, closedStates);
 						} else {
 							// log.info(closedStates.size());

@@ -1,5 +1,8 @@
 package alg.cost;
 
+import org.apache.log4j.Logger;
+
+import alg.Algorithm;
 import util.PartialScheduleGrph;
 
 /**
@@ -10,6 +13,9 @@ import util.PartialScheduleGrph;
  */
 public interface CostFunction {
 
-	public void applyCost(PartialScheduleGrph g, int vertex);
+	final static Logger log = Logger.getLogger(Algorithm.class);
+
+	
+	public void applyCost(PartialScheduleGrph g, int vertex, int numProcessors);
 
 }

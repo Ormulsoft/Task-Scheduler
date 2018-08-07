@@ -2,6 +2,7 @@
 /target/
 <<<<<<< HEAD
 /test_output/*.dot
+/*.dot
 =======
 .settings
 .classpath

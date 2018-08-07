@@ -22,44 +22,9 @@ final static Logger log = Logger.getLogger(OutputTests.class);
 	
 	@BeforeClass
 	public static void before(){
-		int a = g.addVertex();
-		int b = g.addVertex();
-		int c = g.addVertex();
-		int d = g.addVertex();
-
-		int ab = g.addDirectedSimpleEdge(a, b);
-		int ac = g.addDirectedSimpleEdge(a, c);
-		int bd = g.addDirectedSimpleEdge(b, d);
-		int cd = g.addDirectedSimpleEdge(c, d);
-
-		NumericalProperty weightVerts = new NumericalProperty("Weight");
-		weightVerts.setValue(a, 2);
-		weightVerts.setValue(b, 3);
-		weightVerts.setValue(c, 3);
-		weightVerts.setValue(d, 2);
-
-		NumericalProperty weightEdge = g.getVertexWeightProperty();
-		weightEdge.setValue(ab, 1);
-		weightEdge.setValue(ac, 2);
-		weightEdge.setValue(bd, 2);
-		weightEdge.setValue(cd, 1);
-
-		NumericalProperty starts = new NumericalProperty("Starts");
-		starts.setValue(a, 0);
-		starts.setValue(b, 2);
-		starts.setValue(c, 4);
-		starts.setValue(d, 7);
-
-		NumericalProperty processors = new NumericalProperty("Processors");
-		processors.setValue(a, 1);
-		processors.setValue(b, 1);
-		processors.setValue(c, 2);
-		processors.setValue(d, 2);
-
-		g.setVertexWeightProperty(weightVerts);
-		g.setVertexStartProperty(starts);
-		g.setVertexProcessorProperty(processors);
-		g.setEdgeWeightProperty(weightEdge);
+		String outputFile = "C:\\Users\\AmritPal\\Documents\\3rd year\\306\\Softeng-306-Group-15\\src\\resources\\Nodes_8_Random.dot";
+		g = Input.readDotInput(outputFile);
+		
 	}
 	
 	@Test
@@ -74,6 +39,20 @@ final static Logger log = Logger.getLogger(OutputTests.class);
 		}
 		
 		
+	}
+	
+	@Test
+	public void testOutputValidity() throws RemoteException {
+		
+		for(int i : g.getVertices()){
+			for(int j : g.getInNeighbors(i)){
+				// Fail if child's start time is less that finishing time of it's parents
+				if(g.getVertexStartProperty().getValue(i) < (g.getVertexStartProperty().getValue(j) + g.getVertexWeightProperty().getValue(j))){
+					fail();
+				}
+			}
+		}
+				
 	}
 
 }

@@ -4,7 +4,7 @@ import grph.properties.NumericalProperty;
 import util.ScheduleGrph;
 
 /**
- * Stub algorithm that doesnt alter the input, simply returns it as is
+ * Stub algorithm that doesnt alter the input, simply returns a specific unrelated output
  */
 public class AlgorithmStub implements Algorithm {
 
@@ -12,6 +12,7 @@ public class AlgorithmStub implements Algorithm {
 
 		log.info("Running stub algorithm");
 
+		// Set up graph, edges, and verts
 		ScheduleGrph g = new ScheduleGrph();
 
 		int a = g.addVertex();
@@ -24,6 +25,7 @@ public class AlgorithmStub implements Algorithm {
 		int bd = g.addDirectedSimpleEdge(b, d);
 		int cd = g.addDirectedSimpleEdge(c, d);
 
+		// Add vertex and weight properties
 		NumericalProperty weightVerts = new NumericalProperty("Weight");
 		weightVerts.setValue(a, 2);
 		weightVerts.setValue(b, 3);
@@ -48,6 +50,7 @@ public class AlgorithmStub implements Algorithm {
 		processors.setValue(c, 2);
 		processors.setValue(d, 2);
 
+		// Add properties to graph
 		g.setVertexWeightProperty(weightVerts);
 		g.setVertexStartProperty(starts);
 		g.setVertexProcessorProperty(processors);

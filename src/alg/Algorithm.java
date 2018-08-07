@@ -13,6 +13,9 @@ import util.ScheduleGrph;
  *
  */
 public interface Algorithm {
+	/**
+	 * The basic interface for all algorithm objects to fulfill.
+	 */
 
 	final static Logger log = Logger.getLogger(Algorithm.class);
 
