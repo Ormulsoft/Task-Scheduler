@@ -1,6 +1,5 @@
 package alg;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.PriorityQueue;
@@ -9,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang.SerializationUtils;
 
 import alg.cost.CostFunction;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import util.PartialScheduleGrph;
 import util.ScheduleDotWriter;
 import util.ScheduleGrph;
@@ -43,7 +43,75 @@ public class AStarAlgorithm implements Algorithm {
 		this.cost = cost;
 	}
 
+	private ScheduleGrph initializeIdenticalTaskEdges(ScheduleGrph input) {
+
+		ScheduleGrph correctedInput = (ScheduleGrph) SerializationUtils.clone(input);
+
+		for (int vert : input.getVertices()) {
+			for (int vert2 : input.getVertices()) {
+				int vertWeight = input.getVertexWeightProperty().getValueAsInt(vert);
+				int vert2Weight = input.getVertexWeightProperty().getValueAsInt(vert2);
+
+				IntSet vertParents = input.getInNeighbors(vert);
+				IntSet vert2Parents = input.getInNeighbors(vert2);
+
+				IntSet vertChildren = input.getOutNeighbors(vert);
+				IntSet vert2Children = input.getOutNeighbors(vert2);
+
+				boolean childrenEqual = vertChildren.containsAll(vert2Children)
+						&& vert2Children.containsAll(vertChildren);
+
+				boolean parentEqual = vertParents.containsAll(vert2Parents) && vert2Parents.containsAll(vertParents);
+
+				boolean inWeightsSame = true;
+				for (int parent : vertParents) {
+					for (int parent2 : vert2Parents) {
+						if (parent == parent2 && input.getEdgeWeightProperty().getValue(parent) == input
+								.getEdgeWeightProperty().getValue(parent2)) {
+
+						} else {
+							inWeightsSame = false;
+							break;
+						}
+					}
+					if (!inWeightsSame) {
+						break;
+					}
+				}
+
+				boolean outWeightsSame = true;
+				for (int child : vertChildren) {
+					for (int child2 : vert2Children) {
+						if (child == child2 && input.getEdgeWeightProperty().getValue(child) == input
+								.getEdgeWeightProperty().getValue(child2)) {
+
+						} else {
+							outWeightsSame = false;
+							break;
+						}
+					}
+					if (!outWeightsSame) {
+						break;
+					}
+				}
+				boolean alreadyEdge = correctedInput.areVerticesAdjacent(vert, vert2)
+						|| correctedInput.areVerticesAdjacent(vert2, vert);
+
+				if (vert != vert2 && vertWeight == vert2Weight && parentEqual && childrenEqual && inWeightsSame
+						&& outWeightsSame && !alreadyEdge) {
+					int edge = correctedInput.addDirectedSimpleEdge(vert, vert2);
+					correctedInput.getEdgeWeightProperty().setValue(edge, 0);
+				}
+			}
+		}
+		return correctedInput;
+	}
+
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
+		ScheduleGrph original = input;
+		input = initializeIdenticalTaskEdges(input);
+		// log.info(original.toDot());
+		log.info(input.toDot());
 		long startTime = System.currentTimeMillis();
 
 		// A Queue of states (Partial Schedules), that are ordered by their Cost values.
@@ -65,15 +133,17 @@ public class AStarAlgorithm implements Algorithm {
 				storeInClosedSet(s, closedStates);
 
 				// if is a leaf, return the partial.
-				ArrayList<Integer> freeTasks = getFree(input, s);
+				log.info(s.toDot());
+				HashSet<Integer> freeTasks = getFree(input, s);
+				log.info(freeTasks);
 				// if 10 minutes, output valid, but non optimal solution
 				if (freeTasks.size() == 0) {
-					for (int edge : input.getEdges()) {
-						int head = input.getDirectedSimpleEdgeHead(edge);
-						int tail = input.getTheOtherVertex(edge, head);
+					for (int edge : original.getEdges()) {
+						int head = original.getDirectedSimpleEdgeHead(edge);
+						int tail = original.getTheOtherVertex(edge, head);
 						s.addDirectedSimpleEdge(tail, head);
 					}
-					s.setEdgeWeightProperty(input.getEdgeWeightProperty());
+					s.setEdgeWeightProperty(original.getEdgeWeightProperty());
 					return s;
 				} else {
 
@@ -137,7 +207,7 @@ public class AStarAlgorithm implements Algorithm {
 							 * If the algorithm timed out, default to a "valid" solution
 							 */
 							long timeRunning = System.currentTimeMillis() - startTime;
-							if (timeRunning > ALGORITHM_TIMEOUT && false) {
+							if (timeRunning > ALGORITHM_TIMEOUT) {
 								next.setScore(totalVertices);
 								totalVertices--;
 								log.info("Out of time! Defaulting to valid only.");
@@ -148,6 +218,8 @@ public class AStarAlgorithm implements Algorithm {
 							// log.info(next.toDot());
 							if (!storedInClosedSet(next, closedStates)) {
 								states.add(next);
+								// log.info(next.toDot());
+								// storeInClosedSet(next, closedStates);
 							} else {
 
 							}
@@ -174,8 +246,8 @@ public class AStarAlgorithm implements Algorithm {
 	 * 
 	 */
 
-	private ArrayList<Integer> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg) {
-		ArrayList<Integer> a = new ArrayList<Integer>();
+	private HashSet<Integer> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg) {
+		HashSet<Integer> a = new HashSet<Integer>();
 		// get all source nodes (no in edges) that are not in the partialschedule
 		for (int srcTask : inputSaved.getSources()) {
 			if (!pg.containsVertex(srcTask)) {
