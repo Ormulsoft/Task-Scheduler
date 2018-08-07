@@ -66,8 +66,9 @@ public class AStarAlgorithm implements Algorithm {
 				boolean inWeightsSame = true;
 				for (int parent : vertParents) {
 					for (int parent2 : vert2Parents) {
-						if (parent == parent2 && input.getEdgeWeightProperty().getValue(parent) == input
-								.getEdgeWeightProperty().getValue(parent2)) {
+						if (parent == parent2 && input.getEdgeWeightProperty()
+								.getValue(input.getSomeEdgeConnecting(parent, vert)) == input.getEdgeWeightProperty()
+										.getValue(input.getSomeEdgeConnecting(parent2, vert2))) {
 
 						} else {
 							inWeightsSame = false;
@@ -82,8 +83,9 @@ public class AStarAlgorithm implements Algorithm {
 				boolean outWeightsSame = true;
 				for (int child : vertChildren) {
 					for (int child2 : vert2Children) {
-						if (child == child2 && input.getEdgeWeightProperty().getValue(child) == input
-								.getEdgeWeightProperty().getValue(child2)) {
+						if (child == child2 && input.getEdgeWeightProperty()
+								.getValue(input.getSomeEdgeConnecting(vert, child)) == input.getEdgeWeightProperty()
+										.getValue(input.getSomeEdgeConnecting(vert2, child2))) {
 
 						} else {
 							outWeightsSame = false;
@@ -114,7 +116,8 @@ public class AStarAlgorithm implements Algorithm {
 		log.info(input.toDot());
 		long startTime = System.currentTimeMillis();
 
-		// A Queue of states (Partial Schedules), that are ordered by their Cost values.
+		// A Queue of states (Partial Schedules), that are ordered by their Cost
+		// values.
 		PriorityQueue<PartialScheduleGrph> states = new PriorityQueue<PartialScheduleGrph>(1, new CostChecker());
 
 		// A set of closed states, which
@@ -124,139 +127,142 @@ public class AStarAlgorithm implements Algorithm {
 		PartialScheduleGrph initial = new PartialScheduleGrph(0);
 		initial.setVerticesLabel(input.getVertexLabelProperty());
 		states.add(initial);
-
 		int totalVertices = input.getNumberOfVertices();
 
 		while (states.size() > 0) {
 			PartialScheduleGrph s = states.poll();
-			if (!storedInClosedSet(s, closedStates)) {
-				storeInClosedSet(s, closedStates);
 
-				// if is a leaf, return the partial.
-				log.info(s.toDot());
-				HashSet<Integer> freeTasks = getFree(input, s);
-				log.info(freeTasks);
-				// if 10 minutes, output valid, but non optimal solution
-				if (freeTasks.size() == 0) {
-					for (int edge : original.getEdges()) {
-						int head = original.getDirectedSimpleEdgeHead(edge);
-						int tail = original.getTheOtherVertex(edge, head);
-						s.addDirectedSimpleEdge(tail, head);
-					}
-					s.setEdgeWeightProperty(original.getEdgeWeightProperty());
-					return s;
-				} else {
+			// if is a leaf, return the partial.
+			HashSet<Integer> freeTasks = getFree(input, s);
+			// if 10 minutes, output valid, but non optimal solution
+			if (freeTasks.size() == 0) {
+				for (int edge : original.getEdges()) {
+					int head = original.getDirectedSimpleEdgeHead(edge);
+					int tail = original.getTheOtherVertex(edge, head);
+					s.addDirectedSimpleEdge(tail, head);
+				}
+				s.setEdgeWeightProperty(original.getEdgeWeightProperty());
+				// log.info(s.toDot());
+				return s;
+			} else {
 
-					// loop over all free vertices
-					for (int task : freeTasks) {
-						for (int pc = 1; pc <= numProcessors; pc++) {
+				// loop over all free vertices
+				for (int task : freeTasks) {
+					for (int pc = 1; pc <= numProcessors; pc++) {
 
-							PartialScheduleGrph next = (PartialScheduleGrph) SerializationUtils.clone(s);
-							next.addVertex(task);
-							next.getVertexWeightProperty().setValue(task,
-									input.getVertexWeightProperty().getValue(task));
-							next.getVertexProcessorProperty().setValue(task, pc);
+						PartialScheduleGrph next = (PartialScheduleGrph) SerializationUtils.clone(s);
+						next.addVertex(task);
+						next.getVertexWeightProperty().setValue(task, input.getVertexWeightProperty().getValue(task));
+						next.getVertexProcessorProperty().setValue(task, pc);
 
-							// set the start time based on earliest first on a
-							// processor
+						// set the start time based on earliest first on a
+						// processor
 
-							// to get the start time, find the time of most recently
-							// finishing vertex on the same processor,
-							// and store that, also the finish time of the last
-							// dependency. starting time would be the maximum\
-							// of the two.
-							int dependencyUpperBound = 0;
-							for (int taskDp : input.getInNeighbours(task)) {
-								int edgeTime = 0;
-								if (next.getVertexProcessorProperty().getValue(taskDp) != pc) {
-									edgeTime = (int) input.getEdgeWeightProperty()
-											.getValue(input.getSomeEdgeConnecting(taskDp, task));
-								}
-
-								int totalTime = (int) (input.getVertexWeightProperty().getValue(taskDp)
-										// needs to be next, not input for start
-										+ next.getVertexStartProperty().getValue(taskDp) + edgeTime);
-								if (totalTime > dependencyUpperBound) {
-									dependencyUpperBound = totalTime;
-								}
+						// to get the start time, find the time of most
+						// recently
+						// finishing vertex on the same processor,
+						// and store that, also the finish time of the last
+						// dependency. starting time would be the maximum\
+						// of the two.
+						int dependencyUpperBound = 0;
+						for (int taskDp : input.getInNeighbours(task)) {
+							int edgeTime = 0;
+							if (next.getVertexProcessorProperty().getValue(taskDp) != pc) {
+								edgeTime = (int) input.getEdgeWeightProperty()
+										.getValue(input.getSomeEdgeConnecting(taskDp, task));
 							}
 
-							/**
-							 * find the latest finishing process on the same processor, and factor into the
-							 * timing
-							 * 
-							 * TODO make this a function of the PartialScheduleGrph to suit the abstraction
-							 * Named getProcessorFinishTime() ??
-							 */
-							int processorUpperBound = 0;
-							for (int pcTask : next.getVertices()) {
-								if (next.getVertexProcessorProperty().getValue(pcTask) == pc && pcTask != task) {
-									int totalTime = (int) (next.getVertexWeightProperty().getValue(pcTask)
-											+ next.getVertexStartProperty().getValue(pcTask));
-									if (totalTime > processorUpperBound) {
-										processorUpperBound = totalTime;
-									}
+							int totalTime = (int) (input.getVertexWeightProperty().getValue(taskDp)
+									// needs to be next, not input for start
+									+ next.getVertexStartProperty().getValue(taskDp) + edgeTime);
+							if (totalTime > dependencyUpperBound) {
+								dependencyUpperBound = totalTime;
+							}
+						}
+
+						/**
+						 * find the latest finishing process on the same
+						 * processor, and factor into the timing
+						 * 
+						 * TODO make this a function of the PartialScheduleGrph
+						 * to suit the abstraction Named
+						 * getProcessorFinishTime() ??
+						 */
+						int processorUpperBound = 0;
+						for (int pcTask : next.getVertices()) {
+							if (next.getVertexProcessorProperty().getValue(pcTask) == pc && pcTask != task) {
+								int totalTime = (int) (next.getVertexWeightProperty().getValue(pcTask)
+										+ next.getVertexStartProperty().getValue(pcTask));
+								if (totalTime > processorUpperBound) {
+									processorUpperBound = totalTime;
 								}
 							}
+						}
 
-							// find the maximum time the task can start on a processor.
-							next.getVertexStartProperty().setValue(task,
-									Math.max(processorUpperBound, dependencyUpperBound));
+						// find the maximum time the task can start on a
+						// processor.
+						next.getVertexStartProperty().setValue(task,
+								Math.max(processorUpperBound, dependencyUpperBound));
 
-							/**
-							 * If the algorithm timed out, default to a "valid" solution
-							 */
-							long timeRunning = System.currentTimeMillis() - startTime;
-							if (timeRunning > ALGORITHM_TIMEOUT) {
-								next.setScore(totalVertices);
-								totalVertices--;
-								log.info("Out of time! Defaulting to valid only.");
-							} else {
-								cost.applyCost(next, task);
-							}
+						/**
+						 * If the algorithm timed out, default to a "valid"
+						 * solution
+						 */
+						long timeRunning = System.currentTimeMillis() - startTime;
+						if (timeRunning > ALGORITHM_TIMEOUT) {
+							next.setScore(totalVertices);
+							totalVertices--;
+							log.info("Out of time! Defaulting to valid only.");
+						} else {
+							cost.applyCost(next, task);
+						}
 
-							// log.info(next.toDot());
-							if (!storedInClosedSet(next, closedStates)) {
-								states.add(next);
-								// log.info(next.toDot());
-								// storeInClosedSet(next, closedStates);
-							} else {
+						// log.info(next.toDot());
+						if (!storedInClosedSet(next.getNormalizedCopy(), closedStates)) {
 
-							}
+							states.add(next);
+							log.info(next.toDot());
+							// storeInClosedSet(next, closedStates);
+						} else {
+							// log.info(closedStates.size());
+
 						}
 					}
 				}
 			}
+			storeInClosedSet(s.getNormalizedCopy(), closedStates);
 		}
 		return null;
+
 	}
 
-	private void storeInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
+	private void storeInClosedSet(ScheduleGrph g, Set<String> closedStates) {
 		String serialized = new ScheduleDotWriter().createDotText(g, false);
 		closedStates.add(serialized);
 	}
 
-	private boolean storedInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
+	private boolean storedInClosedSet(ScheduleGrph g, Set<String> closedStates) {
 		return closedStates.contains(new ScheduleDotWriter().createDotText(g, false));
 	}
 
 	/**
-	 * Select all the free vertices based on a current partial schedule, that are
-	 * not stored in the current partial schedule
+	 * Select all the free vertices based on a current partial schedule, that
+	 * are not stored in the current partial schedule
 	 * 
 	 */
 
 	private HashSet<Integer> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg) {
 		HashSet<Integer> a = new HashSet<Integer>();
-		// get all source nodes (no in edges) that are not in the partialschedule
+		// get all source nodes (no in edges) that are not in the
+		// partialschedule
 		for (int srcTask : inputSaved.getSources()) {
 			if (!pg.containsVertex(srcTask)) {
 				a.add(srcTask);
 			}
 		}
 		/*
-		 * iterate over tasks in the partial schedule, and add to output ones that are
-		 * free and not contained in the current partial
+		 * iterate over tasks in the partial schedule, and add to output ones
+		 * that are free and not contained in the current partial
 		 */
 		for (int task : pg.getVertices()) {
 			for (int outEdge : inputSaved.getOutEdges(task)) {
