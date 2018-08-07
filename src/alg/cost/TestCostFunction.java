@@ -38,8 +38,7 @@ public class TestCostFunction implements CostFunction {
 			}
 		}
 
-		g.setScore(Math.max(maxFinish,
-				Math.max(getComputationalBottomLevel(addedVertex), getIdleTimeFit(g, numProcessors))));
+		g.setScore(Math.max(maxFinish + getComputationalBottomLevel(addedVertex), getIdleTimeFit(g, numProcessors)));
 	}
 
 	/**
@@ -132,24 +131,5 @@ public class TestCostFunction implements CostFunction {
 
 		return (int) Math.ceil((totalIdle + totalWeight) / (double) numProcessors);
 	}
-
-	public int getDRT(int addedVertex,PartialScheduleGrph g) {
-	    int maxFinTime = 0;
-	    int maxFinTimeVertex = 0;
-	    for(int i :g.getInEdges(addedVertex)) {
-	        if(maxFinTime < g.getVertexStartProperty().getValueAsInt(i)) {
-	            maxFinTime = g.getVertexStartProperty().getValueAsInt(i);
-                maxFinTimeVertex = i;
-            }
-        }
-        if (g.getVertexProcessorProperty().getValueAsInt(maxFinTimeVertex) == g.getVertexProcessorProperty().getValueAsInt(addedVertex)) {
-            return maxFinTime + 0;
-
-        }
-        else {
-	        return maxFinTime + g.getEdgeWeightProperty().getValueAsInt(g.getSomeEdgeConnecting(maxFinTimeVertex,addedVertex));
-        }
-
-    }
 
 }

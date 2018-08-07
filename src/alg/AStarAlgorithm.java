@@ -43,6 +43,13 @@ public class AStarAlgorithm implements Algorithm {
 		this.cost = cost;
 	}
 
+	/**
+	 * 
+	 * This function TODO TEST ME
+	 * 
+	 * @param input
+	 * @return
+	 */
 	private ScheduleGrph initializeIdenticalTaskEdges(ScheduleGrph input) {
 
 		ScheduleGrph correctedInput = (ScheduleGrph) SerializationUtils.clone(input);
