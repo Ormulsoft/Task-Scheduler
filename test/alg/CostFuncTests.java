@@ -9,12 +9,11 @@ import org.junit.Test;
 import alg.cost.TestCostFunction;
 import grph.VertexPair;
 import io.Input;
-import io.OutputTests;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
 public class CostFuncTests {
-	final static Logger log = Logger.getLogger(OutputTests.class);
+	private final Logger log = Logger.getLogger(this.getClass());
 	public static ScheduleGrph g;
 	public static TestCostFunction c;
 	public static PartialScheduleGrph gpart;
@@ -29,6 +28,8 @@ public class CostFuncTests {
 		gpart.setVerticesLabel(g.getVertexLabelProperty());
 		for (int i : g.getVertices()) {
 			gpart.addVertex();
+			gpart.getVertexProcessorProperty().setValue(i, 1);
+			;
 
 		}
 		for (VertexPair j : g.getEdgePairs()) {
@@ -41,7 +42,7 @@ public class CostFuncTests {
 	}
 
 	@Test
-	public void testAStarTimeout() throws RemoteException {
+	public void drtTest() throws RemoteException {
 
 		log.info(g.toDot());
 		gpart.getVertexStartProperty().setValue(5, 1000);
@@ -50,12 +51,41 @@ public class CostFuncTests {
 		int maxDRT = 0;
 
 		for (int i : gpart.getFree(g)) {
-			int valDRT = c.getDRT(i, gpart);
-			if (valDRT > maxDRT) {
-				maxDRT = valDRT;
+
+			int minProc = -1;
+			for (int proc = 1; proc <= 2; proc++) {
+				// Tdr (n, p)
+				int valDRT = c.getDRT(i, gpart, proc);
+				if (valDRT < minProc || minProc == -1) {
+					minProc = valDRT;
+
+				}
+			}
+			if (minProc > maxDRT) {
+				maxDRT = minProc;
 			}
 		}
-		log.info(maxDRT);
+		// log.info(maxDRT);
+
+		// Checking to see if Astar
+		// Works under some time frame
+
+	}
+
+	@Test
+	public void idleTest() {
+
+		gpart.getVertexStartProperty().setValue(1, 0);
+
+		gpart.getVertexStartProperty().setValue(1, 1000);
+
+		gpart.getVertexStartProperty().setValue(2, 32);
+
+		gpart.getVertexStartProperty().setValue(2, 3123);
+
+		c.applyCost(gpart);
+		log.info(gpart.toDot());
+		log.info(c.getIdleTimeFit(gpart, 2));
 
 		// Checking to see if Astar
 		// Works under some time frame

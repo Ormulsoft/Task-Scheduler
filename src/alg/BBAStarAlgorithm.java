@@ -20,7 +20,7 @@ import util.ScheduleGrph;
  * @author matt frost
  *
  */
-public class AStarAlgorithm implements Algorithm {
+public class BBAStarAlgorithm implements Algorithm {
 
 	// define a timeout (2 mins) for it to return a "valid" but not optimal
 	// solution
@@ -39,7 +39,7 @@ public class AStarAlgorithm implements Algorithm {
 		}
 	}
 
-	public AStarAlgorithm(CostFunction cost) {
+	public BBAStarAlgorithm(CostFunction cost) {
 		this.cost = cost;
 	}
 
@@ -132,11 +132,28 @@ public class AStarAlgorithm implements Algorithm {
 				}
 			}
 		}
-
 		return correctedInput;
 	}
 
-	int serializeTime = 0;
+	private int findBound(ScheduleGrph input, PartialScheduleGrph next) {
+
+		for (int i : getFree(input, next)) {
+			int dependencyUpperBound = 0;
+			for (int taskDp : input.getInNeighbours(task)) {
+				int edgeTime = 0;
+				if (next.getVertexProcessorProperty().getValue(taskDp) != pc) {
+					edgeTime = (int) input.getEdgeWeightProperty().getValue(input.getSomeEdgeConnecting(taskDp, task));
+				}
+
+				int totalTime = (int) (input.getVertexWeightProperty().getValue(taskDp)
+						// needs to be next, not input for start
+						+ next.getVertexStartProperty().getValue(taskDp) + edgeTime);
+				if (totalTime > dependencyUpperBound) {
+					dependencyUpperBound = totalTime;
+				}
+			}
+		}
+	}
 
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
 		ScheduleGrph original = input;
@@ -155,10 +172,8 @@ public class AStarAlgorithm implements Algorithm {
 		initial.setVerticesLabel(input.getVertexLabelProperty());
 		states.add(initial);
 		int totalVertices = input.getNumberOfVertices();
-		int count = 0;
-		int deepCopyTime = 0;
+
 		while (states.size() > 0) {
-			count++;
 			PartialScheduleGrph s = states.poll();
 
 			// if is a leaf, return the partial.
@@ -171,17 +186,14 @@ public class AStarAlgorithm implements Algorithm {
 					s.addDirectedSimpleEdge(tail, head);
 				}
 				s.setEdgeWeightProperty(original.getEdgeWeightProperty());
-				log.info("Deep copy time: " + deepCopyTime);
-				log.info("Serialize time: " + serializeTime);
 				return s;
 			} else {
+
 				// loop over all free vertices
 				for (int task : freeTasks) {
 					for (int pc = 1; pc <= numProcessors; pc++) {
-						long start = System.currentTimeMillis();
-						PartialScheduleGrph next = s.copy();
 
-						deepCopyTime += System.currentTimeMillis() - start;
+						PartialScheduleGrph next = (PartialScheduleGrph) SerializationUtils.clone(s);
 						next.addVertex(task);
 						next.getVertexWeightProperty().setValue(task, input.getVertexWeightProperty().getValue(task));
 						next.getVertexProcessorProperty().setValue(task, pc);
@@ -250,38 +262,32 @@ public class AStarAlgorithm implements Algorithm {
 						}
 
 						// log.info(next.toDot());
-						start = System.currentTimeMillis();
 						if (!storedInClosedSet(next.getNormalizedCopy(), closedStates)) {
-							deepCopyTime += System.currentTimeMillis() - start;
+
 							states.add(next);
+							// log.info(next.toDot());
+							// storeInClosedSet(next, closedStates);
+						} else {
+							// log.info(closedStates.size());
 
 						}
 					}
 				}
 			}
-			// TODO this takes too long - find alternative
-			long start = System.currentTimeMillis();
 			storeInClosedSet(s.getNormalizedCopy(), closedStates);
-			deepCopyTime += System.currentTimeMillis() - start;
 		}
 		return null;
 
 	}
 
 	// TODO add equivalence check
-	private void storeInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
-		long start = System.currentTimeMillis();
+	private void storeInClosedSet(ScheduleGrph g, Set<String> closedStates) {
 		String serialized = new ScheduleDotWriter().createDotText(g, false);
-		serializeTime += System.currentTimeMillis() - start;
 		closedStates.add(serialized);
 	}
 
-	// TODO add equivalence check
-	private boolean storedInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
-		long start = System.currentTimeMillis();
-		String serialized = new ScheduleDotWriter().createDotText(g, false);
-		serializeTime += System.currentTimeMillis() - start;
-		return closedStates.contains(serialized);
+	private boolean storedInClosedSet(ScheduleGrph g, Set<String> closedStates) {
+		return closedStates.contains(new ScheduleDotWriter().createDotText(g, false));
 	}
 
 	/**

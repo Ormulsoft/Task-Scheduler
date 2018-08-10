@@ -74,6 +74,7 @@ public class Main {
 		} catch (ArrayIndexOutOfBoundsException e) {
 			// e.printStackTrace();
 			log.error("Please pass the required inputs - { <input file name> <number of processors> }");
+			e.printStackTrace();
 			System.exit(0);
 		}
 	}

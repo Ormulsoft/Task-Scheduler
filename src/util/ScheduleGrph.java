@@ -1,7 +1,5 @@
 package util;
 
-import org.apache.commons.lang.SerializationUtils;
-
 import grph.in_memory.GrphIntSet;
 import grph.in_memory.InMemoryGrph;
 import grph.properties.NumericalProperty;
@@ -117,36 +115,6 @@ public class ScheduleGrph extends InMemoryGrph {
 			}
 		}
 		return g;
-	}
-
-	public ScheduleGrph getNormalizedCopy() {
-		ScheduleGrph out = (ScheduleGrph) SerializationUtils.clone(this);
-		int numProcessor = 0;
-
-		for (int vert : this.getVertices()) {
-			if (this.getVertexProcessorProperty().getValue(vert) > numProcessor) {
-				numProcessor = this.getVertexProcessorProperty().getValueAsInt(vert);
-			}
-		}
-		// System.out.println(out.getVerticesForProcessor(2).size());
-		for (int i = 1; i <= numProcessor; i++) {
-			try {
-				IntSet procVertices = this.getVerticesForProcessor(i);
-				int firstOnProc = procVertices.toIntArray()[0];
-				for (int vert : procVertices) {
-					if (this.getVertexStartProperty().getValue(firstOnProc) > this.getVertexStartProperty()
-							.getValue(vert)) {
-						firstOnProc = vert;
-					}
-				}
-				// real proc number may over lap with new proc name
-				for (int vert : procVertices) {
-					out.getVertexProcessorProperty().setValue(vert, firstOnProc);
-				}
-			} catch (ArrayIndexOutOfBoundsException e) {
-			}
-		}
-		return out;
 	}
 
 }

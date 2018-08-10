@@ -2,6 +2,8 @@ package util;
 
 import java.util.HashSet;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 public class PartialScheduleGrph extends ScheduleGrph {
 
 	/**
@@ -28,8 +30,54 @@ public class PartialScheduleGrph extends ScheduleGrph {
 		this.score = score;
 	}
 
+	public PartialScheduleGrph copy() {
+		PartialScheduleGrph g = new PartialScheduleGrph(0);
+		g.addVertices(this.getVertices());
+		g.setVerticesLabel(this.getVertexLabelProperty());
+		for (int i : this.getVertices()) {
+			g.getVertexWeightProperty().setValue(i, this.getVertexWeightProperty().getValue(i));
+			g.getVertexProcessorProperty().setValue(i, this.getVertexProcessorProperty().getValue(i));
+			g.getVertexStartProperty().setValue(i, this.getVertexStartProperty().getValue(i));
+		}
+
+		g.setScore(score);
+
+		return g;
+
+	}
+
 	public PartialScheduleGrph cloneSelf() {
 		return (PartialScheduleGrph) super.clone();
+	}
+
+	public PartialScheduleGrph getNormalizedCopy() {
+		PartialScheduleGrph out = this.copy();
+		int numProcessor = 0;
+
+		for (int vert : this.getVertices()) {
+			if (this.getVertexProcessorProperty().getValue(vert) > numProcessor) {
+				numProcessor = this.getVertexProcessorProperty().getValueAsInt(vert);
+			}
+		}
+		// System.out.println(out.getVerticesForProcessor(2).size());
+		for (int i = 1; i <= numProcessor; i++) {
+			try {
+				IntSet procVertices = this.getVerticesForProcessor(i);
+				int firstOnProc = procVertices.toIntArray()[0];
+				for (int vert : procVertices) {
+					if (this.getVertexStartProperty().getValue(firstOnProc) > this.getVertexStartProperty()
+							.getValue(vert)) {
+						firstOnProc = vert;
+					}
+				}
+				// real proc number may over lap with new proc name
+				for (int vert : procVertices) {
+					out.getVertexProcessorProperty().setValue(vert, firstOnProc);
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+			}
+		}
+		return out;
 	}
 
 	public HashSet<Integer> getFree(ScheduleGrph inputSaved) {
