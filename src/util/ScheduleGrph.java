@@ -77,6 +77,38 @@ public class ScheduleGrph extends InMemoryGrph {
 		return (ScheduleGrph) super.clone();
 	}
 
+	public int getBottomLevel() {
+		int max = 0;
+		for (int addedVertex : getVertices()) {
+			int val = this.getBottomLevelRecurse(addedVertex);
+			if (val > max) {
+				max = val;
+			}
+		}
+		return max;
+	}
+
+	/**
+	 * TODO need edges in these now
+	 * 
+	 * @param addedVertex
+	 * @return
+	 */
+	private int getBottomLevelRecurse(int addedVertex) {
+		if (getOutEdgeDegree(addedVertex) > 0) {
+			int max = 0;
+			for (int i : getOutNeighbors(addedVertex)) {
+				int current = (int) (getBottomLevelRecurse(i));
+				if (max < current) {
+					max = current;
+				}
+			}
+			return max + (int) getVertexWeightProperty().getValue(addedVertex);
+		} else {
+			return (int) (getVertexWeightProperty().getValue(addedVertex));
+		}
+	}
+
 	public IntSet getVerticesForProcessor(int i) {
 		GrphIntSet g = new GrphIntSet(0);
 		for (int vert : this.getVertices()) {
