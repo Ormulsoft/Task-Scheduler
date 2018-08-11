@@ -35,57 +35,57 @@ public class ScheduleDotWriter extends DotWriter {
 		ScheduleGrph sg = null;
 
 		// downcast to ScheduleGrph
-			sg = (ScheduleGrph) graph;
+		sg = (ScheduleGrph) graph;
 
-			StringBuilder text = new StringBuilder();
-			text.append("digraph {\n");
+		StringBuilder text = new StringBuilder();
+		text.append("digraph {\n");
 
-			for (IntCursor c : IntCursor.fromFastUtil(sg.getVertices())) {
-				int v = c.value;
-				text.append('\t');
-				text.append(sg.getVertexLabelProperty().getValueAsString(v));
-				text.append(' ');
-				Map<String, Object> map = new HashMap<String, Object>();
-				try {
-					map.put("Weight", sg.getVertexWeightProperty().getValueAsInt(v));
-					map.put("Start", sg.getVertexStartProperty().getValueAsInt(v));
-					map.put("Processor", sg.getVertexProcessorProperty().getValueAsInt(v));
-				} catch (NullPointerException e) {
-					log.error(e);
-				}
-
-				// remove all " chars
-				text.append(to(map).replaceAll("\"", ""));
-				text.append(';');
-				text.append('\n');
+		for (IntCursor c : IntCursor.fromFastUtil(sg.getVertices())) {
+			int v = c.value;
+			text.append('\t');
+			text.append(sg.getVertexLabelProperty().getValueAsString(v));
+			text.append(' ');
+			Map<String, Object> map = new HashMap<String, Object>();
+			try {
+				map.put("Weight", sg.getVertexWeightProperty().getValueAsInt(v));
+				map.put("Start", sg.getVertexStartProperty().getValueAsInt(v));
+				map.put("Processor", sg.getVertexProcessorProperty().getValueAsInt(v));
+			} catch (NullPointerException e) {
+				log.error(e);
 			}
 
+			// remove all " chars
+			text.append(to(map).replaceAll("\"", ""));
+			text.append(';');
 			text.append('\n');
+		}
 
-			for (IntCursor c : IntCursor.fromFastUtil(sg.getEdges())) {
-				int e = c.value;
+		text.append('\n');
 
-				if (sg.isSimpleEdge(e)) {
-					text.append('\t');
-					int a = sg.getOneVertex(e);
-					text.append(a);
-					text.append(" -> ");
-					text.append(sg.getTheOtherVertex(e, a));
-				}
+		for (IntCursor c : IntCursor.fromFastUtil(sg.getEdges())) {
+			int e = c.value;
 
-				text.append(' ');
-
-				Map<String, Object> map = new HashMap<String, Object>();
-
-				map.put("Weight", sg.getEdgeWeightProperty().getValueAsInt(e));
-
-				// remove all " chars
-				text.append(to(map).replaceAll("\"", ""));
-				text.append(';');
-				text.append('\n');
+			if (sg.isSimpleEdge(e)) {
+				text.append('\t');
+				int a = sg.getOneVertex(e);
+				text.append(a);
+				text.append(" -> ");
+				text.append(sg.getTheOtherVertex(e, a));
 			}
 
-			text.append('}');
-			return text.toString();
+			text.append(' ');
+
+			Map<String, Object> map = new HashMap<String, Object>();
+
+			map.put("Weight", sg.getEdgeWeightProperty().getValueAsInt(e));
+
+			// remove all " chars
+			text.append(to(map).replaceAll("\"", ""));
+			text.append(';');
+			text.append('\n');
+		}
+
+		text.append('}');
+		return text.toString();
 	}
 }

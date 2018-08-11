@@ -4,7 +4,8 @@ import grph.properties.NumericalProperty;
 import util.ScheduleGrph;
 
 /**
- * Stub algorithm that doesnt alter the input, simply returns a specific unrelated output
+ * Stub algorithm that doesnt alter the input, simply returns a specific
+ * unrelated output
  */
 public class AlgorithmStub implements Algorithm {
 

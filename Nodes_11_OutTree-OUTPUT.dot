@@ -1,15 +1,15 @@
 digraph {
-	0 [Processor=1, Start=0, Weight=50];
-	1 [Processor=1, Start=50, Weight=70];
-	2 [Processor=2, Start=57, Weight=90];
-	3 [Processor=2, Start=147, Weight=100];
-	4 [Processor=2, Start=297, Weight=40];
-	5 [Processor=1, Start=320, Weight=20];
-	6 [Processor=1, Start=120, Weight=100];
-	7 [Processor=1, Start=220, Weight=80];
-	8 [Processor=2, Start=247, Weight=50];
-	9 [Processor=2, Start=337, Weight=20];
-	10 [Processor=1, Start=300, Weight=20];
+	0 [Processor=2, Start=0, Weight=50];
+	1 [Processor=2, Start=150, Weight=70];
+	2 [Processor=1, Start=57, Weight=90];
+	3 [Processor=2, Start=50, Weight=100];
+	4 [Processor=2, Start=310, Weight=40];
+	5 [Processor=1, Start=227, Weight=20];
+	6 [Processor=1, Start=247, Weight=100];
+	7 [Processor=1, Start=147, Weight=80];
+	8 [Processor=2, Start=260, Weight=50];
+	9 [Processor=2, Start=220, Weight=20];
+	10 [Processor=2, Start=240, Weight=20];
 
 	0 -> 1 [Weight=9];
 	0 -> 2 [Weight=7];

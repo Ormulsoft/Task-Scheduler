@@ -1,12 +1,12 @@
 digraph {
-	0 [Processor=1, Start=0, Weight=35];
-	1 [Processor=2, Start=38, Weight=88];
-	2 [Processor=1, Start=35, Weight=176];
-	3 [Processor=2, Start=126, Weight=159];
-	4 [Processor=1, Start=211, Weight=176];
-	5 [Processor=2, Start=285, Weight=141];
-	6 [Processor=1, Start=387, Weight=141];
-	7 [Processor=1, Start=528, Weight=53];
+	0 [Processor=4, Start=0, Weight=35];
+	1 [Processor=3, Start=38, Weight=88];
+	2 [Processor=4, Start=35, Weight=176];
+	3 [Processor=1, Start=42, Weight=159];
+	4 [Processor=4, Start=211, Weight=176];
+	5 [Processor=1, Start=217, Weight=141];
+	6 [Processor=4, Start=387, Weight=141];
+	7 [Processor=4, Start=528, Weight=53];
 
 	0 -> 1 [Weight=3];
 	0 -> 2 [Weight=9];

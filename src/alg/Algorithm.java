@@ -29,7 +29,6 @@ public interface Algorithm {
 	 * @param numProcessors
 	 * @return
 	 */
-	public ScheduleGrph runAlg(ScheduleGrph input, int numCores,
-			int numProcessors);
+	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors);
 
 }
