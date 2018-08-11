@@ -15,19 +15,13 @@ import util.ScheduleGrph;
  * @author Matt
  *
  */
-public class TestCostFunction implements CostFunction {
+public class AStarCostFunction implements CostFunction {
 
 	ScheduleGrph input;
 
-	public TestCostFunction(ScheduleGrph input) {
+	public AStarCostFunction(ScheduleGrph input) {
 		this.input = input;
 	}
-
-	public void applyCost(PartialScheduleGrph g) {
-
-	}
-
-	int[] times = { 0, 0, 0, 0 };
 
 	public void applyCost(PartialScheduleGrph g, int addedVertex, int numProcessors) {
 
@@ -51,7 +45,6 @@ public class TestCostFunction implements CostFunction {
 		for (int i : g.getFree(input)) {
 			int minProc = -1;
 			for (int proc = 1; proc <= numProcessors; proc++) {
-				// Tdr (n, p)
 				int valDRT = this.getDRT(i, g, proc);
 				if (valDRT < minProc || minProc == -1) {
 					minProc = valDRT;
@@ -62,24 +55,8 @@ public class TestCostFunction implements CostFunction {
 			}
 		}
 
-		int max = Math.max(getIdleTimeFit(g, numProcessors), Math.max(maxFinish, Math.max(maxDRT, maxBL)));
-		if (max == getIdleTimeFit(g, numProcessors)) {
-			times[0]++;
-		}
-		if (max == maxFinish) {
-			times[1]++;
-		}
-		if (max == maxDRT) {
-			times[2]++;
-		}
-		if (max == maxBL) {
-			times[3]++;
-		}
-		String o = "";
-		for (int i = 0; i < times.length; i++) {
-			o += times[i] + ", ";
-		}
-		log.info(o);
+		int max = Math.max(maxFinish, Math.max(maxBL, Math.max(getIdleTimeFit(g, numProcessors, maxFinish), maxDRT)));
+
 		g.setScore(max);
 
 	}
@@ -113,7 +90,7 @@ public class TestCostFunction implements CostFunction {
 	 *            The number of processors being used for task allocation
 	 * @return The idle time bound of this schedule
 	 */
-	public int getIdleTimeFit(PartialScheduleGrph sched, int numProcessors) {
+	public int getIdleTimeFit(PartialScheduleGrph sched, int numProcessors, int maxFinish) {
 		int totalIdle = 0;
 		int totalWeight = 0;
 		NumericalProperty vertProcs = sched.getVertexProcessorProperty();
@@ -133,9 +110,11 @@ public class TestCostFunction implements CostFunction {
 		// Add each task to the list related to the relevant processor
 		for (int task : taskIDs) {
 			processors.get(vertProcs.getValueAsInt(task) - 1).add(task);
-			totalWeight += vertWeights.getValueAsInt(task);
+
 		}
-		// log.debug("totalweight" + totalWeight);
+		for (int task : input.getVertices()) {
+			totalWeight += input.getVertexWeightProperty().getValueAsInt(task);
+		}
 
 		// Add idle time of each processor to total
 		for (int i = 0; i < numProcessors; i++) {
@@ -151,7 +130,6 @@ public class TestCostFunction implements CostFunction {
 				}
 
 			});
-			// log.debug(list);
 			int finishTime = 0;
 
 			// If there is a gap between a previous task and this one, add the
@@ -161,21 +139,18 @@ public class TestCostFunction implements CostFunction {
 					totalIdle += vertStarts.getValueAsInt(task) - finishTime;
 				}
 				finishTime = vertStarts.getValueAsInt(task) + vertWeights.getValueAsInt(task);
-				// log.debug("task " + task + " proc " + i + " finishTime " +
-				// finishTime);
+
 			}
 
 		}
-
-		// log.debug("total idle " + totalIdle);
 
 		return (int) Math.ceil((totalIdle + totalWeight) / (double) numProcessors);
 	}
 
 	public int getDRT(int addedVertex, PartialScheduleGrph g, int processor) {
-
 		// TODO change this!
 		int maxFinTime = 0;
+
 		if (input.getInEdgeDegree(addedVertex) > 0) {
 			for (int i : input.getInNeighbors(addedVertex)) {
 				int val = g.getVertexStartProperty().getValueAsInt(i) + g.getVertexWeightProperty().getValueAsInt(i);

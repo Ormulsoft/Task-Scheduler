@@ -1,4 +1,4 @@
-package test.alg;
+package alg;
 
 import java.rmi.RemoteException;
 

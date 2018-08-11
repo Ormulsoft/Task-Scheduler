@@ -15,18 +15,18 @@ public class PartialScheduleGrph extends ScheduleGrph {
 	 * functions about comparisons to original done here?
 	 */
 	private static final long serialVersionUID = 1L;
-	int score;
+	private double score;
 
 	public PartialScheduleGrph(int score) {
 		super();
 		this.score = score;
 	}
 
-	public int getScore() {
+	public double getScore() {
 		return this.score;
 	}
 
-	public void setScore(int score) {
+	public void setScore(double score) {
 		this.score = score;
 	}
 
@@ -46,19 +46,9 @@ public class PartialScheduleGrph extends ScheduleGrph {
 
 	}
 
-	public PartialScheduleGrph cloneSelf() {
-		return (PartialScheduleGrph) super.clone();
-	}
-
-	public PartialScheduleGrph getNormalizedCopy() {
+	public PartialScheduleGrph getNormalizedCopy(int numProcessor) {
 		PartialScheduleGrph out = this.copy();
-		int numProcessor = 0;
 
-		for (int vert : this.getVertices()) {
-			if (this.getVertexProcessorProperty().getValue(vert) > numProcessor) {
-				numProcessor = this.getVertexProcessorProperty().getValueAsInt(vert);
-			}
-		}
 		// System.out.println(out.getVerticesForProcessor(2).size());
 		for (int i = 1; i <= numProcessor; i++) {
 			try {

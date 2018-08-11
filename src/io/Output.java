@@ -19,8 +19,8 @@ public class Output {
 	private final static Logger log = Logger.getLogger(Output.class);
 
 	/**
-	 * The main method of this class, takes a graph and an output path and exports
-	 * it to the file defined in the path variable.
+	 * The main method of this class, takes a graph and an output path and
+	 * exports it to the file defined in the path variable.
 	 * 
 	 * @param outputGraph
 	 * @param outputPath

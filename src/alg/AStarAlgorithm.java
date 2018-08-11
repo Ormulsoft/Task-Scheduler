@@ -137,6 +137,7 @@ public class AStarAlgorithm implements Algorithm {
 	}
 
 	int serializeTime = 0;
+	int costTime = 0;
 
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
 		ScheduleGrph original = input;
@@ -155,10 +156,8 @@ public class AStarAlgorithm implements Algorithm {
 		initial.setVerticesLabel(input.getVertexLabelProperty());
 		states.add(initial);
 		int totalVertices = input.getNumberOfVertices();
-		int count = 0;
 		int deepCopyTime = 0;
 		while (states.size() > 0) {
-			count++;
 			PartialScheduleGrph s = states.poll();
 
 			// if is a leaf, return the partial.
@@ -180,7 +179,6 @@ public class AStarAlgorithm implements Algorithm {
 					for (int pc = 1; pc <= numProcessors; pc++) {
 						long start = System.currentTimeMillis();
 						PartialScheduleGrph next = s.copy();
-
 						deepCopyTime += System.currentTimeMillis() - start;
 						next.addVertex(task);
 						next.getVertexWeightProperty().setValue(task, input.getVertexWeightProperty().getValue(task));
@@ -246,22 +244,23 @@ public class AStarAlgorithm implements Algorithm {
 							totalVertices--;
 							log.info("Out of time! Defaulting to valid only.");
 						} else {
+							start = System.currentTimeMillis();
 							cost.applyCost(next, task, numProcessors);
+							costTime += System.currentTimeMillis() - start;
 						}
 
 						// log.info(next.toDot());
 						start = System.currentTimeMillis();
-						if (!storedInClosedSet(next.getNormalizedCopy(), closedStates)) {
+						if (!storedInClosedSet(next.getNormalizedCopy(numProcessors), closedStates)) {
 							deepCopyTime += System.currentTimeMillis() - start;
 							states.add(next);
-
 						}
 					}
 				}
 			}
 			// TODO this takes too long - find alternative
 			long start = System.currentTimeMillis();
-			storeInClosedSet(s.getNormalizedCopy(), closedStates);
+			storeInClosedSet(s.getNormalizedCopy(numProcessors), closedStates);
 			deepCopyTime += System.currentTimeMillis() - start;
 		}
 		return null;
@@ -278,9 +277,9 @@ public class AStarAlgorithm implements Algorithm {
 
 	// TODO add equivalence check
 	private boolean storedInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
-		long start = System.currentTimeMillis();
+		// long start = System.currentTimeMillis();
 		String serialized = new ScheduleDotWriter().createDotText(g, false);
-		serializeTime += System.currentTimeMillis() - start;
+		// serializeTime += System.currentTimeMillis() - start;
 		return closedStates.contains(serialized);
 	}
 
