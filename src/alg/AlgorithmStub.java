@@ -57,6 +57,7 @@ public class AlgorithmStub implements Algorithm {
 		g.setEdgeWeightProperty(weightEdge);
 
 		// log.info(g.getVertexProcessorProperty());
+       input.getupperBound();
 
 		return g;
 
