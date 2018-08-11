@@ -1,7 +1,8 @@
 /bin/
 /target/
 /test_output/*.dot
-*.dot
+
+/*.dot
 .settings
 .classpath
 .project
