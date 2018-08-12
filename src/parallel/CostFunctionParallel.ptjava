@@ -1,0 +1,63 @@
+package parallel;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import org.apache.log4j.Logger;
+import grph.properties.NumericalProperty;
+import pt.*;
+import alg.Algorithm;
+import toools.collections.primitive.LucIntSet;
+import util.PartialScheduleGrph;
+import util.ScheduleGrph;
+import java.util.HashSet;
+/**
+ * A basic cost function that assigns the end time as the cost.
+ * 
+ * @author Matt
+ *
+ */
+public class CostFunctionParallel  {
+
+	ScheduleGrph input;
+	final static Logger log = Logger.getLogger(Algorithm.class);
+	public CostFunctionParallel(ScheduleGrph input) {
+		this.input = input;
+	}
+
+	
+	TASK public boolean getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg,int task) {
+		/*
+		 * iterate over tasks in the partial schedule, and add to output ones
+		 * that are free and not contained in the current partial
+		 */
+		 long start = System.currentTimeMillis();
+		 boolean X = true;
+			for (int outEdge : inputSaved.getOutEdges(task)) {
+				int otherVert = inputSaved.getTheOtherVertex(outEdge, task);
+				// check that not contained in current
+				if (!pg.containsVertex(otherVert)) {
+					boolean add = true;
+					// check that dependencies are satisfied.
+					for (int e : inputSaved.getInEdges(otherVert)) {
+						if (!pg.containsVertex(inputSaved.getTheOtherVertex(e, otherVert))) {
+							add = false;
+							break;
+						}
+					}
+					if (add) {
+						 long time = System.currentTimeMillis() - start;
+				         long id = Thread.currentThread().getId();
+				         log.info(task + "added:'" + X +"\' [" + (time / 1000.0) + " seconds, thread "+id+"]");
+						return true;
+					}
+				}
+			}
+			 long time = System.currentTimeMillis() - start;
+	         long id = Thread.currentThread().getId();
+	         log.info(task + "added:'" + X +"\' [" + (time / 1000.0) + " seconds, thread "+id+"]");
+
+		
+			return false;
+	}
+}

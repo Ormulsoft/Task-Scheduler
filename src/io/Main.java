@@ -18,6 +18,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
+import parallel.AStarAlgorithmParallel;
+import pt.runtime.ParaTask;
 import util.ScheduleGrph;
 
 /**
@@ -41,7 +43,7 @@ public class Main {
 	 * @throws URISyntaxException
 	 */
 	public static void main(String[] args) throws URISyntaxException {
-
+		ParaTask.init();
 		log.info("Task scheduler launched");
 		boolean visualization = DEFAULT_VISUALISATION;
 		int numCores = DEFAULT_CORES;
@@ -134,6 +136,7 @@ public class Main {
 		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
 				+ " core(s)");
 		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
+		ScheduleGrph out2 = new AStarAlgorithmParallel(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
 		log.info("Outputting solution to file: " + outputFile);
 
 		try {
@@ -141,6 +144,15 @@ public class Main {
 		} catch (IOException e) {
 			log.error("Failed to export file - is your output filepath valid?", e);
 		}
+		
+		
+			try {
+				Output.export(out2, outputFile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 
 		log.info("Finished!");
 	}
