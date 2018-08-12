@@ -8,7 +8,7 @@
   <repositories>
 	<repository>
 		<id>lhogie.i3s.maven.repo</id>
-		<name>Luc Hogie Maven repository</name>
+		<name>Luc Hogie Maven   repository</name>
 		<url>http://www.i3s.unice.fr/~hogie/maven_repository/</url>
     </repository>
   </repositories>  
