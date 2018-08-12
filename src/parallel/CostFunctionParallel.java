@@ -140,14 +140,13 @@ public class CostFunctionParallel {//####[20]####
                     long id = Thread.currentThread().getId();//####[50]####
                     log.info(task + "added:'" + add + "\' [" + (time / 1000.0) + " seconds, thread " + id + "]");//####[51]####
                     a.add(task);//####[52]####
-                    return a;//####[53]####
-                }//####[54]####
-            }//####[55]####
-        }//####[56]####
-        long time = System.currentTimeMillis() - start;//####[57]####
-        long id = Thread.currentThread().getId();//####[58]####
-        log.info(task + "added:'" + add + "\' [" + (time / 1000.0) + " seconds, thread " + id + "]");//####[59]####
-        return a;//####[62]####
-    }//####[63]####
-//####[63]####
-}//####[63]####
+                }//####[53]####
+            }//####[54]####
+        }//####[55]####
+        long time = System.currentTimeMillis() - start;//####[56]####
+        long id = Thread.currentThread().getId();//####[57]####
+        log.info(task + "added:'" + add + "\' [" + (time / 1000.0) + " seconds, thread " + id + "]");//####[58]####
+        return a;//####[61]####
+    }//####[62]####
+//####[62]####
+}//####[62]####

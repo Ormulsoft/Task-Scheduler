@@ -50,7 +50,6 @@ public class CostFunctionParallel  {
 				         long id = Thread.currentThread().getId();
 				         log.info(task + "added:'" + add +"\' [" + (time / 1000.0) + " seconds, thread "+id+"]");
 						a.add(task);
-				         return a;
 					}
 				}
 			}
