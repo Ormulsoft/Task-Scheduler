@@ -28,7 +28,6 @@ public class ScheduleGrph extends InMemoryGrph {
 	private NumericalProperty edgeWeightProperty;
 
 	public ScheduleGrph() {
-		super();
 		verticesWeight = new NumericalProperty("Weight");
 		verticesStart = new NumericalProperty("Start");
 		verticesProcessor = new NumericalProperty("Processor");

@@ -2,6 +2,7 @@ package util;
 
 import java.util.HashSet;
 
+import grph.properties.NumericalProperty;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class PartialScheduleGrph extends ScheduleGrph {
@@ -30,14 +31,23 @@ public class PartialScheduleGrph extends ScheduleGrph {
 		this.score = score;
 	}
 
+	public static long time = 0;
+
 	public PartialScheduleGrph copy() {
+		long start = System.nanoTime();
 		PartialScheduleGrph g = new PartialScheduleGrph(0);
+		time += System.nanoTime() - start;
 		g.addVertices(this.getVertices());
 		g.setVerticesLabel(this.getVertexLabelProperty());
+
+		g.setVertexWeightProperty(this.getVertexWeightProperty());
+		NumericalProperty procs = g.getVertexProcessorProperty();
+		NumericalProperty starts = g.getVertexStartProperty();
+		// weights.setValue(.getValue(i));
 		for (int i : this.getVertices()) {
-			g.getVertexWeightProperty().setValue(i, this.getVertexWeightProperty().getValue(i));
-			g.getVertexProcessorProperty().setValue(i, this.getVertexProcessorProperty().getValue(i));
-			g.getVertexStartProperty().setValue(i, this.getVertexStartProperty().getValue(i));
+
+			procs.setValue(i, this.getVertexProcessorProperty().getValue(i));
+			starts.setValue(i, this.getVertexStartProperty().getValue(i));
 		}
 
 		g.setScore(score);
@@ -68,6 +78,21 @@ public class PartialScheduleGrph extends ScheduleGrph {
 			}
 		}
 		return out;
+	}
+
+	public String serialize() {
+		String serialized = "";
+		// NumericalProperty weights = this.getVertexWeightProperty();
+		NumericalProperty procs = this.getVertexProcessorProperty();
+		NumericalProperty starts = this.getVertexStartProperty();
+		for (int i : this.getVertices()) {
+			serialized += i;
+			// serialized += weights.getValueAsString(i);
+			serialized += procs.getValueAsString(i);
+			serialized += starts.getValueAsString(i);
+		}
+		return serialized;
+
 	}
 
 	public HashSet<Integer> getFree(ScheduleGrph inputSaved) {

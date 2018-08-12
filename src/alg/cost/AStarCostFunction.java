@@ -110,7 +110,6 @@ public class AStarCostFunction implements CostFunction {
 		// Add each task to the list related to the relevant processor
 		for (int task : taskIDs) {
 			processors.get(vertProcs.getValueAsInt(task) - 1).add(task);
-
 		}
 		for (int task : input.getVertices()) {
 			totalWeight += input.getVertexWeightProperty().getValueAsInt(task);

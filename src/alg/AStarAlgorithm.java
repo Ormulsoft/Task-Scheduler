@@ -10,7 +10,6 @@ import org.apache.commons.lang.SerializationUtils;
 import alg.cost.CostFunction;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import util.PartialScheduleGrph;
-import util.ScheduleDotWriter;
 import util.ScheduleGrph;
 
 /**
@@ -136,14 +135,13 @@ public class AStarAlgorithm implements Algorithm {
 		return correctedInput;
 	}
 
-	int serializeTime = 0;
-	int costTime = 0;
+	long serializeTime = 0;
+	long costTime = 0;
 
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
 		ScheduleGrph original = input;
 		input = initializeIdenticalTaskEdges(input);
-		long startTime = System.currentTimeMillis();
-
+		long startTime = System.nanoTime();
 		// A Queue of states (Partial Schedules), that are ordered by their Cost
 		// values.
 		PriorityQueue<PartialScheduleGrph> states = new PriorityQueue<PartialScheduleGrph>(1, new CostChecker());
@@ -156,7 +154,8 @@ public class AStarAlgorithm implements Algorithm {
 		initial.setVerticesLabel(input.getVertexLabelProperty());
 		states.add(initial);
 		int totalVertices = input.getNumberOfVertices();
-		int deepCopyTime = 0;
+		long deepCopyTime = 0;
+		long totTime = System.nanoTime();
 		while (states.size() > 0) {
 			PartialScheduleGrph s = states.poll();
 
@@ -170,16 +169,19 @@ public class AStarAlgorithm implements Algorithm {
 					s.addDirectedSimpleEdge(tail, head);
 				}
 				s.setEdgeWeightProperty(original.getEdgeWeightProperty());
-				log.info("Deep copy time: " + deepCopyTime);
-				log.info("Serialize time: " + serializeTime);
+				log.info("Total time: " + (System.nanoTime() - totTime) / (1000.0 * 1000));
+				log.info("Deep copy time: " + (deepCopyTime / (1000.0 * 1000)));
+				log.info("Serialize time: " + serializeTime / (1000.0 * 1000));
+				log.info("Cost time: " + costTime / (1000.0 * 1000));
+				log.info(" Partial time: " + PartialScheduleGrph.time / (1000.0 * 1000));
 				return s;
 			} else {
 				// loop over all free vertices
 				for (int task : freeTasks) {
 					for (int pc = 1; pc <= numProcessors; pc++) {
-						long start = System.currentTimeMillis();
+						long start = System.nanoTime();
 						PartialScheduleGrph next = s.copy();
-						deepCopyTime += System.currentTimeMillis() - start;
+						deepCopyTime += System.nanoTime() - start;
 						next.addVertex(task);
 						next.getVertexWeightProperty().setValue(task, input.getVertexWeightProperty().getValue(task));
 						next.getVertexProcessorProperty().setValue(task, pc);
@@ -244,24 +246,26 @@ public class AStarAlgorithm implements Algorithm {
 							totalVertices--;
 							log.info("Out of time! Defaulting to valid only.");
 						} else {
-							start = System.currentTimeMillis();
+							start = System.nanoTime();
 							cost.applyCost(next, task, numProcessors);
-							costTime += System.currentTimeMillis() - start;
+							costTime += System.nanoTime() - start;
 						}
 
 						// log.info(next.toDot());
-						start = System.currentTimeMillis();
+						long start2 = System.nanoTime();
+
 						if (!storedInClosedSet(next.getNormalizedCopy(numProcessors), closedStates)) {
-							deepCopyTime += System.currentTimeMillis() - start;
 							states.add(next);
 						}
+						deepCopyTime += System.nanoTime() - start2;
 					}
 				}
 			}
 			// TODO this takes too long - find alternative
-			long start = System.currentTimeMillis();
+			long start = System.nanoTime();
+			// deepCopyTime += System.nanoTime() - start;
 			storeInClosedSet(s.getNormalizedCopy(numProcessors), closedStates);
-			deepCopyTime += System.currentTimeMillis() - start;
+			deepCopyTime += System.nanoTime() - start;
 		}
 		return null;
 
@@ -269,17 +273,17 @@ public class AStarAlgorithm implements Algorithm {
 
 	// TODO add equivalence check
 	private void storeInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
-		long start = System.currentTimeMillis();
-		String serialized = new ScheduleDotWriter().createDotText(g, false);
-		serializeTime += System.currentTimeMillis() - start;
+		// long start = System.nanoTime();
+		String serialized = g.serialize();
+		// serializeTime += System.nanoTime() - start;
 		closedStates.add(serialized);
 	}
 
 	// TODO add equivalence check
 	private boolean storedInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
-		// long start = System.currentTimeMillis();
-		String serialized = new ScheduleDotWriter().createDotText(g, false);
-		// serializeTime += System.currentTimeMillis() - start;
+		// long start = System.nanoTime();
+		String serialized = g.serialize();
+		// serializeTime += System.nanoTime() - start;
 		return closedStates.contains(serialized);
 	}
 
