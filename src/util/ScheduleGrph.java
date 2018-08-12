@@ -1,11 +1,15 @@
 package util;
 
+import grph.in_memory.GrphIntSet;
 import grph.in_memory.InMemoryGrph;
 import grph.properties.NumericalProperty;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * This extends the InMemoryGrph to provide additional fields, such as the properties we need 
- * for this particular problem 
+ * <<<<<<< HEAD This extends the InMemoryGrph to provide additional fields, such
+ * as the properties we need for this particular problem ======= This extends
+ * the InMemoryGrph to provide additional fields, such as the properties we need
+ * for this particular problem >>>>>>> a8e40dea54e9b2cc3289608bb61892fe3407f8d6
  * 
  * @author Gino
  *
@@ -13,8 +17,10 @@ import grph.properties.NumericalProperty;
 public class ScheduleGrph extends InMemoryGrph {
 
 	private static final long serialVersionUID = 1L;
-	
-	// Object keeps track of weight (runtime), start, and assigned processor for each vertex (task)
+
+	// Object keeps track of weight (runtime), start, and assigned processor for
+	// each vertex (task)
+
 	private NumericalProperty verticesWeight;
 	private NumericalProperty verticesStart;
 	private NumericalProperty verticesProcessor;
@@ -28,7 +34,6 @@ public class ScheduleGrph extends InMemoryGrph {
 		verticesProcessor = new NumericalProperty("Processor");
 	}
 
-	
 	// Getters and setters
 	public void setVertexStartProperty(NumericalProperty vertStarts) {
 		this.verticesStart = vertStarts;
@@ -41,7 +46,7 @@ public class ScheduleGrph extends InMemoryGrph {
 	public void setVertexProcessorProperty(NumericalProperty vertProcs) {
 		this.verticesProcessor = vertProcs;
 	}
-	
+
 	public void setEdgeWeightProperty(NumericalProperty edgeWeights) {
 		this.edgeWeightProperty = edgeWeights;
 	}
@@ -61,8 +66,55 @@ public class ScheduleGrph extends InMemoryGrph {
 	public NumericalProperty getEdgeWeightProperty() {
 		return edgeWeightProperty;
 	}
-	
+
 	public String toDot() {
 		return new ScheduleDotWriter().createDotText(this, false);
 	}
+
+	public ScheduleGrph cloneSelf() {
+		return (ScheduleGrph) super.clone();
+	}
+
+	public int getBottomLevel() {
+		int max = 0;
+		for (int addedVertex : getVertices()) {
+			int val = this.getBottomLevelRecurse(addedVertex);
+			if (val > max) {
+				max = val;
+			}
+		}
+		return max;
+	}
+
+	/**
+	 * TODO need edges in these now
+	 * 
+	 * @param addedVertex
+	 * @return
+	 */
+	private int getBottomLevelRecurse(int addedVertex) {
+		if (getOutEdgeDegree(addedVertex) > 0) {
+			int max = 0;
+			for (int i : getOutNeighbors(addedVertex)) {
+				int current = (int) (getBottomLevelRecurse(i));
+				if (max < current) {
+					max = current;
+				}
+			}
+			return max + (int) getVertexWeightProperty().getValue(addedVertex);
+		} else {
+			return (int) (getVertexWeightProperty().getValue(addedVertex));
+		}
+	}
+
+	public IntSet getVerticesForProcessor(int i) {
+		GrphIntSet g = new GrphIntSet(0);
+		for (int vert : this.getVertices()) {
+			if (this.getVertexProcessorProperty().getValue(vert) == i) {
+				g.add(vert);
+			}
+		}
+		return g;
+	}
+
 }
