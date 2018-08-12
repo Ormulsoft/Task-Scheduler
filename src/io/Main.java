@@ -133,6 +133,9 @@ public class Main {
 		ScheduleGrph in = Input.readDotInput(inputFile);
 		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
 				+ " core(s)");
+		if(visualization == true){
+			gui.Interface.main(null);
+		}
 		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
 		log.info("Outputting solution to file: " + outputFile);
 
