@@ -15,19 +15,13 @@ import util.ScheduleGrph;
  * @author Matt
  *
  */
-public class TestCostFunction implements CostFunction {
+public class AStarCostFunction implements CostFunction {
 
 	ScheduleGrph input;
 
-	public TestCostFunction(ScheduleGrph input) {
+	public AStarCostFunction(ScheduleGrph input) {
 		this.input = input;
 	}
-
-	public void applyCost(PartialScheduleGrph g) {
-
-	}
-
-	int[] times = { 0, 0, 0, 0 };
 
 	public void applyCost(PartialScheduleGrph g, int addedVertex, int numProcessors) {
 
@@ -51,7 +45,6 @@ public class TestCostFunction implements CostFunction {
 		for (int i : g.getFree(input)) {
 			int minProc = -1;
 			for (int proc = 1; proc <= numProcessors; proc++) {
-				// Tdr (n, p)
 				int valDRT = this.getDRT(i, g, proc);
 				if (valDRT < minProc || minProc == -1) {
 					minProc = valDRT;
@@ -122,7 +115,6 @@ public class TestCostFunction implements CostFunction {
 		for (int task : input.getVertices()) {
 			totalWeight += input.getVertexWeightProperty().getValueAsInt(task);
 		}
-		// log.debug("totalweight" + totalWeight);
 
 		// Add idle time of each processor to total
 		for (int i = 0; i < numProcessors; i++) {
@@ -138,7 +130,6 @@ public class TestCostFunction implements CostFunction {
 				}
 
 			});
-			// log.debug(list);
 			int finishTime = 0;
 
 			// If there is a gap between a previous task and this one, add the
@@ -150,7 +141,6 @@ public class TestCostFunction implements CostFunction {
 				finishTime = vertStarts.getValueAsInt(task) + vertWeights.getValueAsInt(task);
 
 			}
-			// totalIdle += maxFinish - finishTime;
 
 		}
 
@@ -158,7 +148,6 @@ public class TestCostFunction implements CostFunction {
 	}
 
 	public int getDRT(int addedVertex, PartialScheduleGrph g, int processor) {
-
 		// TODO change this!
 		int maxFinTime = 0;
 

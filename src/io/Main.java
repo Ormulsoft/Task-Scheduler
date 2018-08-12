@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
-import alg.cost.TestCostFunction;
+import alg.cost.AStarCostFunction;
 import util.ScheduleGrph;
 
 /**
@@ -133,7 +133,7 @@ public class Main {
 		ScheduleGrph in = Input.readDotInput(inputFile);
 		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
 				+ " core(s)");
-		ScheduleGrph out = new AStarAlgorithm(new TestCostFunction(in)).runAlg(in, numCores, numProcessors);
+		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
 		log.info("Outputting solution to file: " + outputFile);
 
 		try {

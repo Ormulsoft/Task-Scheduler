@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import alg.cost.TestCostFunction;
+import alg.cost.AStarCostFunction;
 import grph.VertexPair;
 import io.Input;
 import util.PartialScheduleGrph;
@@ -15,7 +15,7 @@ import util.ScheduleGrph;
 public class CostFuncTests {
 	private final Logger log = Logger.getLogger(this.getClass());
 	public static ScheduleGrph g;
-	public static TestCostFunction c;
+	public static AStarCostFunction c;
 	public static PartialScheduleGrph gpart;
 
 	@BeforeClass
@@ -36,8 +36,7 @@ public class CostFuncTests {
 
 			gpart.addDirectedSimpleEdge(j.first, j.second);
 		}
-		// gpart = Input.readDotInput(inputFile);
-		c = new TestCostFunction(g);
+		c = new AStarCostFunction(g);
 
 	}
 
@@ -65,7 +64,6 @@ public class CostFuncTests {
 				maxDRT = minProc;
 			}
 		}
-		// log.info(maxDRT);
 
 		// Checking to see if Astar
 		// Works under some time frame
@@ -83,9 +81,9 @@ public class CostFuncTests {
 
 		gpart.getVertexStartProperty().setValue(2, 3123);
 
-		c.applyCost(gpart);
-		log.info(gpart.toDot());
-		log.info(c.getIdleTimeFit(gpart, 2));
+		// c.applyCost(gpart);
+		// log.info(gpart.toDot());
+		// log.info(c.getIdleTimeFit(gpart, 2));
 
 		// Checking to see if Astar
 		// Works under some time frame
