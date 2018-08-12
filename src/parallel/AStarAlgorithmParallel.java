@@ -1,7 +1,9 @@
 package parallel;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -309,12 +311,21 @@ public class AStarAlgorithmParallel implements Algorithm {
 		TaskIDGroup g = new TaskIDGroup(pg.getVertices().size());
 		CostFunctionParallel A = new CostFunctionParallel(inputSaved);
 		for (int task : pg.getVertices()) {
-			TaskID id = A.getFree(inputSaved, pg, task);
+			TaskID id = A.getFree(inputSaved, pg, task,a);
 			log.info(id.toString());
 			g.add(id);
 		}
 		try {
 			g.waitTillFinished();
+			int i = 0;
+			while(g.groupMembers().hasNext()) {
+				if(i == g.groupSize()) {
+					break;
+				}
+				TaskID t = (TaskID) g.groupMembers().next();
+				a.addAll((Collection<? extends Integer>) t.getReturnResult());
+				i++;
+			}
 		} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

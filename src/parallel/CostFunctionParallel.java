@@ -48,489 +48,84 @@ public class CostFunctionParallel {//####[20]####
         this.input = input;//####[25]####
     }//####[26]####
 //####[29]####
-    private static volatile Method __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method = null;//####[29]####
-    private synchronized static void __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet() {//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
+    private static volatile Method __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_HashSetInteger_method = null;//####[29]####
+    private synchronized static void __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_HashSetInteger_ensureMethodVarSet() {//####[29]####
+        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_HashSetInteger_method == null) {//####[29]####
             try {//####[29]####
-                __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method = ParaTaskHelper.getDeclaredMethod(new ParaTaskHelper.ClassGetter().getCurrentClass(), "__pt__getFree", new Class[] {//####[29]####
-                    ScheduleGrph.class, PartialScheduleGrph.class, int.class//####[29]####
+                __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_HashSetInteger_method = ParaTaskHelper.getDeclaredMethod(new ParaTaskHelper.ClassGetter().getCurrentClass(), "__pt__getFree", new Class[] {//####[29]####
+                    ScheduleGrph.class, PartialScheduleGrph.class, int.class, HashSet.class//####[29]####
                 });//####[29]####
             } catch (Exception e) {//####[29]####
                 e.printStackTrace();//####[29]####
             }//####[29]####
         }//####[29]####
     }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg, int task) {//####[29]####
+    public TaskID<HashSet<Integer>> getFree(Object inputSaved, Object pg, Object task, Object a) {//####[29]####
         //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
+        return getFree(inputSaved, pg, task, a, new TaskInfo());//####[29]####
     }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg, int task, TaskInfo taskinfo) {//####[29]####
+    public TaskID<HashSet<Integer>> getFree(Object inputSaved, Object pg, Object task, Object a, TaskInfo taskinfo) {//####[29]####
         // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
+        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_HashSetInteger_method == null) {//####[29]####
+            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_HashSetInteger_ensureMethodVarSet();//####[29]####
         }//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
+        List<Integer> __pt__taskIdIndexList = new ArrayList<Integer>();//####[29]####
+        List<Integer> __pt__queueIndexList = new ArrayList<Integer>();//####[29]####
+        if (inputSaved instanceof BlockingQueue) {//####[29]####
+            __pt__queueIndexList.add(0);//####[29]####
+        }//####[29]####
+        if (inputSaved instanceof TaskID) {//####[29]####
+            taskinfo.addDependsOn((TaskID)inputSaved);//####[29]####
+            __pt__taskIdIndexList.add(0);//####[29]####
+        }//####[29]####
+        if (pg instanceof BlockingQueue) {//####[29]####
+            __pt__queueIndexList.add(1);//####[29]####
+        }//####[29]####
+        if (pg instanceof TaskID) {//####[29]####
+            taskinfo.addDependsOn((TaskID)pg);//####[29]####
+            __pt__taskIdIndexList.add(1);//####[29]####
+        }//####[29]####
+        if (task instanceof BlockingQueue) {//####[29]####
+            __pt__queueIndexList.add(2);//####[29]####
+        }//####[29]####
+        if (task instanceof TaskID) {//####[29]####
+            taskinfo.addDependsOn((TaskID)task);//####[29]####
+            __pt__taskIdIndexList.add(2);//####[29]####
+        }//####[29]####
+        if (a instanceof BlockingQueue) {//####[29]####
+            __pt__queueIndexList.add(3);//####[29]####
+        }//####[29]####
+        if (a instanceof TaskID) {//####[29]####
+            taskinfo.addDependsOn((TaskID)a);//####[29]####
+            __pt__taskIdIndexList.add(3);//####[29]####
+        }//####[29]####
+        int[] __pt__queueIndexArray = new int[__pt__queueIndexList.size()];//####[29]####
+        for (int __pt__i = 0; __pt__i < __pt__queueIndexArray.length; __pt__i++) {//####[29]####
+            __pt__queueIndexArray[__pt__i] = __pt__queueIndexList.get(__pt__i);//####[29]####
+        }//####[29]####
+        taskinfo.setQueueArgIndexes(__pt__queueIndexArray);//####[29]####
+        if (__pt__queueIndexArray.length > 0) {//####[29]####
+            taskinfo.setIsPipeline(true);//####[29]####
+        }//####[29]####
+        int[] __pt__taskIdIndexArray = new int[__pt__taskIdIndexList.size()];//####[29]####
+        for (int __pt__i = 0; __pt__i < __pt__taskIdIndexArray.length; __pt__i++) {//####[29]####
+            __pt__taskIdIndexArray[__pt__i] = __pt__taskIdIndexList.get(__pt__i);//####[29]####
+        }//####[29]####
+        taskinfo.setTaskIdArgIndexes(__pt__taskIdIndexArray);//####[29]####
+        taskinfo.setParameters(inputSaved, pg, task, a);//####[29]####
+        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_HashSetInteger_method);//####[29]####
         taskinfo.setInstance(this);//####[29]####
         return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
     }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, PartialScheduleGrph pg, int task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, PartialScheduleGrph pg, int task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setTaskIdArgIndexes(0);//####[29]####
-        taskinfo.addDependsOn(inputSaved);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, PartialScheduleGrph pg, int task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, PartialScheduleGrph pg, int task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(0);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, TaskID<PartialScheduleGrph> pg, int task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, TaskID<PartialScheduleGrph> pg, int task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setTaskIdArgIndexes(1);//####[29]####
-        taskinfo.addDependsOn(pg);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, int task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, int task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setTaskIdArgIndexes(0, 1);//####[29]####
-        taskinfo.addDependsOn(inputSaved);//####[29]####
-        taskinfo.addDependsOn(pg);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, int task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, int task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(0);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(1);//####[29]####
-        taskinfo.addDependsOn(pg);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, BlockingQueue<PartialScheduleGrph> pg, int task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, BlockingQueue<PartialScheduleGrph> pg, int task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(1);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, int task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, int task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(1);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(0);//####[29]####
-        taskinfo.addDependsOn(inputSaved);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, int task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, int task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(0, 1);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg, TaskID<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg, TaskID<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setTaskIdArgIndexes(2);//####[29]####
-        taskinfo.addDependsOn(task);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, PartialScheduleGrph pg, TaskID<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, PartialScheduleGrph pg, TaskID<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setTaskIdArgIndexes(0, 2);//####[29]####
-        taskinfo.addDependsOn(inputSaved);//####[29]####
-        taskinfo.addDependsOn(task);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, PartialScheduleGrph pg, TaskID<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, PartialScheduleGrph pg, TaskID<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(0);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(2);//####[29]####
-        taskinfo.addDependsOn(task);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, TaskID<PartialScheduleGrph> pg, TaskID<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, TaskID<PartialScheduleGrph> pg, TaskID<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setTaskIdArgIndexes(1, 2);//####[29]####
-        taskinfo.addDependsOn(pg);//####[29]####
-        taskinfo.addDependsOn(task);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, TaskID<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, TaskID<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setTaskIdArgIndexes(0, 1, 2);//####[29]####
-        taskinfo.addDependsOn(inputSaved);//####[29]####
-        taskinfo.addDependsOn(pg);//####[29]####
-        taskinfo.addDependsOn(task);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, TaskID<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, TaskID<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(0);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(1, 2);//####[29]####
-        taskinfo.addDependsOn(pg);//####[29]####
-        taskinfo.addDependsOn(task);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, BlockingQueue<PartialScheduleGrph> pg, TaskID<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, BlockingQueue<PartialScheduleGrph> pg, TaskID<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(1);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(2);//####[29]####
-        taskinfo.addDependsOn(task);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, TaskID<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, TaskID<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(1);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(0, 2);//####[29]####
-        taskinfo.addDependsOn(inputSaved);//####[29]####
-        taskinfo.addDependsOn(task);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, TaskID<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, TaskID<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(0, 1);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(2);//####[29]####
-        taskinfo.addDependsOn(task);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg, BlockingQueue<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg, BlockingQueue<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(2);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, PartialScheduleGrph pg, BlockingQueue<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, PartialScheduleGrph pg, BlockingQueue<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(2);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(0);//####[29]####
-        taskinfo.addDependsOn(inputSaved);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, PartialScheduleGrph pg, BlockingQueue<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, PartialScheduleGrph pg, BlockingQueue<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(0, 2);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, TaskID<PartialScheduleGrph> pg, BlockingQueue<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, TaskID<PartialScheduleGrph> pg, BlockingQueue<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(2);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(1);//####[29]####
-        taskinfo.addDependsOn(pg);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, BlockingQueue<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, BlockingQueue<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(2);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(0, 1);//####[29]####
-        taskinfo.addDependsOn(inputSaved);//####[29]####
-        taskinfo.addDependsOn(pg);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, BlockingQueue<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, TaskID<PartialScheduleGrph> pg, BlockingQueue<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(0, 2);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(1);//####[29]####
-        taskinfo.addDependsOn(pg);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, BlockingQueue<PartialScheduleGrph> pg, BlockingQueue<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(ScheduleGrph inputSaved, BlockingQueue<PartialScheduleGrph> pg, BlockingQueue<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(1, 2);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, BlockingQueue<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(TaskID<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, BlockingQueue<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(1, 2);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setTaskIdArgIndexes(0);//####[29]####
-        taskinfo.addDependsOn(inputSaved);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, BlockingQueue<Integer> task) {//####[29]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[29]####
-        return getFree(inputSaved, pg, task, new TaskInfo());//####[29]####
-    }//####[29]####
-    public TaskID<Boolean> getFree(BlockingQueue<ScheduleGrph> inputSaved, BlockingQueue<PartialScheduleGrph> pg, BlockingQueue<Integer> task, TaskInfo taskinfo) {//####[29]####
-        // ensure Method variable is set//####[29]####
-        if (__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method == null) {//####[29]####
-            __pt__getFree_ScheduleGrph_PartialScheduleGrph_int_ensureMethodVarSet();//####[29]####
-        }//####[29]####
-        taskinfo.setQueueArgIndexes(0, 1, 2);//####[29]####
-        taskinfo.setIsPipeline(true);//####[29]####
-        taskinfo.setParameters(inputSaved, pg, task);//####[29]####
-        taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_method);//####[29]####
-        taskinfo.setInstance(this);//####[29]####
-        return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
-    }//####[29]####
-    public boolean __pt__getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg, int task) {//####[29]####
+    public HashSet<Integer> __pt__getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg, int task, HashSet<Integer> a) {//####[29]####
         long start = System.currentTimeMillis();//####[34]####
-        boolean X = true;//####[35]####
+        boolean add = true;//####[35]####
         for (int outEdge : inputSaved.getOutEdges(task)) //####[36]####
         {//####[36]####
             int otherVert = inputSaved.getTheOtherVertex(outEdge, task);//####[37]####
             if (!pg.containsVertex(otherVert)) //####[39]####
             {//####[39]####
-                boolean add = true;//####[40]####
+                add = true;//####[40]####
                 for (int e : inputSaved.getInEdges(otherVert)) //####[42]####
                 {//####[42]####
                     if (!pg.containsVertex(inputSaved.getTheOtherVertex(e, otherVert))) //####[43]####
@@ -543,15 +138,16 @@ public class CostFunctionParallel {//####[20]####
                 {//####[48]####
                     long time = System.currentTimeMillis() - start;//####[49]####
                     long id = Thread.currentThread().getId();//####[50]####
-                    log.info(task + "added:'" + X + "\' [" + (time / 1000.0) + " seconds, thread " + id + "]");//####[51]####
-                    return true;//####[52]####
-                }//####[53]####
-            }//####[54]####
-        }//####[55]####
-        long time = System.currentTimeMillis() - start;//####[56]####
-        long id = Thread.currentThread().getId();//####[57]####
-        log.info(task + "added:'" + X + "\' [" + (time / 1000.0) + " seconds, thread " + id + "]");//####[58]####
-        return false;//####[61]####
-    }//####[62]####
-//####[62]####
-}//####[62]####
+                    log.info(task + "added:'" + add + "\' [" + (time / 1000.0) + " seconds, thread " + id + "]");//####[51]####
+                    a.add(task);//####[52]####
+                    return a;//####[53]####
+                }//####[54]####
+            }//####[55]####
+        }//####[56]####
+        long time = System.currentTimeMillis() - start;//####[57]####
+        long id = Thread.currentThread().getId();//####[58]####
+        log.info(task + "added:'" + add + "\' [" + (time / 1000.0) + " seconds, thread " + id + "]");//####[59]####
+        return a;//####[62]####
+    }//####[63]####
+//####[63]####
+}//####[63]####

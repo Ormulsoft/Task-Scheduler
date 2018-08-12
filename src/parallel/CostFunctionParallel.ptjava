@@ -26,18 +26,18 @@ public class CostFunctionParallel  {
 	}
 
 	
-	TASK public boolean getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg,int task) {
+	TASK public HashSet<Integer> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg,int task,HashSet<Integer> a) {
 		/*
 		 * iterate over tasks in the partial schedule, and add to output ones
 		 * that are free and not contained in the current partial
 		 */
 		 long start = System.currentTimeMillis();
-		 boolean X = true;
+		 boolean add = true;
 			for (int outEdge : inputSaved.getOutEdges(task)) {
 				int otherVert = inputSaved.getTheOtherVertex(outEdge, task);
 				// check that not contained in current
 				if (!pg.containsVertex(otherVert)) {
-					boolean add = true;
+					 add = true;
 					// check that dependencies are satisfied.
 					for (int e : inputSaved.getInEdges(otherVert)) {
 						if (!pg.containsVertex(inputSaved.getTheOtherVertex(e, otherVert))) {
@@ -48,16 +48,17 @@ public class CostFunctionParallel  {
 					if (add) {
 						 long time = System.currentTimeMillis() - start;
 				         long id = Thread.currentThread().getId();
-				         log.info(task + "added:'" + X +"\' [" + (time / 1000.0) + " seconds, thread "+id+"]");
-						return true;
+				         log.info(task + "added:'" + add +"\' [" + (time / 1000.0) + " seconds, thread "+id+"]");
+						a.add(task);
+				         return a;
 					}
 				}
 			}
 			 long time = System.currentTimeMillis() - start;
 	         long id = Thread.currentThread().getId();
-	         log.info(task + "added:'" + X +"\' [" + (time / 1000.0) + " seconds, thread "+id+"]");
+	         log.info(task + "added:'" + add +"\' [" + (time / 1000.0) + " seconds, thread "+id+"]");
 
 		
-			return false;
+			return a;
 	}
 }
