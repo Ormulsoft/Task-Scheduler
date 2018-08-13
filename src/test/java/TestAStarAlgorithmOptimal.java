@@ -79,6 +79,7 @@ class TestAStarAlgorithmOptimal {
     
     /*@Test
     void node11Proc2Core1() {
+    System.out.println("node11Proc2Core1");
     	ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(_11In)).runAlg(_11In, 1, 2);
     	assertEquals(getEndTime(out),350);
     }*/

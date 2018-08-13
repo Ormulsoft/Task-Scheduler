@@ -17,6 +17,10 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private double score;
+	private int _idleTime = 0; // the MOST RECENTLY CALCULATED idle time. can be
+								// idle time of parent until getIdleTime is run
+								// on this in the cost func
+	private int _fBTW = 0;
 
 	private long timeAdded = 0;
 
@@ -33,12 +37,28 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		this.score = score;
 	}
 
+	public int getLastIdleTime() {
+		return this._idleTime;
+	}
+
+	public void setIdleTime(int idleTime) {
+		this._idleTime = idleTime;
+	}
+
 	public void setTimeAdded(long t) {
 		this.timeAdded = t;
 	}
 
 	public long getTimeAdded() {
 		return this.timeAdded;
+	}
+
+	public int getLastFBottomLevel() {
+		return this._fBTW;
+	}
+
+	public void setFBottomLevel(int fbtw) {
+		this._fBTW = fbtw;
 	}
 
 	public static long time = 0;
@@ -61,6 +81,8 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		}
 
 		g.setScore(score);
+		g.setIdleTime(_idleTime);
+		g.setFBottomLevel(_fBTW);
 
 		return g;
 
