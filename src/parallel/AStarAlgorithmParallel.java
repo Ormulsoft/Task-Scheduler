@@ -181,87 +181,29 @@ public class AStarAlgorithmParallel implements Algorithm {
 				return s;
 			} else {
 				// loop over all free vertices
+				TaskIDGroup g = new TaskIDGroup(freeTasks.size());
+				GetFreeVerticesParallel A = new GetFreeVerticesParallel();
 				for (int task : freeTasks) {
-					for (int pc = 1; pc <= numProcessors; pc++) {
-						long start = System.currentTimeMillis();
-						PartialScheduleGrph next = s.copy();
-						deepCopyTime += System.currentTimeMillis() - start;
-						next.addVertex(task);
-						next.getVertexWeightProperty().setValue(task, input.getVertexWeightProperty().getValue(task));
-						next.getVertexProcessorProperty().setValue(task, pc);
-
-						// set the start time based on earliest first on a
-						// processor
-
-						// to get the start time, find the time of most
-						// recently
-						// finishing vertex on the same processor,
-						// and store that, also the finish time of the last
-						// dependency. starting time would be the maximum\
-						// of the two.
-						int dependencyUpperBound = 0;
-						for (int taskDp : input.getInNeighbours(task)) {
-							int edgeTime = 0;
-							if (next.getVertexProcessorProperty().getValue(taskDp) != pc) {
-								edgeTime = (int) input.getEdgeWeightProperty()
-										.getValue(input.getSomeEdgeConnecting(taskDp, task));
-							}
-
-							int totalTime = (int) (input.getVertexWeightProperty().getValue(taskDp)
-									// needs to be next, not input for start
-									+ next.getVertexStartProperty().getValue(taskDp) + edgeTime);
-							if (totalTime > dependencyUpperBound) {
-								dependencyUpperBound = totalTime;
-							}
+					TaskID id = A.getCosts(numProcessors, states, task, s, closedStates);
+					g.add(id);				
+				}
+				try {
+					g.waitTillFinished();
+					int i = 0;
+					while(g.groupMembers().hasNext()) {
+						if(i == g.groupSize()) {
+							break;
 						}
-
-						/**
-						 * find the latest finishing process on the same
-						 * processor, and factor into the timing
-						 * 
-						 * TODO make this a function of the PartialScheduleGrph
-						 * to suit the abstraction Named
-						 * getProcessorFinishTime() ??
-						 */
-						int processorUpperBound = 0;
-						for (int pcTask : next.getVertices()) {
-							if (next.getVertexProcessorProperty().getValue(pcTask) == pc && pcTask != task) {
-								int totalTime = (int) (next.getVertexWeightProperty().getValue(pcTask)
-										+ next.getVertexStartProperty().getValue(pcTask));
-								if (totalTime > processorUpperBound) {
-									processorUpperBound = totalTime;
-								}
-
-							}
-						}
-
-						// find the maximum time the task can start on a
-						// processor.
-						next.getVertexStartProperty().setValue(task,
-								Math.max(processorUpperBound, dependencyUpperBound));
-
-						/**
-						 * If the algorithm timed out, default to a "valid"
-						 * solution
-						 */
-						long timeRunning = System.currentTimeMillis() - startTime;
-						if (timeRunning > ALGORITHM_TIMEOUT && false) {
-							next.setScore(totalVertices);
-							totalVertices--;
-							log.info("Out of time! Defaulting to valid only.");
-						} else {
-							start = System.currentTimeMillis();
-							cost.applyCost(next, task, numProcessors);
-							costTime += System.currentTimeMillis() - start;
-						}
-
-						// log.info(next.toDot());
-						start = System.currentTimeMillis();
-						if (!storedInClosedSet(next.getNormalizedCopy(numProcessors), closedStates)) {
-							deepCopyTime += System.currentTimeMillis() - start;
-							states.add(next);
-						}
+						TaskID t = (TaskID) g.groupMembers().next();
+						states.addAll((Collection<? extends PartialScheduleGrph>) t.getReturnResult());
+						i++;
 					}
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 			// TODO this takes too long - find alternative
