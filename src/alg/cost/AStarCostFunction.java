@@ -28,25 +28,12 @@ public class AStarCostFunction implements CostFunction {
 
 	public void applyCost(PartialScheduleGrph g, int addedVertex, int numProcessors) {
 
-		int maxFinish = 0;
-		
-
 		int maxDRT = getComputationalBottomLevel(addedVertex) + (int) g.getVertexStartProperty().getValue(addedVertex);
 		
 		int maxBL = 0;
-		for (int i : g.getVertices()) {
-			// get the end time from the highest start time + weight combination
-			int val = (int) g.getVertexStartProperty().getValue(i) + (int) g.getVertexWeightProperty().getValue(i);
-			if (val > maxFinish) {
-				maxFinish = val;
-
-			}
-			
-			int valBL = this.getComputationalBottomLevel(i) + (int) g.getVertexStartProperty().getValue(i);
-			if (valBL > maxBL) {
-				maxBL = valBL;
-			}
-		}
+		
+		maxBL = Math.max(g.getLastFBottomLevel(), this.getComputationalBottomLevel(addedVertex) + (int) g.getVertexStartProperty().getValue(addedVertex));
+		g.setFBottomLevel(maxBL);
 
 		for (int i : g.getFree(input)) {
 			int minProc = -1;
