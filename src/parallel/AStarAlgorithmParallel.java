@@ -312,7 +312,6 @@ public class AStarAlgorithmParallel implements Algorithm {
 		CostFunctionParallel A = new CostFunctionParallel(inputSaved);
 		for (int task : pg.getVertices()) {
 			TaskID id = A.getFree(inputSaved, pg, task,a);
-			log.info(task);
 			g.add(id);
 		}
 		try {

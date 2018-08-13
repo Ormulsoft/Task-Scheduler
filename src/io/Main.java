@@ -136,14 +136,15 @@ public class Main {
 		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
 				+ " core(s)");
 		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
+		log.info("Outputting solution 1 to file: " + outputFile);
 		ScheduleGrph out2 = new AStarAlgorithmParallel(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
-		log.info("Outputting solution to file: " + outputFile);
+		log.info("Outputting solution 2 to file: " + outputFile);
 
-		try {
+		  try {
 			Output.export(out, outputFile);
 		} catch (IOException e) {
 			log.error("Failed to export file - is your output filepath valid?", e);
-		}
+		} 
 		
 		
 			try {

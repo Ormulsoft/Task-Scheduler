@@ -26,7 +26,7 @@ public class CostFunctionParallel  {
 	}
 
 	
-	TASK public HashSet<Integer> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg,int task,HashSet<Integer> a) {
+	IO_TASK public HashSet<Integer> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg,int task,HashSet<Integer> a) {
 		/*
 		 * iterate over tasks in the partial schedule, and add to output ones
 		 * that are free and not contained in the current partial
@@ -46,9 +46,7 @@ public class CostFunctionParallel  {
 						}
 					}
 					if (add) {
-						 long time = System.currentTimeMillis() - start;
 				         long id = Thread.currentThread().getId();
-				         log.info(otherVert + "added: " + add +"\' [" + (time / 1000.0) + " seconds, thread "+id+"]");
 				         a.add(otherVert);
 					}
 				}

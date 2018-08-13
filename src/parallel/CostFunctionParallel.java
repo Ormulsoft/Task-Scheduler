@@ -115,6 +115,7 @@ public class CostFunctionParallel {//####[20]####
         taskinfo.setParameters(inputSaved, pg, task, a);//####[29]####
         taskinfo.setMethod(__pt__getFree_ScheduleGrph_PartialScheduleGrph_int_HashSetInteger_method);//####[29]####
         taskinfo.setInstance(this);//####[29]####
+        taskinfo.setInteractive(true);//####[29]####
         return TaskpoolFactory.getTaskpool().enqueue(taskinfo);//####[29]####
     }//####[29]####
     public HashSet<Integer> __pt__getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg, int task, HashSet<Integer> a) {//####[29]####
@@ -136,14 +137,12 @@ public class CostFunctionParallel {//####[20]####
                 }//####[47]####
                 if (add) //####[48]####
                 {//####[48]####
-                    long time = System.currentTimeMillis() - start;//####[49]####
-                    long id = Thread.currentThread().getId();//####[50]####
-                    log.info(otherVert + "added: " + add + "\' [" + (time / 1000.0) + " seconds, thread " + id + "]");//####[51]####
-                    a.add(otherVert);//####[52]####
-                }//####[53]####
-            }//####[54]####
-        }//####[55]####
-        return a;//####[56]####
-    }//####[57]####
-//####[57]####
-}//####[57]####
+                    long id = Thread.currentThread().getId();//####[49]####
+                    a.add(otherVert);//####[50]####
+                }//####[51]####
+            }//####[52]####
+        }//####[53]####
+        return a;//####[54]####
+    }//####[55]####
+//####[55]####
+}//####[55]####
