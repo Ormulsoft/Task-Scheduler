@@ -17,6 +17,7 @@ public class PartialScheduleGrph extends ScheduleGrph {
 	 */
 	private static final long serialVersionUID = 1L;
 	private double score;
+	private int _idleTime = 0; // the MOST RECENTLY CALCULATED idle time. can be idle time of parent until getIdleTime is run on this in the cost func
 
 	public PartialScheduleGrph(int score) {
 		super();
@@ -29,6 +30,14 @@ public class PartialScheduleGrph extends ScheduleGrph {
 
 	public void setScore(double score) {
 		this.score = score;
+	}
+	
+	public int getLastIdleTime() {
+		return this._idleTime;
+	}
+
+	public void setIdleTime(int idleTime) {
+		this._idleTime = idleTime;
 	}
 
 	public static long time = 0;
@@ -51,6 +60,7 @@ public class PartialScheduleGrph extends ScheduleGrph {
 		}
 
 		g.setScore(score);
+		g.setIdleTime(_idleTime);
 
 		return g;
 
