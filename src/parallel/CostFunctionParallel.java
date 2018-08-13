@@ -23,9 +23,9 @@ import java.util.ArrayList;//####[13]####
 import java.util.List;//####[13]####
 //####[13]####
 /**
- * A basic cost function that assigns the end time as the cost.
+ * A basic cost parallel function that assigns the end time as the cost.
  * 
- * @author Matt
+ * @author Nikhil
  *
  *///####[19]####
 public class CostFunctionParallel {//####[20]####
@@ -138,15 +138,12 @@ public class CostFunctionParallel {//####[20]####
                 {//####[48]####
                     long time = System.currentTimeMillis() - start;//####[49]####
                     long id = Thread.currentThread().getId();//####[50]####
-                    log.info(task + "added:'" + add + "\' [" + (time / 1000.0) + " seconds, thread " + id + "]");//####[51]####
-                    a.add(task);//####[52]####
+                    log.info(otherVert + "added: " + add + "\' [" + (time / 1000.0) + " seconds, thread " + id + "]");//####[51]####
+                    a.add(otherVert);//####[52]####
                 }//####[53]####
             }//####[54]####
         }//####[55]####
-        long time = System.currentTimeMillis() - start;//####[56]####
-        long id = Thread.currentThread().getId();//####[57]####
-        log.info(task + "added:'" + add + "\' [" + (time / 1000.0) + " seconds, thread " + id + "]");//####[58]####
-        return a;//####[61]####
-    }//####[62]####
-//####[62]####
-}//####[62]####
+        return a;//####[56]####
+    }//####[57]####
+//####[57]####
+}//####[57]####

@@ -12,9 +12,9 @@ import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 import java.util.HashSet;
 /**
- * A basic cost function that assigns the end time as the cost.
+ * A basic cost parallel function that assigns the end time as the cost.
  * 
- * @author Matt
+ * @author Nikhil
  *
  */
 public class CostFunctionParallel  {
@@ -48,16 +48,11 @@ public class CostFunctionParallel  {
 					if (add) {
 						 long time = System.currentTimeMillis() - start;
 				         long id = Thread.currentThread().getId();
-				         log.info(task + "added:'" + add +"\' [" + (time / 1000.0) + " seconds, thread "+id+"]");
-						a.add(task);
+				         log.info(otherVert + "added: " + add +"\' [" + (time / 1000.0) + " seconds, thread "+id+"]");
+				         a.add(otherVert);
 					}
 				}
 			}
-			 long time = System.currentTimeMillis() - start;
-	         long id = Thread.currentThread().getId();
-	         log.info(task + "added:'" + add +"\' [" + (time / 1000.0) + " seconds, thread "+id+"]");
-
-		
 			return a;
 	}
 }
