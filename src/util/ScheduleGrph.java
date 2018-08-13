@@ -116,4 +116,36 @@ public class ScheduleGrph extends InMemoryGrph {
 		return g;
 	}
 
+	public boolean dependenciesValid(ScheduleGrph input) {
+		for (int vert : this.getVertices()) {
+			int vertStart = this.getVertexStartProperty().getValueAsInt(vert);
+			for (int neighbor : input.getInNeighbors(vert)) {
+
+				if (!this.containsVertex(neighbor)) {
+					return false;
+				} else {
+					int nEnd = this.getVertexStartProperty().getValueAsInt(neighbor)
+							+ this.getVertexWeightProperty().getValueAsInt(neighbor);
+
+					if (this.getVertexProcessorProperty().getValue(neighbor) != this.getVertexProcessorProperty()
+							.getValue(vert)) {
+						nEnd += input.getEdgeWeightProperty()
+								.getValueAsInt(input.getSomeEdgeConnecting(neighbor, vert));
+					}
+					if (nEnd > vertStart) {
+						// System.out.println(vert);
+						// System.out.println(neighbor);
+						// System.out.println(vertStart);
+						// System.out.println(nEnd);
+						// System.out.println(this.toDot());
+						return false;
+					}
+				}
+			}
+
+		}
+		return true;
+
+	}
+
 }

@@ -1,6 +1,5 @@
 package alg;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -28,15 +27,6 @@ public class AStarAlgorithm implements Algorithm {
 	private final CostFunction cost;
 
 	// used to compare the cost values in the PriorityQueue
-	private class CostChecker implements Comparator<PartialScheduleGrph> {
-
-		public int compare(PartialScheduleGrph grph1, PartialScheduleGrph grph2) {
-			if (grph1.getScore() < grph2.getScore())
-				return -1;
-			else
-				return 1;
-		}
-	}
 
 	public AStarAlgorithm(CostFunction cost) {
 		this.cost = cost;
@@ -144,10 +134,12 @@ public class AStarAlgorithm implements Algorithm {
 		long startTime = System.nanoTime();
 		// A Queue of states (Partial Schedules), that are ordered by their Cost
 		// values.
-		PriorityQueue<PartialScheduleGrph> states = new PriorityQueue<PartialScheduleGrph>(1, new CostChecker());
+		PriorityQueue<PartialScheduleGrph> states = new PriorityQueue<PartialScheduleGrph>(1);
 
 		// A set of closed states, which
 		HashSet<String> closedStates = new HashSet<String>();
+
+		HashSet<String> openAndClosedStates = new HashSet<String>();
 
 		// initially, add an state with no tasks scheduled (EMPTY)
 		PartialScheduleGrph initial = new PartialScheduleGrph(0);
@@ -156,7 +148,12 @@ public class AStarAlgorithm implements Algorithm {
 		int totalVertices = input.getNumberOfVertices();
 		long deepCopyTime = 0;
 		long totTime = System.nanoTime();
+		PartialScheduleGrph prev = null;
+
+		int iterations = 0;
 		while (states.size() > 0) {
+			iterations++;
+			boolean foundSameScore = false;
 			PartialScheduleGrph s = states.poll();
 
 			// if is a leaf, return the partial.
@@ -174,14 +171,17 @@ public class AStarAlgorithm implements Algorithm {
 				log.info("Serialize time: " + serializeTime / (1000.0 * 1000));
 				log.info("Cost time: " + costTime / (1000.0 * 1000));
 				log.info(" Partial time: " + PartialScheduleGrph.time / (1000.0 * 1000));
+				log.info("Number of states at end: " + states.size());
+				log.info("Number of closed states: " + closedStates.size());
+				log.info("Number of iterations: " + iterations);
 				return s;
-			} else {
+			} else if (!this.storedInClosedSet(s, closedStates)) {
 				// loop over all free vertices
+				// foundSameScore = false;
 				for (int task : freeTasks) {
 					for (int pc = 1; pc <= numProcessors; pc++) {
-						long start = System.nanoTime();
+
 						PartialScheduleGrph next = s.copy();
-						deepCopyTime += System.nanoTime() - start;
 						next.addVertex(task);
 						next.getVertexWeightProperty().setValue(task, input.getVertexWeightProperty().getValue(task));
 						next.getVertexProcessorProperty().setValue(task, pc);
@@ -195,6 +195,7 @@ public class AStarAlgorithm implements Algorithm {
 						// and store that, also the finish time of the last
 						// dependency. starting time would be the maximum\
 						// of the two.
+
 						int dependencyUpperBound = 0;
 						for (int taskDp : input.getInNeighbours(task)) {
 							int edgeTime = 0;
@@ -230,7 +231,7 @@ public class AStarAlgorithm implements Algorithm {
 
 							}
 						}
-
+						//
 						// find the maximum time the task can start on a
 						// processor.
 						next.getVertexStartProperty().setValue(task,
@@ -246,29 +247,53 @@ public class AStarAlgorithm implements Algorithm {
 							totalVertices--;
 							log.info("Out of time! Defaulting to valid only.");
 						} else {
-							start = System.nanoTime();
+
 							cost.applyCost(next, task, numProcessors);
-							costTime += System.nanoTime() - start;
+
 						}
-
-						// log.info(next.toDot());
-						long start2 = System.nanoTime();
-
+						// String serialized =
+						// next.getNormalizedCopy(numProcessors).serialize();
 						if (!storedInClosedSet(next.getNormalizedCopy(numProcessors), closedStates)) {
+							next.setTimeAdded(System.nanoTime());
 							states.add(next);
+
+							if (next.getScore() <= s.getScore()) {
+
+								// states.add(s);
+								// log.info(next == states.peek());
+								// foundSameScore = true;
+								// break;
+							}
+
 						}
-						deepCopyTime += System.nanoTime() - start2;
+
+						// prev = null;
+
+					}
+					if (foundSameScore) {
+						// break;
 					}
 				}
 			}
+
 			// TODO this takes too long - find alternative
-			long start = System.nanoTime();
-			// deepCopyTime += System.nanoTime() - start;
+			// if (!foundSameScore)
 			storeInClosedSet(s.getNormalizedCopy(numProcessors), closedStates);
-			deepCopyTime += System.nanoTime() - start;
+
 		}
 		return null;
 
+	}
+
+	// TODO fix this
+	private void storeEquivalentInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
+		// long start = System.nanoTime();
+		for (int vert1 : g.getVertices()) {
+
+		}
+		String serialized = g.serialize();
+		// serializeTime += System.nanoTime() - start;
+		closedStates.add(serialized);
 	}
 
 	// TODO add equivalence check

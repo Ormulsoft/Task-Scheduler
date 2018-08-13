@@ -27,13 +27,14 @@ public class AStarCostFunction implements CostFunction {
 
 		int maxFinish = 0;
 		int maxBL = 0;
-
+		int maxFinishNode = -1;
 		int maxDRT = getComputationalBottomLevel(addedVertex) + (int) g.getVertexStartProperty().getValue(addedVertex);
 		for (int i : g.getVertices()) {
 			// get the end time from the highest start time + weight combination
 			int val = (int) g.getVertexStartProperty().getValue(i) + (int) g.getVertexWeightProperty().getValue(i);
 			if (val > maxFinish) {
 				maxFinish = val;
+				maxFinishNode = i;
 
 			}
 			int valBL = this.getComputationalBottomLevel(i) + (int) g.getVertexStartProperty().getValue(i);
@@ -55,7 +56,7 @@ public class AStarCostFunction implements CostFunction {
 			}
 		}
 
-		int max = Math.max(maxFinish, Math.max(maxBL, Math.max(getIdleTimeFit(g, numProcessors, maxFinish), maxDRT)));
+		int max = Math.max(0, Math.max(maxBL, Math.max(getIdleTimeFit(g, numProcessors, maxFinish), maxDRT)));
 
 		g.setScore(max);
 

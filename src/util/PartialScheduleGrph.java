@@ -5,7 +5,7 @@ import java.util.HashSet;
 import grph.properties.NumericalProperty;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-public class PartialScheduleGrph extends ScheduleGrph {
+public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 
 	/**
 	 * A graphing class for an intermediary partial schedule generated during
@@ -18,6 +18,8 @@ public class PartialScheduleGrph extends ScheduleGrph {
 	private static final long serialVersionUID = 1L;
 	private double score;
 
+	private long timeAdded = 0;
+
 	public PartialScheduleGrph(int score) {
 		super();
 		this.score = score;
@@ -29,6 +31,14 @@ public class PartialScheduleGrph extends ScheduleGrph {
 
 	public void setScore(double score) {
 		this.score = score;
+	}
+
+	public void setTimeAdded(long t) {
+		this.timeAdded = t;
+	}
+
+	public long getTimeAdded() {
+		return this.timeAdded;
 	}
 
 	public static long time = 0;
@@ -130,4 +140,17 @@ public class PartialScheduleGrph extends ScheduleGrph {
 		return a;
 	}
 
+	public int compareTo(Object o) {
+		PartialScheduleGrph g = (PartialScheduleGrph) o;
+		if (this.getScore() == g.getScore()) {
+			if (this.timeAdded > g.getTimeAdded())
+				return -1;
+			else
+				return 1;
+		}
+		if (this.getScore() < g.getScore())
+			return -1;
+		else
+			return 1;
+	}
 }
