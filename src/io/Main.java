@@ -18,10 +18,12 @@ import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
+import javafx.application.Application;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
+import javafx.stage.Stage;
 import util.ScheduleGrph;
 
 /**
@@ -30,7 +32,7 @@ import util.ScheduleGrph;
  * @author All
  *
  */
-public class Main {
+public class Main extends Application {
 	private static final int DEFAULT_CORES = 1;
 	private static final boolean DEFAULT_VISUALISATION = false;
 
@@ -184,6 +186,12 @@ public class Main {
 		log.info("Finished!");
 		}
 		
+		
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		// TODO Auto-generated method stub
 		
 	}
 	
