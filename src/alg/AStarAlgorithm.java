@@ -139,8 +139,6 @@ public class AStarAlgorithm implements Algorithm {
 		// A set of closed states, which
 		HashSet<String> closedStates = new HashSet<String>();
 
-		HashSet<String> openAndClosedStates = new HashSet<String>();
-
 		// initially, add an state with no tasks scheduled (EMPTY)
 		PartialScheduleGrph initial = new PartialScheduleGrph(0);
 		initial.setVerticesLabel(input.getVertexLabelProperty());
@@ -155,7 +153,7 @@ public class AStarAlgorithm implements Algorithm {
 			iterations++;
 			boolean foundSameScore = false;
 			PartialScheduleGrph s = states.poll();
-
+			String parentSerialized = s.getNormalizedCopy(numProcessors).serialize();
 			// if is a leaf, return the partial.
 			HashSet<Integer> freeTasks = getFree(input, s);
 			// if 10 minutes, output valid, but non optimal solution
@@ -175,7 +173,7 @@ public class AStarAlgorithm implements Algorithm {
 				log.info("Number of closed states: " + closedStates.size());
 				log.info("Number of iterations: " + iterations);
 				return s;
-			} else if (!this.storedInClosedSet(s, closedStates)) {
+			} else if (!this.storedInClosedSet(parentSerialized, closedStates)) {
 				// loop over all free vertices
 				// foundSameScore = false;
 				for (int task : freeTasks) {
@@ -242,7 +240,7 @@ public class AStarAlgorithm implements Algorithm {
 						 * solution
 						 */
 						long timeRunning = System.currentTimeMillis() - startTime;
-						if (timeRunning > ALGORITHM_TIMEOUT && false) {
+						if (timeRunning > ALGORITHM_TIMEOUT) {
 							next.setScore(totalVertices);
 							totalVertices--;
 							log.info("Out of time! Defaulting to valid only.");
@@ -251,34 +249,21 @@ public class AStarAlgorithm implements Algorithm {
 							cost.applyCost(next, task, numProcessors);
 
 						}
-						// String serialized =
-						// next.getNormalizedCopy(numProcessors).serialize();
-						if (!storedInClosedSet(next.getNormalizedCopy(numProcessors), closedStates)) {
+						String serialized = next.getNormalizedCopy(numProcessors).serialize();
+						if (!storedInClosedSet(serialized, closedStates)) {
 							next.setTimeAdded(System.nanoTime());
 							states.add(next);
 
-							if (next.getScore() <= s.getScore()) {
-
-								// states.add(s);
-								// log.info(next == states.peek());
-								// foundSameScore = true;
-								// break;
-							}
-
 						}
 
-						// prev = null;
+					}
 
-					}
-					if (foundSameScore) {
-						// break;
-					}
 				}
 			}
 
 			// TODO this takes too long - find alternative
 			// if (!foundSameScore)
-			storeInClosedSet(s.getNormalizedCopy(numProcessors), closedStates);
+			storeInClosedSet(parentSerialized, closedStates);
 
 		}
 		return null;
@@ -297,17 +282,17 @@ public class AStarAlgorithm implements Algorithm {
 	}
 
 	// TODO add equivalence check
-	private void storeInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
+	private void storeInClosedSet(String serialized, Set<String> closedStates) {
 		// long start = System.nanoTime();
-		String serialized = g.serialize();
+		//String serialized = g.serialize();
 		// serializeTime += System.nanoTime() - start;
 		closedStates.add(serialized);
 	}
 
 	// TODO add equivalence check
-	private boolean storedInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
+	private boolean storedInClosedSet(String serialized, Set<String> closedStates) {
 		// long start = System.nanoTime();
-		String serialized = g.serialize();
+		//String serialized = g.serialize();
 		// serializeTime += System.nanoTime() - start;
 		return closedStates.contains(serialized);
 	}

@@ -21,7 +21,7 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 								// idle time of parent until getIdleTime is run
 								// on this in the cost func
 	private int _fBTW = 0;
-
+	private String serialized = null;
 	private long timeAdded = 0;
 
 	public PartialScheduleGrph(int score) {
@@ -161,6 +161,26 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		}
 		return a;
 	}
+	
+	public void setSerialized(String s){
+		this.serialized = s;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof PartialScheduleGrph){
+			PartialScheduleGrph g = (PartialScheduleGrph) o;
+			if(this.serialized == null || g.serialized == null){
+				return false;
+			}
+			if(this.serialized.compareToIgnoreCase(g.serialized) == 0){
+				return true;
+			}
+			
+		}
+		return false;
+	}
+	
 
 	public int compareTo(Object o) {
 		PartialScheduleGrph g = (PartialScheduleGrph) o;
