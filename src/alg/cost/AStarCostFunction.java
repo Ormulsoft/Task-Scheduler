@@ -1,9 +1,5 @@
 package alg.cost;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
 import grph.properties.NumericalProperty;
 import toools.collections.primitive.LucIntSet;
 import util.PartialScheduleGrph;
@@ -25,22 +21,13 @@ public class AStarCostFunction implements CostFunction {
 
 	public void applyCost(PartialScheduleGrph g, int addedVertex, int numProcessors) {
 
-		int maxFinish = 0;
+		int maxDRT = getComputationalBottomLevel(addedVertex) + (int) g.getVertexStartProperty().getValue(addedVertex);
+
 		int maxBL = 0;
 
-		int maxDRT = getComputationalBottomLevel(addedVertex) + (int) g.getVertexStartProperty().getValue(addedVertex);
-		for (int i : g.getVertices()) {
-			// get the end time from the highest start time + weight combination
-			int val = (int) g.getVertexStartProperty().getValue(i) + (int) g.getVertexWeightProperty().getValue(i);
-			if (val > maxFinish) {
-				maxFinish = val;
-
-			}
-			int valBL = this.getComputationalBottomLevel(i) + (int) g.getVertexStartProperty().getValue(i);
-			if (valBL > maxBL) {
-				maxBL = valBL;
-			}
-		}
+		maxBL = Math.max(g.getLastFBottomLevel(),
+				this.getComputationalBottomLevel(addedVertex) + (int) g.getVertexStartProperty().getValue(addedVertex));
+		g.setFBottomLevel(maxBL);
 
 		for (int i : g.getFree(input)) {
 			int minProc = -1;
@@ -55,14 +42,14 @@ public class AStarCostFunction implements CostFunction {
 			}
 		}
 
-		int max = Math.max(maxFinish, Math.max(maxBL, Math.max(getIdleTimeFit(g, numProcessors, maxFinish), maxDRT)));
+		int max = Math.max(maxBL, Math.max(getIdleTimeFit(g, numProcessors, addedVertex), maxDRT));
 
 		g.setScore(max);
 
 	}
 
 	/**
-	 * Gets the max Computational bottom level value for all current vertices
+	 * Gets the max Computational bottom level value for specified vertex
 	 */
 	public int getComputationalBottomLevel(int addedVertex) {
 
@@ -90,59 +77,36 @@ public class AStarCostFunction implements CostFunction {
 	 *            The number of processors being used for task allocation
 	 * @return The idle time bound of this schedule
 	 */
-	public int getIdleTimeFit(PartialScheduleGrph sched, int numProcessors, int maxFinish) {
-		int totalIdle = 0;
+	public int getIdleTimeFit(PartialScheduleGrph sched, int numProcessors, int addedVertex) {
+		int totalIdle = sched.getLastIdleTime(); // idle time based on idle time
+													// before addedVertex is
+													// added
 		int totalWeight = 0;
 		NumericalProperty vertProcs = sched.getVertexProcessorProperty();
 		final NumericalProperty vertStarts = sched.getVertexStartProperty();
 		NumericalProperty vertWeights = sched.getVertexWeightProperty();
 		LucIntSet taskIDs = sched.getVertices();
 
-		// Create a list of lists, each list relates to a processor and stores
-		// the tasks on that processor
-		// for sorting later
-		ArrayList<ArrayList<Integer>> processors = new ArrayList<ArrayList<Integer>>();
-
-		for (int i = 0; i < numProcessors; i++) {
-			processors.add(new ArrayList<Integer>());
-		}
-
-		// Add each task to the list related to the relevant processor
-		for (int task : taskIDs) {
-			processors.get(vertProcs.getValueAsInt(task) - 1).add(task);
-
-		}
 		for (int task : input.getVertices()) {
 			totalWeight += input.getVertexWeightProperty().getValueAsInt(task);
 		}
 
-		// Add idle time of each processor to total
-		for (int i = 0; i < numProcessors; i++) {
-
-			ArrayList<Integer> list = processors.get(i);
-
-			// Sort tasks based on start time
-			Collections.sort(list, new Comparator<Integer>() {
-
-				public int compare(Integer o1, Integer o2) {
-					return ((Integer) (vertStarts.getValueAsInt(o1)))
-							.compareTo((Integer) (vertStarts.getValueAsInt(o2)));
-				}
-
-			});
-			int finishTime = 0;
-
-			// If there is a gap between a previous task and this one, add the
-			// gap to idletime.
-			for (int task : list) {
-				if (vertStarts.getValueAsInt(task) > finishTime) {
-					totalIdle += vertStarts.getValueAsInt(task) - finishTime;
-				}
-				finishTime = vertStarts.getValueAsInt(task) + vertWeights.getValueAsInt(task);
-
+		// Find idle time between addedVertex and previous latest task on same
+		// processor
+		int lastFinishOnProc = 0;
+		for (int task : taskIDs) {
+			if (task != addedVertex && vertProcs.getValueAsInt(task) == vertProcs.getValueAsInt(addedVertex)
+					&& vertStarts.getValueAsInt(task) < vertStarts.getValueAsInt(addedVertex)) {
+				lastFinishOnProc = Math.max(lastFinishOnProc,
+						vertStarts.getValueAsInt(task) + vertWeights.getValueAsInt(task));
 			}
-
 		}
+
+		totalIdle += vertStarts.getValueAsInt(addedVertex) - lastFinishOnProc; // Idle
+																				// time
+																				// calculated
+																				// incrementally
+		sched.setIdleTime(totalIdle); // Update idle time for next increment use
 
 		return (int) Math.ceil((totalIdle + totalWeight) / (double) numProcessors);
 	}

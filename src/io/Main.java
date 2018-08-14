@@ -134,6 +134,8 @@ public class Main {
 		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
 				+ " core(s)");
 		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
+
+		log.info("Is valid?: " + out.dependenciesValid(in));
 		log.info("Outputting solution to file: " + outputFile);
 
 		try {
