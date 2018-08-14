@@ -18,15 +18,10 @@ import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
-import javafx.application.Application;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
 import util.ScheduleGrph;
 
 /**
@@ -35,7 +30,7 @@ import util.ScheduleGrph;
  * @author All
  *
  */
-public class Main extends Application {
+public class Main {
 	private static final int DEFAULT_CORES = 1;
 	private static final boolean DEFAULT_VISUALISATION = false;
 
@@ -51,7 +46,7 @@ public class Main extends Application {
 	 * @param args
 	 * @throws URISyntaxException
 	 */
-	public static void main(String[] args) throws URISyntaxException {
+	public static void main(String[] args) throws URISyntaxException  {
 
 		log.info("Task scheduler launched");
 		boolean visualization = DEFAULT_VISUALISATION;
@@ -174,8 +169,8 @@ public class Main extends Application {
 			
 			new Thread(background).start();
 			
-					
-			} else {
+			gui.Interface.main(null);
+		} else {
 		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
 		
 		log.info("Outputting solution to file: " + outputFile);
@@ -189,20 +184,6 @@ public class Main extends Application {
 		log.info("Finished!");
 		}
 		
-		
-	}
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		try {
-			BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("MainView.fxml"));
-			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
 		
 	}
 	
