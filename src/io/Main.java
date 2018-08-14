@@ -18,6 +18,15 @@ import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
+import javafx.application.Application;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import util.ScheduleGrph;
 
 /**
@@ -26,11 +35,13 @@ import util.ScheduleGrph;
  * @author All
  *
  */
-public class Main {
+public class Main extends Application {
 	private static final int DEFAULT_CORES = 1;
 	private static final boolean DEFAULT_VISUALISATION = false;
 
 	final static Logger log = Logger.getLogger(Main.class);
+	
+	private static Service<Void> backgroundThread;
 
 	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
 
@@ -126,17 +137,47 @@ public class Main {
 	/**
 	 * Begins the task scheduling process
 	 */
-	private static void startScheduling(String inputFile, String outputFile, boolean visualization, int numCores,
-			int numProcessors) {
+	private static void startScheduling(String inputFile, final String outputFile, boolean visualization, final int numCores,
+			final int numProcessors) {
 
 		log.info("Reading input file");
-		ScheduleGrph in = Input.readDotInput(inputFile);
+		final ScheduleGrph in = Input.readDotInput(inputFile);
 		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
 				+ " core(s)");
+		
+		
+		
 		if(visualization == true){
-			gui.Interface.main(null);
-		}
+			
+//			backgroundThread = new Service<Void>(){
+				
+				Task<Void> background = new Task<Void>(){
+
+					@Override
+					protected Void call() throws Exception {
+						ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
+						log.info("Outputting solution to file: " + outputFile);
+
+						try {
+							Output.export(out, outputFile);
+						} catch (IOException e) {
+							log.error("Failed to export file - is your output filepath valid?", e);
+						}
+
+						log.info("Finished!");
+						
+					
+						return null;
+					}
+					
+				};
+			
+			new Thread(background).start();
+			
+					
+			} else {
 		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
+		
 		log.info("Outputting solution to file: " + outputFile);
 
 		try {
@@ -146,5 +187,23 @@ public class Main {
 		}
 
 		log.info("Finished!");
+		}
+		
+		
 	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		try {
+			BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("MainView.fxml"));
+			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 }
