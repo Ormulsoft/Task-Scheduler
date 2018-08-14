@@ -18,6 +18,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
+import io.Input;
+import io.Output;
 import parallel.AStarAlgorithmParallel;
 import parallel.AStarAlgorithmParallel2;
 import pt.runtime.ParaTask;
@@ -137,9 +139,12 @@ public class Main {
 		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
 				+ " core(s)");
 		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
+
 		log.info("Outputting solution 1 to file: " + outputFile);
 		ScheduleGrph out2 = new AStarAlgorithmParallel2(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
 		log.info("Outputting solution 2 to file: " + outputFile);
+		log.info("Is valid?: " + out.dependenciesValid(in));
+		log.info("Outputting solution to file: " + outputFile);
 
 		  try {
 			Output.export(out, outputFile);
