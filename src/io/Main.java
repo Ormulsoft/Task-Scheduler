@@ -33,7 +33,7 @@ import util.ScheduleGrph;
  */
 public class Main {
 	private static final int DEFAULT_CORES = 1;
-	private static final boolean DEFAULT_VISUALISATION = false;
+	private static final  boolean DEFAULT_VISUALISATION = false;
 
 	final static Logger log = Logger.getLogger(Main.class);
 
