@@ -23,6 +23,8 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.control.ProgressIndicator;
 import javafx.stage.Stage;
 import util.ScheduleGrph;
 
@@ -38,7 +40,10 @@ public class Main extends Application {
 
 	final static Logger log = Logger.getLogger(Main.class);
 	
-	private static Service<Void> backgroundThread;
+	@FXML
+	static
+	ProgressIndicator indicator;
+
 
 	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
 
@@ -152,6 +157,7 @@ public class Main extends Application {
 
 					@Override
 					protected Void call() throws Exception {
+						
 						ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
 						log.info("Outputting solution to file: " + outputFile);
 
@@ -162,13 +168,12 @@ public class Main extends Application {
 						}
 
 						log.info("Finished!");
-						
 					
 						return null;
 					}
 					
 				};
-			
+				
 			new Thread(background).start();
 			
 			gui.Interface.main(null);
