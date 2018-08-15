@@ -1,14 +1,22 @@
-package alg;
+package parallel;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.SerializationUtils;
 
+import alg.Algorithm;
 import alg.cost.CostFunction;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import pt.runtime.TaskID;
+import pt.runtime.TaskIDGroup;
 import util.PartialScheduleGrph;
+import util.ScheduleDotWriter;
 import util.ScheduleGrph;
 
 /**
@@ -18,7 +26,7 @@ import util.ScheduleGrph;
  * @author matt frost
  *
  */
-public class AStarAlgorithm implements Algorithm {
+public class AStarAlgorithmParallel implements Algorithm {
 
 	// define a timeout (2 mins) for it to return a "valid" but not optimal
 	// solution
@@ -27,8 +35,17 @@ public class AStarAlgorithm implements Algorithm {
 	private final CostFunction cost;
 
 	// used to compare the cost values in the PriorityQueue
+	private class CostChecker implements Comparator<PartialScheduleGrph> {
 
-	public AStarAlgorithm(CostFunction cost) {
+		public int compare(PartialScheduleGrph grph1, PartialScheduleGrph grph2) {
+			if (grph1.getScore() < grph2.getScore())
+				return -1;
+			else
+				return 1;
+		}
+	}
+
+	public AStarAlgorithmParallel(CostFunction cost) {
 		this.cost = cost;
 	}
 
@@ -125,35 +142,28 @@ public class AStarAlgorithm implements Algorithm {
 		return correctedInput;
 	}
 
-	long serializeTime = 0;
-	long costTime = 0;
+	int serializeTime = 0;
+	int costTime = 0;
 
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
 		ScheduleGrph original = input;
 		input = initializeIdenticalTaskEdges(input);
-		long startTime = System.nanoTime();
+		long startTime = System.currentTimeMillis();
+
 		// A Queue of states (Partial Schedules), that are ordered by their Cost
 		// values.
-		PriorityQueue<PartialScheduleGrph> states = new PriorityQueue<PartialScheduleGrph>(1);
+		PriorityQueue<PartialScheduleGrph> states = new PriorityQueue<PartialScheduleGrph>(1, new CostChecker());
 
 		// A set of closed states, which
 		HashSet<String> closedStates = new HashSet<String>();
-
-		HashSet<String> openAndClosedStates = new HashSet<String>();
 
 		// initially, add an state with no tasks scheduled (EMPTY)
 		PartialScheduleGrph initial = new PartialScheduleGrph(0);
 		initial.setVerticesLabel(input.getVertexLabelProperty());
 		states.add(initial);
 		int totalVertices = input.getNumberOfVertices();
-		long deepCopyTime = 0;
-		long totTime = System.nanoTime();
-		PartialScheduleGrph prev = null;
-
-		int iterations = 0;
+		int deepCopyTime = 0;
 		while (states.size() > 0) {
-			iterations++;
-			boolean foundSameScore = false;
 			PartialScheduleGrph s = states.poll();
 
 			// if is a leaf, return the partial.
@@ -166,149 +176,58 @@ public class AStarAlgorithm implements Algorithm {
 					s.addDirectedSimpleEdge(tail, head);
 				}
 				s.setEdgeWeightProperty(original.getEdgeWeightProperty());
-				log.info("Total time: " + (System.nanoTime() - totTime) / (1000.0 * 1000));
-				log.info("Deep copy time: " + (deepCopyTime / (1000.0 * 1000)));
-				log.info("Serialize time: " + serializeTime / (1000.0 * 1000));
-				log.info("Cost time: " + costTime / (1000.0 * 1000));
-				log.info(" Partial time: " + PartialScheduleGrph.time / (1000.0 * 1000));
-				log.info("Number of states at end: " + states.size());
-				log.info("Number of closed states: " + closedStates.size());
-				log.info("Number of iterations: " + iterations);
+				log.info("Deep copy time: " + deepCopyTime);
+				log.info("Serialize time: " + serializeTime);
 				return s;
-			} else if (!this.storedInClosedSet(s, closedStates)) {
+			} else {
 				// loop over all free vertices
-				// foundSameScore = false;
+				TaskIDGroup g = new TaskIDGroup(freeTasks.size());
+				GetFreeVerticesParallel A = new GetFreeVerticesParallel();
 				for (int task : freeTasks) {
-					for (int pc = 1; pc <= numProcessors; pc++) {
-
-						PartialScheduleGrph next = s.copy();
-						next.addVertex(task);
-						next.getVertexWeightProperty().setValue(task, input.getVertexWeightProperty().getValue(task));
-						next.getVertexProcessorProperty().setValue(task, pc);
-
-						// set the start time based on earliest first on a
-						// processor
-
-						// to get the start time, find the time of most
-						// recently
-						// finishing vertex on the same processor,
-						// and store that, also the finish time of the last
-						// dependency. starting time would be the maximum\
-						// of the two.
-
-						int dependencyUpperBound = 0;
-						for (int taskDp : input.getInNeighbours(task)) {
-							int edgeTime = 0;
-							if (next.getVertexProcessorProperty().getValue(taskDp) != pc) {
-								edgeTime = (int) input.getEdgeWeightProperty()
-										.getValue(input.getSomeEdgeConnecting(taskDp, task));
-							}
-
-							int totalTime = (int) (input.getVertexWeightProperty().getValue(taskDp)
-									// needs to be next, not input for start
-									+ next.getVertexStartProperty().getValue(taskDp) + edgeTime);
-							if (totalTime > dependencyUpperBound) {
-								dependencyUpperBound = totalTime;
-							}
+					TaskID id = A.getCosts(numProcessors, states, task, s, closedStates);
+					g.add(id);				
+				}
+				try {
+					g.waitTillFinished();
+					int i = 0;
+					while(g.groupMembers().hasNext()) {
+						if(i == g.groupSize()) {
+							break;
 						}
-
-						/**
-						 * find the latest finishing process on the same
-						 * processor, and factor into the timing
-						 * 
-						 * TODO make this a function of the PartialScheduleGrph
-						 * to suit the abstraction Named
-						 * getProcessorFinishTime() ??
-						 */
-						int processorUpperBound = 0;
-						for (int pcTask : next.getVertices()) {
-							if (next.getVertexProcessorProperty().getValue(pcTask) == pc && pcTask != task) {
-								int totalTime = (int) (next.getVertexWeightProperty().getValue(pcTask)
-										+ next.getVertexStartProperty().getValue(pcTask));
-								if (totalTime > processorUpperBound) {
-									processorUpperBound = totalTime;
-								}
-
-							}
-						}
-						//
-						// find the maximum time the task can start on a
-						// processor.
-						next.getVertexStartProperty().setValue(task,
-								Math.max(processorUpperBound, dependencyUpperBound));
-
-						/**
-						 * If the algorithm timed out, default to a "valid"
-						 * solution
-						 */
-						long timeRunning = System.currentTimeMillis() - startTime;
-						if (timeRunning > ALGORITHM_TIMEOUT && false) {
-							next.setScore(totalVertices);
-							totalVertices--;
-							log.info("Out of time! Defaulting to valid only.");
-						} else {
-
-							cost.applyCost(next, task, numProcessors);
-
-						}
-						// String serialized =
-						// next.getNormalizedCopy(numProcessors).serialize();
-						if (!storedInClosedSet(next.getNormalizedCopy(numProcessors), closedStates)) {
-							next.setTimeAdded(System.nanoTime());
-							states.add(next);
-
-							if (next.getScore() <= s.getScore()) {
-
-								// states.add(s);
-								// log.info(next == states.peek());
-								// foundSameScore = true;
-								// break;
-							}
-
-						}
-
-						// prev = null;
-
+						TaskID t = (TaskID) g.groupMembers().next();
+						states.addAll((Collection<? extends PartialScheduleGrph>) t.getReturnResult());
+						i++;
 					}
-					if (foundSameScore) {
-						// break;
-					}
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
-
 			// TODO this takes too long - find alternative
-			// if (!foundSameScore)
+			long start = System.currentTimeMillis();
 			storeInClosedSet(s.getNormalizedCopy(numProcessors), closedStates);
-
+			deepCopyTime += System.currentTimeMillis() - start;
 		}
 		return null;
 
 	}
 
-	// TODO fix this
-	private void storeEquivalentInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
-		// long start = System.nanoTime();
-		for (int vert1 : g.getVertices()) {
-
-		}
-		String serialized = g.serialize();
-		// serializeTime += System.nanoTime() - start;
-		closedStates.add(serialized);
-	}
-
 	// TODO add equivalence check
 	private void storeInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
-		// long start = System.nanoTime();
-		String serialized = g.serialize();
-		// serializeTime += System.nanoTime() - start;
+		long start = System.currentTimeMillis();
+		String serialized = new ScheduleDotWriter().createDotText(g, false);
+		serializeTime += System.currentTimeMillis() - start;
 		closedStates.add(serialized);
 	}
 
 	// TODO add equivalence check
 	private boolean storedInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
-		// long start = System.nanoTime();
-		String serialized = g.serialize();
-		// serializeTime += System.nanoTime() - start;
+		// long start = System.currentTimeMillis();
+		String serialized = new ScheduleDotWriter().createDotText(g, false);
+		// serializeTime += System.currentTimeMillis() - start;
 		return closedStates.contains(serialized);
 	}
 
@@ -331,24 +250,29 @@ public class AStarAlgorithm implements Algorithm {
 		 * iterate over tasks in the partial schedule, and add to output ones
 		 * that are free and not contained in the current partial
 		 */
+		TaskIDGroup g = new TaskIDGroup(pg.getVertices().size());
+		CostFunctionParallel A = new CostFunctionParallel(inputSaved);
 		for (int task : pg.getVertices()) {
-			for (int outEdge : inputSaved.getOutEdges(task)) {
-				int otherVert = inputSaved.getTheOtherVertex(outEdge, task);
-				// check that not contained in current
-				if (!pg.containsVertex(otherVert)) {
-					boolean add = true;
-					// check that dependencies are satisfied.
-					for (int e : inputSaved.getInEdges(otherVert)) {
-						if (!pg.containsVertex(inputSaved.getTheOtherVertex(e, otherVert))) {
-							add = false;
-							break;
-						}
-					}
-					if (add) {
-						a.add(otherVert);
-					}
+			TaskID id = A.getFree(inputSaved, pg, task,a);
+			g.add(id);
+		}
+		try {
+			g.waitTillFinished();
+			int i = 0;
+			while(g.groupMembers().hasNext()) {
+				if(i == g.groupSize()) {
+					break;
 				}
+				TaskID t = (TaskID) g.groupMembers().next();
+				a.addAll((Collection<? extends Integer>) t.getReturnResult());
+				i++;
 			}
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return a;
 	}

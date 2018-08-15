@@ -6,8 +6,8 @@ import grph.properties.NumericalProperty;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * <<<<<<< HEAD This extends the InMemoryGrph to provide additional fields, such
- * as the properties we need for this particular problem ======= This extends
+ * This extends the InMemoryGrph to provide additional fields, such
+ * as the properties we need for this particular problem.This extends
  * the InMemoryGrph to provide additional fields, such as the properties we need
  * for this particular problem >>>>>>> a8e40dea54e9b2cc3289608bb61892fe3407f8d6
  * 
@@ -28,7 +28,6 @@ public class ScheduleGrph extends InMemoryGrph {
 	private NumericalProperty edgeWeightProperty;
 
 	public ScheduleGrph() {
-		super();
 		verticesWeight = new NumericalProperty("Weight");
 		verticesStart = new NumericalProperty("Start");
 		verticesProcessor = new NumericalProperty("Processor");
@@ -115,6 +114,38 @@ public class ScheduleGrph extends InMemoryGrph {
 			}
 		}
 		return g;
+	}
+
+	public boolean dependenciesValid(ScheduleGrph input) {
+		for (int vert : this.getVertices()) {
+			int vertStart = this.getVertexStartProperty().getValueAsInt(vert);
+			for (int neighbor : input.getInNeighbors(vert)) {
+
+				if (!this.containsVertex(neighbor)) {
+					return false;
+				} else {
+					int nEnd = this.getVertexStartProperty().getValueAsInt(neighbor)
+							+ this.getVertexWeightProperty().getValueAsInt(neighbor);
+
+					if (this.getVertexProcessorProperty().getValue(neighbor) != this.getVertexProcessorProperty()
+							.getValue(vert)) {
+						nEnd += input.getEdgeWeightProperty()
+								.getValueAsInt(input.getSomeEdgeConnecting(neighbor, vert));
+					}
+					if (nEnd > vertStart) {
+						// System.out.println(vert);
+						// System.out.println(neighbor);
+						// System.out.println(vertStart);
+						// System.out.println(nEnd);
+						// System.out.println(this.toDot());
+						return false;
+					}
+				}
+			}
+
+		}
+		return true;
+
 	}
 
 }

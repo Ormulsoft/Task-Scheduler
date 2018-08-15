@@ -26,6 +26,11 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressIndicator;
 import javafx.stage.Stage;
+import io.Input;
+import io.Output;
+import parallel.AStarAlgorithmParallel;
+import parallel.AStarAlgorithmParallel2;
+import pt.runtime.ParaTask;
 import util.ScheduleGrph;
 
 /**
@@ -36,7 +41,7 @@ import util.ScheduleGrph;
  */
 public class Main extends Application {
 	private static final int DEFAULT_CORES = 1;
-	private static final boolean DEFAULT_VISUALISATION = false;
+	private static final  boolean DEFAULT_VISUALISATION = false;
 
 	final static Logger log = Logger.getLogger(Main.class);
 	
@@ -53,8 +58,9 @@ public class Main extends Application {
 	 * @param args
 	 * @throws URISyntaxException
 	 */
-	public static void main(String[] args) throws URISyntaxException  {
 
+	public static void main(String[] args) throws URISyntaxException {
+		ParaTask.init();
 		log.info("Task scheduler launched");
 		boolean visualization = DEFAULT_VISUALISATION;
 		int numCores = DEFAULT_CORES;
@@ -179,15 +185,27 @@ public class Main extends Application {
 			gui.Interface.main(null);
 		} else {
 		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
-		
+		log.info("Outputting solution 1 to file: " + outputFile);
+		ScheduleGrph out2 = new AStarAlgorithmParallel2(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
+		log.info("Outputting solution 2 to file: " + outputFile);
+		log.info("Is valid?: " + out.dependenciesValid(in));
 		log.info("Outputting solution to file: " + outputFile);
 
-		try {
+		  try {
 			Output.export(out, outputFile);
 		} catch (IOException e) {
 			log.error("Failed to export file - is your output filepath valid?", e);
-		}
-
+		} 
+		
+		
+			try {
+				Output.export(out2, outputFile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		
 		log.info("Finished!");
 		}
 		

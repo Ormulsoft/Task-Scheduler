@@ -8,7 +8,7 @@
   <repositories>
 	<repository>
 		<id>lhogie.i3s.maven.repo</id>
-		<name>Luc Hogie Maven repository</name>
+		<name>Luc Hogie Maven   repository</name>
 		<url>http://www.i3s.unice.fr/~hogie/maven_repository/</url>
     </repository>
   </repositories>  
@@ -87,6 +87,20 @@
 		<artifactId>commons-cli</artifactId>
 		<version>1.4</version>
 	</dependency>
+	<dependency>
+    		<groupId>parallel.auckland.ac.nz</groupId>
+    		<artifactId>PTCompiler</artifactId>
+    		<version>0.9.4</version>
+    		<scope>system</scope>
+    		<systemPath>${basedir}/PTCompiler-0.9.4.jar</systemPath>
+		</dependency>
+		<dependency>
+    		<groupId>PTRuntime</groupId>
+    		<artifactId>PTRuntime</artifactId>
+    		<version>0.9.4</version>
+    		<scope>system</scope>
+    		<systemPath>${basedir}/PTRuntime-0.9.4(1).jar</systemPath>
+</dependency>
   </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>
