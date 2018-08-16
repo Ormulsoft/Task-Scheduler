@@ -16,7 +16,7 @@
       </Label>
       <Label layoutX="418.0" layoutY="312.0" text="States Visited:" />
       <Label layoutX="417.0" layoutY="340.0" text="States Pruned:" />
-      <Label layoutX="509.0" layoutY="312.0" text="0" />
+      <Label fx:id="visited" layoutX="509.0" layoutY="312.0" text="0" />
       <Label layoutX="509.0" layoutY="340.0" text="0" />
       <ImageView fitHeight="183.0" fitWidth="273.0" layoutX="207.0" layoutY="99.0" pickOnBounds="true" preserveRatio="true">
          <image>
