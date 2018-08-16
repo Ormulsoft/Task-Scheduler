@@ -1,20 +1,27 @@
 package gui;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import cnrs.i3s.papareto.demo.function.Main;
 import javafx.application.Application;
+import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.StackedBarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class MainView extends Application {
-	
-	
+	final CategoryAxis xAxis = new CategoryAxis();
+    final NumberAxis yAxis = new NumberAxis();
+
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -29,7 +36,9 @@ public class MainView extends Application {
 		
 		
 	}
-
+	
+	
+	
 	public static void main(String[] args) {
 		
 		launch(args);

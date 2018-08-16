@@ -12,7 +12,6 @@ public class InformationModel {
 	private int _iterations;
 	
 	public InformationModel() {
-
 		_listeners = new ArrayList<ScheduleListener>();
 	}
 	
