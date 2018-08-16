@@ -16,8 +16,9 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import alg.AStarAlgorithm;
+import alg.AStarParallel;
 import alg.cost.AStarCostFunction;
+import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
 /**
@@ -133,8 +134,12 @@ public class Main {
 		ScheduleGrph in = Input.readDotInput(inputFile);
 		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
 				+ " core(s)");
-		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
+		// PartialScheduleGrph out = new AStarAlgorithm(in, new
+		// AStarCostFunction(in), numProcessors).runAlg();
 
+		long start = System.currentTimeMillis();
+		PartialScheduleGrph out = new AStarParallel(in, new AStarCostFunction(in), numProcessors, numCores).runAlg();
+		log.info("Algorithm took " + (System.currentTimeMillis() - start) + " ms");
 		log.info("Is valid?: " + out.dependenciesValid(in));
 		log.info("Outputting solution to file: " + outputFile);
 

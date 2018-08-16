@@ -2,7 +2,7 @@ package alg;
 
 import org.apache.log4j.Logger;
 
-import util.ScheduleGrph;
+import util.PartialScheduleGrph;
 
 /**
  * The Algorithm interface provides a starting point for any search algorithm to
@@ -29,6 +29,6 @@ public interface Algorithm {
 	 * @param numProcessors
 	 * @return
 	 */
-	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors);
+	public PartialScheduleGrph runAlg();
 
 }

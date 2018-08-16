@@ -161,26 +161,25 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		}
 		return a;
 	}
-	
-	public void setSerialized(String s){
+
+	public void setSerialized(String s) {
 		this.serialized = s;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
-		if(o instanceof PartialScheduleGrph){
+		if (o instanceof PartialScheduleGrph) {
 			PartialScheduleGrph g = (PartialScheduleGrph) o;
-			if(this.serialized == null || g.serialized == null){
+			if (this.serialized == null || g.serialized == null) {
 				return false;
 			}
-			if(this.serialized.compareToIgnoreCase(g.serialized) == 0){
+			if (this.serialized.compareToIgnoreCase(g.serialized) == 0) {
 				return true;
 			}
-			
+
 		}
 		return false;
 	}
-	
 
 	public int compareTo(Object o) {
 		PartialScheduleGrph g = (PartialScheduleGrph) o;

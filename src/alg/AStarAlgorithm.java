@@ -5,13 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.concurrent.PriorityBlockingQueue;
 
 import org.apache.commons.lang.SerializationUtils;
 
 import alg.cost.CostFunction;
-import grph.Grph;
 import grph.properties.NumericalProperty;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import toools.collections.primitive.LucIntSet;
@@ -27,17 +25,29 @@ import util.ScheduleGrph;
  */
 public class AStarAlgorithm implements Algorithm {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	// define a timeout (2 mins) for it to return a "valid" but not optimal
 	// solution
 	private static final int ALGORITHM_TIMEOUT = 2 * 60 * 1000;
 
 	private final CostFunction cost;
-	private ScheduleGrph _input;
 
+	private ScheduleGrph _input;
+	private int numProcessors;
+
+	// A set of closed states, which
+	protected HashSet<String> closedStates = new HashSet<String>();
+	protected PriorityBlockingQueue<PartialScheduleGrph> states = new PriorityBlockingQueue<PartialScheduleGrph>(1);
 	// used to compare the cost values in the PriorityQueue
 
-	public AStarAlgorithm(CostFunction cost) {
+	public AStarAlgorithm(ScheduleGrph input, CostFunction cost, int numProcessors) {
 		this.cost = cost;
+		this._input = input;
+		this.numProcessors = numProcessors;
 	}
 
 	/**
@@ -136,35 +146,27 @@ public class AStarAlgorithm implements Algorithm {
 	long serializeTime = 0;
 	long costTime = 0;
 
-	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
-		_input = input;
-		ScheduleGrph original = input;
-		input = initializeIdenticalTaskEdges(input);
+	public PartialScheduleGrph runAlg() {
+
+		// this will break
+		ScheduleGrph original = _input;
+		// _input = initializeIdenticalTaskEdges(_input);
 		long startTime = System.nanoTime();
 		// A Queue of states (Partial Schedules), that are ordered by their Cost
 		// values.
-		PriorityQueue<PartialScheduleGrph> states = new PriorityQueue<PartialScheduleGrph>(1);
-
-		// A set of closed states, which
-		HashSet<String> closedStates = new HashSet<String>();
 
 		// initially, add an state with no tasks scheduled (EMPTY)
 		PartialScheduleGrph initial = new PartialScheduleGrph(0);
-		initial.setVerticesLabel(input.getVertexLabelProperty());
+		initial.setVerticesLabel(_input.getVertexLabelProperty());
 		states.add(initial);
-		int totalVertices = input.getNumberOfVertices();
-		long deepCopyTime = 0;
-		long totTime = System.nanoTime();
-		PartialScheduleGrph prev = null;
-
-		int iterations = 0;
+		int totalVertices = _input.getNumberOfVertices();
 		while (states.size() > 0) {
-			iterations++;
-			boolean foundSameScore = false;
+
 			PartialScheduleGrph s = states.poll();
 			String parentSerialized = s.getNormalizedCopy(numProcessors).serialize();
 			// if is a leaf, return the partial.
-			HashSet<Integer> freeTasks = getFree(input, s);
+			HashSet<Integer> freeTasks = s.getFree(_input);
+
 			// if 10 minutes, output valid, but non optimal solution
 			if (freeTasks.size() == 0) {
 				for (int edge : original.getEdges()) {
@@ -173,16 +175,9 @@ public class AStarAlgorithm implements Algorithm {
 					s.addDirectedSimpleEdge(tail, head);
 				}
 				s.setEdgeWeightProperty(original.getEdgeWeightProperty());
-				log.info("Total time: " + (System.nanoTime() - totTime) / (1000.0 * 1000));
-				log.info("Deep copy time: " + (deepCopyTime / (1000.0 * 1000)));
-				log.info("Serialize time: " + serializeTime / (1000.0 * 1000));
-				log.info("Cost time: " + costTime / (1000.0 * 1000));
-				log.info(" Partial time: " + PartialScheduleGrph.time / (1000.0 * 1000));
-				log.info("Number of states at end: " + states.size());
-				log.info("Number of closed states: " + closedStates.size());
-				log.info("Number of iterations: " + iterations);
+
 				return s;
-			} else if (!this.storedInClosedSet(parentSerialized, closedStates)) {
+			} else if (!this.storedInClosedSet(parentSerialized)) {
 				// loop over all free vertices
 				// foundSameScore = false;
 				for (int task : freeTasks) {
@@ -190,7 +185,7 @@ public class AStarAlgorithm implements Algorithm {
 
 						PartialScheduleGrph next = s.copy();
 						next.addVertex(task);
-						next.getVertexWeightProperty().setValue(task, input.getVertexWeightProperty().getValue(task));
+						next.getVertexWeightProperty().setValue(task, _input.getVertexWeightProperty().getValue(task));
 						next.getVertexProcessorProperty().setValue(task, pc);
 
 						// set the start time based on earliest first on a
@@ -204,14 +199,14 @@ public class AStarAlgorithm implements Algorithm {
 						// of the two.
 
 						int dependencyUpperBound = 0;
-						for (int taskDp : input.getInNeighbours(task)) {
+						for (int taskDp : _input.getInNeighbours(task)) {
 							int edgeTime = 0;
 							if (next.getVertexProcessorProperty().getValue(taskDp) != pc) {
-								edgeTime = (int) input.getEdgeWeightProperty()
-										.getValue(input.getSomeEdgeConnecting(taskDp, task));
+								edgeTime = (int) _input.getEdgeWeightProperty()
+										.getValue(_input.getSomeEdgeConnecting(taskDp, task));
 							}
 
-							int totalTime = (int) (input.getVertexWeightProperty().getValue(taskDp)
+							int totalTime = (int) (_input.getVertexWeightProperty().getValue(taskDp)
 									// needs to be next, not input for start
 									+ next.getVertexStartProperty().getValue(taskDp) + edgeTime);
 							if (totalTime > dependencyUpperBound) {
@@ -259,8 +254,7 @@ public class AStarAlgorithm implements Algorithm {
 
 						}
 						String serialized = next.getNormalizedCopy(numProcessors).serialize();
-						if (!storedInClosedSet(serialized, closedStates)) {
-							next.setTimeAdded(System.nanoTime());
+						if (!storedInClosedSet(serialized)) {
 							states.add(next);
 
 						}
@@ -272,88 +266,33 @@ public class AStarAlgorithm implements Algorithm {
 
 			// TODO this takes too long - find alternative
 			// if (!foundSameScore)
-			storeInClosedSet(parentSerialized, closedStates);
+			storeInClosedSet(parentSerialized);
 
 		}
 		return null;
 
 	}
 
-	// TODO fix this
-	private void storeEquivalentInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
-		// long start = System.nanoTime();
-		for (int vert1 : g.getVertices()) {
-
-		}
-		String serialized = g.serialize();
-		// serializeTime += System.nanoTime() - start;
+	// TODO add equivalence check
+	private void storeInClosedSet(String serialized) {
 		closedStates.add(serialized);
 	}
 
 	// TODO add equivalence check
-	private void storeInClosedSet(String serialized, Set<String> closedStates) {
-		// long start = System.nanoTime();
-		//String serialized = g.serialize();
-		// serializeTime += System.nanoTime() - start;
-		closedStates.add(serialized);
-	}
-
-	// TODO add equivalence check
-	private boolean storedInClosedSet(String serialized, Set<String> closedStates) {
-		// long start = System.nanoTime();
-		//String serialized = g.serialize();
-		// serializeTime += System.nanoTime() - start;
+	private boolean storedInClosedSet(String serialized) {
 		return closedStates.contains(serialized);
 	}
 
 	/**
-	 * Select all the free vertices based on a current partial schedule, that
-	 * are not stored in the current partial schedule
+	 * Not currently working, seems to break optimal on input 10, more testing
+	 * needed
 	 * 
-	 */
-
-	private HashSet<Integer> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg) {
-		HashSet<Integer> a = new HashSet<Integer>();
-		// get all source nodes (no in edges) that are not in the
-		// partialschedule
-		for (int srcTask : inputSaved.getSources()) {
-			if (!pg.containsVertex(srcTask)) {
-				a.add(srcTask);
-			}
-		}
-		/*
-		 * iterate over tasks in the partial schedule, and add to output ones
-		 * that are free and not contained in the current partial
-		 */
-		for (int task : pg.getVertices()) {
-			for (int outEdge : inputSaved.getOutEdges(task)) {
-				int otherVert = inputSaved.getTheOtherVertex(outEdge, task);
-				// check that not contained in current
-				if (!pg.containsVertex(otherVert)) {
-					boolean add = true;
-					// check that dependencies are satisfied.
-					for (int e : inputSaved.getInEdges(otherVert)) {
-						if (!pg.containsVertex(inputSaved.getTheOtherVertex(e, otherVert))) {
-							add = false;
-							break;
-						}
-					}
-					if (add) {
-						a.add(otherVert);
-					}
-				}
-			}
-		}
-		return a;
-	}
-
-	
-	/**
-	 * Not currently working, seems to break optimal on input 10, more testing needed
+	 * Checks whether or not a schedule has any equivalent schedules, and should
+	 * therefore not be expanded. i.e leaves it to the last equivalentschedule
+	 * to be expanded. RELIES ON THE ALGORITHM EVENTUALLY CHECKING THE
+	 * EQUIVALENT SCHEDULE WITH ALL TASKS THAT ARE ON THE SAME PROCESSOR AS
+	 * LASTADDED BEING IN THE INDEX ORDER WHERE POSSIBLE
 	 * 
-	 * Checks whether or not a schedule has any equivalent schedules, and should therefore not be expanded.
-	 * i.e leaves it to the last equivalentschedule to be expanded. RELIES ON THE ALGORITHM EVENTUALLY CHECKING THE 
-	 * EQUIVALENT SCHEDULE WITH ALL TASKS THAT ARE ON THE SAME PROCESSOR AS LASTADDED BEING IN THE INDEX ORDER WHERE POSSIBLE 
 	 * @param sched
 	 * @param lastAdded
 	 * @return
@@ -364,45 +303,47 @@ public class AStarAlgorithm implements Algorithm {
 		NumericalProperty procs = sched.getVertexProcessorProperty();
 		NumericalProperty vertWeights = sched.getVertexWeightProperty();
 		NumericalProperty edgeWeights = sched.getEdgeWeightProperty();
-		
-		// Create an ordered list of all the tasks on the same processor as lastAdded
+
+		// Create an ordered list of all the tasks on the same processor as
+		// lastAdded
 		int p = procs.getValueAsInt(lastAdded);
-		final HashMap<Integer,Integer> newStarts = new HashMap<Integer,Integer>();
-		
+		final HashMap<Integer, Integer> newStarts = new HashMap<Integer, Integer>();
+
 		for (int task : sched.getVertices()) {
 			if (procs.getValueAsInt(task) == p) {
 				tasksOnP.add(task);
 				newStarts.put(task, starts.getValueAsInt(task));
 			}
 		}
-		
+
 		// Sort on start time
-		Comparator<Integer> comp = new Comparator<Integer>(){
+		Comparator<Integer> comp = new Comparator<Integer>() {
 
 			public int compare(Integer o1, Integer o2) {
-				return ((Integer)newStarts.get(o1)).compareTo(newStarts.get(o2));
+				return ((Integer) newStarts.get(o1)).compareTo(newStarts.get(o2));
 			}
-			
+
 		};
 		Collections.sort(tasksOnP, comp);
-		
+
 		int i = tasksOnP.size() - 2;
-		
+
 		// While a task can "bubble up"
 		while (i >= 0 && lastAdded < tasksOnP.get(i) && !sched.areVerticesAdjacent(tasksOnP.get(i), lastAdded)) {
 
 			// swap lastadded with task before it
-			Collections.swap(tasksOnP, tasksOnP.indexOf((Integer)lastAdded), i);
-			
-			// for each affected task (now scheduled after lastAdded) reschedule at new earliest time
+			Collections.swap(tasksOnP, tasksOnP.indexOf((Integer) lastAdded), i);
+
+			// for each affected task (now scheduled after lastAdded) reschedule
+			// at new earliest time
 			for (int j = i; j < tasksOnP.size(); j++) {
 				int thisTask = tasksOnP.get(j);
 				int time = 0;
-				
+
 				if (j > 0) {
 					time = newStarts.get(tasksOnP.get(j - 1)) + vertWeights.getValueAsInt(tasksOnP.get(j - 1));
 				}
-				
+
 				// Find earliest time based on dependencies
 				for (int dep : sched.getInNeighbors(thisTask)) {
 					int drt = starts.getValueAsInt(dep) + vertWeights.getValueAsInt(dep);
@@ -414,38 +355,46 @@ public class AStarAlgorithm implements Algorithm {
 
 					time = Math.max(drt, time);
 				}
-				
+
 				newStarts.put(thisTask, time);
 			}
 
-			// If processor end is the same, and outgoing dependency edges are "unaffected" - see ougoingCommsOK method - this schedule has equivalents
-			if ((newStarts.get(tasksOnP.get(tasksOnP.size() - 1)) + vertWeights.getValueAsInt(tasksOnP.get(tasksOnP.size() - 1))) <= 
-					(starts.getValueAsInt(lastAdded) + vertWeights.getValueAsInt(lastAdded))
-					&& outgoingCommsOK(sched,newStarts, numProcessors)) {
+			// If processor end is the same, and outgoing dependency edges are
+			// "unaffected" - see ougoingCommsOK method - this schedule has
+			// equivalents
+			if ((newStarts.get(tasksOnP.get(tasksOnP.size() - 1))
+					+ vertWeights.getValueAsInt(tasksOnP.get(tasksOnP.size() - 1))) <= (starts.getValueAsInt(lastAdded)
+							+ vertWeights.getValueAsInt(lastAdded))
+					&& outgoingCommsOK(sched, newStarts, numProcessors)) {
 				return true;
 			}
-			
+
 			i--;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
-	 * Helper method for equivalenceCheck which checks that all outgoing datatransfers of a set of tasks are unaffected by
-	 * a change in order/position
-	 * @param originalStarts A map of task id to start time, before the change
-	 * @param newStarts A map of task id to start time, after the change
-	 * @param tasksAfter A list of all the tasks displaced by the switch(es)
+	 * Helper method for equivalenceCheck which checks that all outgoing
+	 * datatransfers of a set of tasks are unaffected by a change in
+	 * order/position
+	 * 
+	 * @param originalStarts
+	 *            A map of task id to start time, before the change
+	 * @param newStarts
+	 *            A map of task id to start time, after the change
+	 * @param tasksAfter
+	 *            A list of all the tasks displaced by the switch(es)
 	 * @return
 	 */
-	private boolean outgoingCommsOK(PartialScheduleGrph sched, HashMap<Integer,Integer> newStarts, int numProcessors) {
+	private boolean outgoingCommsOK(PartialScheduleGrph sched, HashMap<Integer, Integer> newStarts, int numProcessors) {
 		NumericalProperty starts = sched.getVertexStartProperty();
 		NumericalProperty weights = sched.getVertexWeightProperty();
 		NumericalProperty edgeWeights = _input.getEdgeWeightProperty();
 		NumericalProperty procs = sched.getVertexProcessorProperty();
 		LucIntSet placedTasks = sched.getVertices();
-		
+
 		// Check that the children of each affected task are unaffected
 		for (int task : newStarts.keySet()) {
 			if (newStarts.get(task) > starts.getValueAsInt(task)) {
@@ -453,23 +402,26 @@ public class AStarAlgorithm implements Algorithm {
 					int edge = (Integer) _input.getEdgesConnecting(task, child).toArray()[0];
 					int time = (newStarts.get(task) + weights.getValueAsInt(task)) + edgeWeights.getValueAsInt(edge);
 					if (placedTasks.contains(child)) {
-						// If child is in the schedule, check that the start time does not contradict the new DRTs
+						// If child is in the schedule, check that the start
+						// time does not contradict the new DRTs
 						if (time > starts.getValueAsInt(child)) {
 							return false;
 						}
-					}
-					else {
+					} else {
 						for (int i = 1; i <= numProcessors; i++) {
-							// Verify that the changed end time of task is outweighed by DRTs of at least one other dependency on ALL processors 
+							// Verify that the changed end time of task is
+							// outweighed by DRTs of at least one other
+							// dependency on ALL processors
 							boolean atLeastOneLater = false;
-							
+
 							for (int parent : _input.getInNeighbours(child)) {
-								
+
 								if (parent != task) {
 									if (placedTasks.contains(parent)) {
 										int parentTime = starts.getValueAsInt(parent) + weights.getValueAsInt(parent);
 										if (procs.getValueAsInt(parent) != i) {
-											parentTime += edgeWeights.getValueAsInt((Integer) _input.getEdgesConnecting(parent, child).toArray()[0]);
+											parentTime += edgeWeights.getValueAsInt(
+													(Integer) _input.getEdgesConnecting(parent, child).toArray()[0]);
 										}
 										if (parentTime >= time) {
 											atLeastOneLater = true;
@@ -477,14 +429,15 @@ public class AStarAlgorithm implements Algorithm {
 									}
 								}
 							}
-						
-						
+
 							if (!atLeastOneLater) {
-								// If the child is affected by the changes when placed on any processor, this is not an equivalentsched
+								// If the child is affected by the changes when
+								// placed on any processor, this is not an
+								// equivalentsched
 								return false;
 							}
 						}
-						
+
 					}
 				}
 			}
