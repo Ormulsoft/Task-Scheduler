@@ -89,17 +89,20 @@ public class Input {
 		NumericalProperty vertWeights = new NumericalProperty("Weight");
 		NumericalProperty vertLabels = new NumericalProperty("Labels");
 
+		TreeMap<Integer, Integer> nodesToId = new TreeMap<Integer, Integer>();
 		// Collections.sort(nodesList);
 		// Add each vertex from input file
 		for (Map.Entry<Integer, Integer> entry : nodes.entrySet()) {
+
 			Integer key = entry.getKey();
 			Integer weight = entry.getValue();
 
 			int vert = outputGraph.addVertex();
 			vertLabels.setValue(vert, key);
 			vertWeights.setValue(vert, weight);
-		}
 
+			nodesToId.put(key, vert);
+		}
 		outputGraph.setVertexWeightProperty(vertWeights);
 		outputGraph.setVerticesLabel(vertLabels);
 
@@ -119,9 +122,8 @@ public class Input {
 			e = e.substring(0, e.indexOf("]"));
 
 			int weight = Integer.parseInt(e);
-
 			// Add edge to graph
-			int newEdge = outputGraph.addSimpleEdge(srcNode, destNode, true);
+			int newEdge = outputGraph.addSimpleEdge(nodesToId.get(srcNode), nodesToId.get(destNode), true);
 
 			// Update the edge's width with the weight
 			edgeWeights.setValue(newEdge, weight);

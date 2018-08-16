@@ -16,8 +16,8 @@ public class AStarThread extends AStarAlgorithm implements Runnable {
 
 		super(input, cost, numProcessors);
 
-		this.closedStates = closed;
-		this.states = open;
+		this._closedStates = closed;
+		this._openStates = open;
 
 	}
 

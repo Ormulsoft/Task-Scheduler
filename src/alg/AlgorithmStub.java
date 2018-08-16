@@ -1,7 +1,7 @@
 package alg;
 
 import grph.properties.NumericalProperty;
-import util.ScheduleGrph;
+import util.PartialScheduleGrph;
 
 /**
  * Stub algorithm that doesnt alter the input, simply returns a specific
@@ -9,12 +9,12 @@ import util.ScheduleGrph;
  */
 public class AlgorithmStub implements Algorithm {
 
-	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
+	public PartialScheduleGrph runAlg() {
 
 		log.info("Running stub algorithm");
 
 		// Set up graph, edges, and verts
-		ScheduleGrph g = new ScheduleGrph();
+		PartialScheduleGrph g = new PartialScheduleGrph(0);
 
 		int a = g.addVertex();
 		int b = g.addVertex();
@@ -33,7 +33,7 @@ public class AlgorithmStub implements Algorithm {
 		weightVerts.setValue(c, 3);
 		weightVerts.setValue(d, 2);
 
-		NumericalProperty weightEdge = input.getVertexWeightProperty();
+		NumericalProperty weightEdge = new NumericalProperty("Weight");
 		weightEdge.setValue(ab, 1);
 		weightEdge.setValue(ac, 2);
 		weightEdge.setValue(bd, 2);

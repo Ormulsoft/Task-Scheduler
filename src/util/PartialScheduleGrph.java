@@ -1,9 +1,14 @@
 package util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import grph.properties.NumericalProperty;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import toools.collections.primitive.LucIntSet;
 
 public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 
@@ -193,5 +198,166 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 			return -1;
 		else
 			return 1;
+	}
+
+	/**
+	 * Not currently working, seems to break optimal on input 10, more testing
+	 * needed
+	 * 
+	 * Checks whether or not a schedule has any equivalent schedules, and should
+	 * therefore not be expanded. i.e leaves it to the last equivalentschedule
+	 * to be expanded. RELIES ON THE ALGORITHM EVENTUALLY CHECKING THE
+	 * EQUIVALENT SCHEDULE WITH ALL TASKS THAT ARE ON THE SAME PROCESSOR AS
+	 * LASTADDED BEING IN THE INDEX ORDER WHERE POSSIBLE
+	 * 
+	 * @param sched
+	 * @param lastAdded
+	 * @return
+	 */
+	private boolean equivalenceCheck(ScheduleGrph input, int lastAdded, int numProcessors) {
+		ArrayList<Integer> tasksOnP = new ArrayList<Integer>();
+		final NumericalProperty starts = this.getVertexStartProperty();
+		NumericalProperty procs = this.getVertexProcessorProperty();
+		NumericalProperty vertWeights = this.getVertexWeightProperty();
+		NumericalProperty edgeWeights = this.getEdgeWeightProperty();
+
+		// Create an ordered list of all the tasks on the same processor as
+		// lastAdded
+		int p = procs.getValueAsInt(lastAdded);
+		final HashMap<Integer, Integer> newStarts = new HashMap<Integer, Integer>();
+
+		for (int task : this.getVertices()) {
+			if (procs.getValueAsInt(task) == p) {
+				tasksOnP.add(task);
+				newStarts.put(task, starts.getValueAsInt(task));
+			}
+		}
+
+		// Sort on start time
+		Comparator<Integer> comp = new Comparator<Integer>() {
+
+			public int compare(Integer o1, Integer o2) {
+				return ((Integer) newStarts.get(o1)).compareTo(newStarts.get(o2));
+			}
+
+		};
+		Collections.sort(tasksOnP, comp);
+
+		int i = tasksOnP.size() - 2;
+
+		// While a task can "bubble up"
+		while (i >= 0 && lastAdded < tasksOnP.get(i) && !this.areVerticesAdjacent(tasksOnP.get(i), lastAdded)) {
+
+			// swap lastadded with task before it
+			Collections.swap(tasksOnP, tasksOnP.indexOf((Integer) lastAdded), i);
+
+			// for each affected task (now thisuled after lastAdded) rethisule
+			// at new earliest time
+			for (int j = i; j < tasksOnP.size(); j++) {
+				int thisTask = tasksOnP.get(j);
+				int time = 0;
+
+				if (j > 0) {
+					time = newStarts.get(tasksOnP.get(j - 1)) + vertWeights.getValueAsInt(tasksOnP.get(j - 1));
+				}
+
+				// Find earliest time based on dependencies
+				for (int dep : this.getInNeighbors(thisTask)) {
+					int drt = starts.getValueAsInt(dep) + vertWeights.getValueAsInt(dep);
+
+					if (procs.getValueAsInt(dep) != p) {
+						int edge = (Integer) this.getEdgesConnecting(dep, thisTask).toArray()[0];
+						drt += edgeWeights.getValueAsInt(edge);
+					}
+
+					time = Math.max(drt, time);
+				}
+
+				newStarts.put(thisTask, time);
+			}
+
+			// If processor end is the same, and outgoing dependency edges are
+			// "unaffected" - see ougoingCommsOK method - this thisule has
+			// equivalents
+			if ((newStarts.get(tasksOnP.get(tasksOnP.size() - 1))
+					+ vertWeights.getValueAsInt(tasksOnP.get(tasksOnP.size() - 1))) <= (starts.getValueAsInt(lastAdded)
+							+ vertWeights.getValueAsInt(lastAdded))
+					&& this.outgoingCommsOK(input, newStarts, numProcessors)) {
+				return true;
+			}
+
+			i--;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Helper method for equivalenceCheck which checks that all outgoing
+	 * datatransfers of a set of tasks are unaffected by a change in
+	 * order/position
+	 * 
+	 * @param input
+	 * @param newStarts
+	 *            A map of task id to start time, after the change
+	 * @param numProcessors
+	 * @return
+	 */
+	public boolean outgoingCommsOK(ScheduleGrph input, HashMap<Integer, Integer> newStarts, int numProcessors) {
+
+		NumericalProperty starts = this.getVertexStartProperty();
+		NumericalProperty weights = this.getVertexWeightProperty();
+		NumericalProperty edgeWeights = input.getEdgeWeightProperty();
+		NumericalProperty procs = this.getVertexProcessorProperty();
+		LucIntSet placedTasks = this.getVertices();
+
+		// Check that the children of each affected task are unaffected
+		for (int task : newStarts.keySet()) {
+			if (newStarts.get(task) > starts.getValueAsInt(task)) {
+				for (int child : input.getOutNeighbors(task)) {
+					int edge = (Integer) input.getEdgesConnecting(task, child).toArray()[0];
+					int time = (newStarts.get(task) + weights.getValueAsInt(task)) + edgeWeights.getValueAsInt(edge);
+					if (placedTasks.contains(child)) {
+						// If child is in the thisule, check that the start
+						// time does not contradict the new DRTs
+						if (time > starts.getValueAsInt(child)) {
+							return false;
+						}
+					} else {
+						for (int i = 1; i <= numProcessors; i++) {
+							// Verify that the changed end time of task is
+							// outweighed by DRTs of at least one other
+							// dependency on ALL processors
+							boolean atLeastOneLater = false;
+
+							for (int parent : input.getInNeighbours(child)) {
+
+								if (parent != task) {
+									if (placedTasks.contains(parent)) {
+										int parentTime = starts.getValueAsInt(parent) + weights.getValueAsInt(parent);
+										if (procs.getValueAsInt(parent) != i) {
+											parentTime += edgeWeights.getValueAsInt(
+													(Integer) input.getEdgesConnecting(parent, child).toArray()[0]);
+										}
+										if (parentTime >= time) {
+											atLeastOneLater = true;
+										}
+									}
+								}
+							}
+
+							if (!atLeastOneLater) {
+								// If the child is affected by the changes when
+								// placed on any processor, this is not an
+								// equivalentthis
+								return false;
+							}
+						}
+
+					}
+				}
+			}
+		}
+		return true;
 	}
 }
