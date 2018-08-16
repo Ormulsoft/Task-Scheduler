@@ -182,7 +182,7 @@ public class Main extends Application {
 				
 			new Thread(background).start();
 			
-			gui.Interface.main(null);
+			gui.MainView.main(null);
 		} else {
 		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
 		log.info("Outputting solution 1 to file: " + outputFile);
