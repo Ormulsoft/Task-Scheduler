@@ -5,7 +5,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="499.0" prefWidth="776.0" style="-fx-background-color: #DFBC90;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="459.0" prefWidth="689.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
    <children>
       <Label layoutX="252.0" layoutY="22.0" prefHeight="39.0" prefWidth="287.0" text="Optimal Task Scheduler" textFill="#b17221">
          <font>
@@ -20,7 +21,9 @@
          <font>
             <Font name="Berlin Sans FB" size="24.0" />
          </font></Label>
-      <Button fx:id="startBtn" layoutX="54.0" layoutY="78.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="143.0" text="Start!" />
+      <Button fx:id="startBtn" layoutX="33.0" layoutY="74.0" mnemonicParsing="false" onAction="#startAlgorithm" prefHeight="58.0" prefWidth="143.0" text="Start!" />
+
       <AnchorPane layoutX="245.0" layoutY="78.0" prefHeight="73.0" prefWidth="199.0" />
+
    </children>
 </AnchorPane>

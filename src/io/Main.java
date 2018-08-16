@@ -42,7 +42,9 @@ import util.ScheduleGrph;
 public class Main extends Application {
 	private static final int DEFAULT_CORES = 1;
 	private static final  boolean DEFAULT_VISUALISATION = false;
-
+	private static ScheduleGrph in;
+	private static int numOfCores;
+	private static int numOfProcessers;
 	final static Logger log = Logger.getLogger(Main.class);
 	
 	@FXML
@@ -149,8 +151,10 @@ public class Main extends Application {
 			final int numProcessors) {
 
 		log.info("Reading input file");
-		final ScheduleGrph in = Input.readDotInput(inputFile);
-		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
+		 in = Input.readDotInput(inputFile);
+		 numOfProcessers = numProcessors;
+		 numOfCores = numCores;
+		 log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
 				+ " core(s)");
 		
 		
@@ -210,6 +214,18 @@ public class Main extends Application {
 		}
 		
 		
+	}
+	
+	public static ScheduleGrph getIn(){
+		return in;
+	}
+	
+	public static int getNumProcessers() {
+		return numOfProcessers;
+	}
+	
+	public static int getNumCores() {
+		return numOfCores;
 	}
 
 	@Override
