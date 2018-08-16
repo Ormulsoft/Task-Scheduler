@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="459.0" prefWidth="689.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label layoutX="214.0" layoutY="28.0" prefHeight="31.0" prefWidth="156.0" text="Visualization">
+      <Label layoutX="201.0" layoutY="14.0" prefHeight="39.0" prefWidth="287.0" text="Optimal Task Scheduler">
          <font>
             <Font size="27.0" />
          </font>
@@ -23,5 +23,11 @@
             <Image url="@../resources/samplegraphpic.JPG" />
          </image>
       </ImageView>
+      <ImageView fitHeight="32.0" fitWidth="62.0" layoutX="28.0" layoutY="14.0" pickOnBounds="true">
+         <image>
+            <Image url="@../../../../Downloads/ormulsoft.png" />
+         </image>
+      </ImageView>
+      <Button fx:id="startBtn" layoutX="33.0" layoutY="74.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="143.0" text="Start!" />
    </children>
 </AnchorPane>
