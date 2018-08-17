@@ -141,7 +141,7 @@ public class Main {
 		long start = System.currentTimeMillis();
 		PartialScheduleGrph out;
 		if (numCores == 1) {
-			out = new DFSAlgorithm(in, new AStarCostFunction(in), numProcessors).runAlg();
+			out = new DFSAlgorithm(in, new AStarCostFunction(in), numProcessors, numCores).runAlg();
 			// out = new AStarAlgorithm(in, new AStarCostFunction(in),
 			// numProcessors).runAlg();
 		} else {

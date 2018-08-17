@@ -33,15 +33,8 @@ public class DFSAlgorithm extends RecursiveAction implements Algorithm {
 
 	@Override
 	public PartialScheduleGrph runAlg() {
+		forkJoinPool.invoke(this);
 
-		_lowerBound = Integer.MAX_VALUE;
-
-		_bestState = new PartialScheduleGrph(0);
-		_bestState.setVerticesLabel(_input.getVertexLabelProperty());
-
-		recursiveSolve(_bestState);
-
-		getSetupOutput(_bestState);
 		return _bestState;
 
 	}
@@ -82,7 +75,14 @@ public class DFSAlgorithm extends RecursiveAction implements Algorithm {
 
 	@Override
 	protected void compute() {
-		// TODO Auto-generated method stub
+		_lowerBound = Integer.MAX_VALUE;
+
+		_bestState = new PartialScheduleGrph(0);
+		_bestState.setVerticesLabel(_input.getVertexLabelProperty());
+
+		recursiveSolve(_bestState);
+
+		getSetupOutput(_bestState);
 
 	}
 
