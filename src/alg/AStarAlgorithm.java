@@ -165,7 +165,7 @@ public class AStarAlgorithm implements Algorithm {
 			PartialScheduleGrph s = _openStates.poll();
 			String parentSerialized = s.getNormalizedCopy(_numProcessors).serialize();
 
-			TreeSet<Integer> freeTasks = s.getFree(init);
+			TreeSet<Integer> freeTasks = s.getFixedFree(init);
 
 			// if is a leaf, return the partial.
 			if (freeTasks.size() == 0) {

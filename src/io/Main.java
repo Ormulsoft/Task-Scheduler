@@ -19,7 +19,6 @@ import org.apache.log4j.PropertyConfigurator;
 import alg.AStarParallel;
 import alg.DFSAlgorithm;
 import alg.cost.AStarCostFunction;
-import alg.cost.StaticCostFunction;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
@@ -142,7 +141,7 @@ public class Main {
 		long start = System.currentTimeMillis();
 		PartialScheduleGrph out;
 		if (numCores == 1) {
-			out = new DFSAlgorithm(in, new StaticCostFunction(in), numProcessors).runAlg();
+			out = new DFSAlgorithm(in, new AStarCostFunction(in), numProcessors).runAlg();
 			// out = new AStarAlgorithm(in, new AStarCostFunction(in),
 			// numProcessors).runAlg();
 		} else {

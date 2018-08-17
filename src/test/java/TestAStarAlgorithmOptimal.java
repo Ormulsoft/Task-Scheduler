@@ -80,12 +80,12 @@ public class TestAStarAlgorithmOptimal {
 		assertEquals(50, getEndTime(out));
 	}
 
-	/*
-	 * @Test public void node11Proc2Core1() {
-	 * System.out.println("node11Proc2Core1"); ScheduleGrph out = new
-	 * AStarAlgorithm(_11In, new AStarCostFunction(_11In), 2).runAlg();
-	 * assertEquals(getEndTime(out), 350); }
-	 */
+	@Test
+	public void node11Proc2Core1() {
+		System.out.println("node11Proc2Core1");
+		ScheduleGrph out = new AStarAlgorithm(_11In, new AStarCostFunction(_11In), 2).runAlg();
+		assertEquals(getEndTime(out), 350);
+	}
 
 	@Test
 	public void node7Proc4Core1() {

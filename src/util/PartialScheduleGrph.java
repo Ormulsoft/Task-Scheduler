@@ -133,12 +133,46 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 
 	}
 
-	public TreeSet<Integer> getFree(final ScheduleGrph inputSaved) {
+	public HashSet<Integer> getFree(ScheduleGrph inputSaved) {
+		HashSet<Integer> a = new HashSet<Integer>();
+		// get all source nodes (no in edges) that are not in the
+		// partialschedule
+		for (int srcTask : inputSaved.getSources()) {
+			if (!this.containsVertex(srcTask)) {
+				a.add(srcTask);
+			}
+		}
+		/*
+		 * iterate over tasks in the partial schedule, and add to output ones that are
+		 * free and not contained in the current partial
+		 */
+		for (int task : this.getVertices()) {
+			for (int outEdge : inputSaved.getOutEdges(task)) {
+				int otherVert = inputSaved.getTheOtherVertex(outEdge, task);
+				// check that not contained in current
+				if (!this.containsVertex(otherVert)) {
+					boolean add = true;
+					// check that dependencies are satisfied.
+					for (int e : inputSaved.getInEdges(otherVert)) {
+						if (!this.containsVertex(inputSaved.getTheOtherVertex(e, otherVert))) {
+							add = false;
+							break;
+						}
+					}
+					if (add) {
+						a.add(otherVert);
+					}
+				}
+			}
+		}
+		return a;
+	}
+
+	public TreeSet<Integer> getFixedFree(final ScheduleGrph inputSaved) {
 		TreeSet<Integer> a = new TreeSet<Integer>();
 		// get all source nodes (no in edges) that are not in the
 		// partialschedule
-		
-		
+
 		/*
 		 * iterate over tasks in the partial schedule, and add to output ones that are
 		 * free and not contained in the current partial
@@ -146,7 +180,7 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		for (int task : inputSaved.getVertices()) {
 			if (!this.containsVertex(task)) {
 				boolean add = true;
-				for (int child: inputSaved.getInNeighbors(task)) {
+				for (int child : inputSaved.getInNeighbors(task)) {
 					if (!this.containsVertex(child)) {
 						add = false;
 					}
@@ -156,125 +190,116 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 				}
 			}
 		}
-		
+
 		boolean meetsConditions = true;
 		int firstChild = -1;
 		int firstParentProc = -1;
-		
+
 		NumericalProperty procs = this.getVertexProcessorProperty();
 		final NumericalProperty starts = this.getVertexStartProperty();
 		final NumericalProperty edgeWeights = inputSaved.getEdgeWeightProperty();
 		final NumericalProperty vertWeights = inputSaved.getVertexWeightProperty();
-		
+
 		// Check that free tasks meet conditions to be sorted for fixed task order
 		for (int task : a) {
-			
+
 			// Condition 3: parents are all on same processor
 			LucIntSet parents = inputSaved.getInNeighbors(task);
 			int numParents = parents.size();
 			if (numParents > 1) { // part of condition one
 				meetsConditions = false;
 				break;
-			}
-			else if (numParents == 1) {
+			} else if (numParents == 1) {
 				if (firstParentProc == -1) {
-					firstParentProc = procs.getValueAsInt((Integer)parents.toArray()[0]);
-				}
-				else {
-					if (procs.getValueAsInt((Integer)parents.toArray()[0]) != firstParentProc) {
+					firstParentProc = procs.getValueAsInt((Integer) parents.toArray()[0]);
+				} else {
+					if (procs.getValueAsInt((Integer) parents.toArray()[0]) != firstParentProc) {
 						meetsConditions = false;
 						break;
 					}
 				}
 			}
-			
+
 			// Condition 2: all free tasks with a child have the same child
 			LucIntSet children = inputSaved.getOutNeighbors(task);
 			int numChildren = children.size();
 			if (numChildren > 1) { // other half of condition one
 				meetsConditions = false;
 				break;
-			}
-			else if (numChildren == 1) {
+			} else if (numChildren == 1) {
 				if (firstChild == -1) {
-					firstChild = (Integer)children.toArray()[0];
-				}
-				else {
-					if ((Integer)children.toArray()[0] != firstChild) {
+					firstChild = (Integer) children.toArray()[0];
+				} else {
+					if ((Integer) children.toArray()[0] != firstChild) {
 						meetsConditions = false;
 						break;
 					}
 				}
 			}
-			
+
 		}
-		
-		
+
 		if (meetsConditions) {
-			
+
 			// Perform sort on parent DRT
 			TreeSet<Integer> parentSorted = new TreeSet<Integer>(new Comparator<Integer>() {
 
 				public int compare(Integer o1, Integer o2) {
 					return Integer.compare(getDrt(o1), getDrt(o2));
 				}
-				
+
 				private int getDrt(int task) {
 					LucIntSet parents = inputSaved.getInNeighbors(task);
 					if (parents.size() == 0) {
 						return 0;
-					}
-					else {
-						int parent = (Integer)parents.toArray()[0];
-						int edge = (Integer)inputSaved.getEdgesConnecting(parent, task).toArray()[0];
-						
-						return starts.getValueAsInt(parent) + 
-								vertWeights.getValueAsInt(parent) + 
-								edgeWeights.getValueAsInt(edge);
+					} else {
+						int parent = (Integer) parents.toArray()[0];
+						int edge = (Integer) inputSaved.getEdgesConnecting(parent, task).toArray()[0];
+
+						return starts.getValueAsInt(parent) + vertWeights.getValueAsInt(parent)
+								+ edgeWeights.getValueAsInt(edge);
 					}
 				}
-				
+
 			});
 			parentSorted.addAll(a);
-			
-			
+
 			// Perform sort on child out time (ascending)
 			TreeSet<Integer> outSorted = new TreeSet<Integer>(new Comparator<Integer>() {
 
 				public int compare(Integer o1, Integer o2) {
 					return Integer.compare(getOutCost(o2), getOutCost(o1));
 				}
-				
+
 				private int getOutCost(int task) {
 					LucIntSet children = inputSaved.getOutNeighbors(task);
-					
+
 					if (children.size() == 0) {
 						return 0;
-					}
-					else {
-						int child = (Integer)children.toArray()[0];
-						int edge = (Integer)inputSaved.getEdgesConnecting(task,child).toArray()[0];
-						
+					} else {
+						int child = (Integer) children.toArray()[0];
+						int edge = (Integer) inputSaved.getEdgesConnecting(task, child).toArray()[0];
+
 						return edgeWeights.getValueAsInt(edge);
 					}
 				}
-				
+
 			});
-			
-			outSorted.addAll(parentSorted);	
-			
-			// After sort, return first free task only to force order (or just the set if only contains one)
+
+			outSorted.addAll(parentSorted);
+
+			// After sort, return first free task only to force order (or just the set if
+			// only contains one)
 			if (outSorted.size() <= 1) {
 				return outSorted;
-			}
-			else {
+			} else {
 				TreeSet<Integer> retSet = new TreeSet<Integer>();
 				retSet.add(outSorted.iterator().next());
 				return retSet;
 			}
-			
+
 		}
-		
+
 		return a;
 	}
 
