@@ -1,5 +1,6 @@
 package alg;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -7,7 +8,14 @@ import java.util.Set;
 import org.apache.commons.lang.SerializationUtils;
 
 import alg.cost.CostFunction;
+import gui.Controller;
+import gui.MainViewController;
+import io.InformationModel;
+import io.ScheduleEvent;
+import io.ScheduleListener;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
@@ -25,11 +33,19 @@ public class AStarAlgorithm implements Algorithm {
 	private static final int ALGORITHM_TIMEOUT = 2 * 60 * 1000;
 
 	private final CostFunction cost;
+	
+	private int statesVisited;
+
+	
+	private InformationModel info;
 
 	// used to compare the cost values in the PriorityQueue
 
 	public AStarAlgorithm(CostFunction cost) {
+		info = new InformationModel();
+		// info.addListener(guiControl);
 		this.cost = cost;
+		statesVisited = 0;
 	}
 
 	/**
@@ -127,6 +143,20 @@ public class AStarAlgorithm implements Algorithm {
 
 	long serializeTime = 0;
 	long costTime = 0;
+	
+	private void update(){
+		FXMLLoader loader = new FXMLLoader(
+				getClass().getResource("/gui/MainView.fxml"));
+		
+		try {
+			Parent root = (Parent) loader.load();
+			Controller guiController = loader.getController();
+			guiController.updateLabel();
+		} catch (IOException e){
+			
+		}
+		
+	}
 
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
 		ScheduleGrph original = input;
@@ -180,6 +210,14 @@ public class AStarAlgorithm implements Algorithm {
 				// foundSameScore = false;
 				for (int task : freeTasks) {
 					for (int pc = 1; pc <= numProcessors; pc++) {
+						
+					///// Visualisation /////////
+						statesVisited++;
+						info.setIterations(statesVisited);
+						update();
+//						info.fire(new ScheduleEvent(ScheduleEvent.EventType.NewState));
+						
+						///////////////////////
 
 						PartialScheduleGrph next = s.copy();
 						next.addVertex(task);

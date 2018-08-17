@@ -2,6 +2,6 @@ package io;
 
 public interface ScheduleListener {
 	
-	void update(ScheduleEvent event);
+	void update(ScheduleEvent event, int iterations);
 
 }
