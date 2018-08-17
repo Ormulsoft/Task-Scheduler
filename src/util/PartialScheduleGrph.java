@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TreeSet;
 
+import grph.Grph;
 import grph.properties.NumericalProperty;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import toools.collections.primitive.LucIntSet;
@@ -65,6 +66,18 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 
 	public void setFBottomLevel(int fbtw) {
 		this._fBTW = fbtw;
+	}
+
+	public int getScheduleLength() {
+		int max = 0;
+		for (int vert : this.getVertices()) {
+			int val = this.getVertexWeightProperty().getValueAsInt(vert)
+					+ this.getVertexStartProperty().getValueAsInt(vert);
+			if (val > max) {
+				max = val;
+			}
+		}
+		return max;
 	}
 
 	public static long time = 0;
@@ -138,6 +151,13 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		// get all source nodes (no in edges) that are not in the
 		// partialschedule
 		for (int srcTask : inputSaved.getSources()) {
+
+			if (!this.containsVertex(srcTask)) {
+				a.add(srcTask);
+			}
+		}
+
+		for (int srcTask : inputSaved.getVerticesOfDegree(0, Grph.DIRECTION.in_out)) {
 			if (!this.containsVertex(srcTask)) {
 				a.add(srcTask);
 			}

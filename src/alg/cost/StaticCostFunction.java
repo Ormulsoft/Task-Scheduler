@@ -23,7 +23,6 @@ public class StaticCostFunction extends AStarCostFunction {
 				this.getComputationalBottomLevel(addedVertex) + (int) g.getVertexStartProperty().getValue(addedVertex));
 
 		g.setFBottomLevel(maxBL);
-		// log.info(g.getBottomLevel());
 
 		g.setScore(max);
 

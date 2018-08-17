@@ -16,8 +16,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import alg.AStarParallel;
-import alg.DFSAlgorithm;
+import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
@@ -137,19 +136,18 @@ public class Main {
 				+ " core(s)");
 		// PartialScheduleGrph out = new AStarAlgorithm(in, new
 		// AStarCostFunction(in), numProcessors).runAlg();
-
 		long start = System.currentTimeMillis();
 		PartialScheduleGrph out;
 		if (numCores == 1) {
-			out = new DFSAlgorithm(in, new AStarCostFunction(in), numProcessors, numCores).runAlg();
+			out = new AStarAlgorithm(in, new AStarCostFunction(in), numProcessors).runAlg();
 			// out = new AStarAlgorithm(in, new AStarCostFunction(in),
 			// numProcessors).runAlg();
 		} else {
-			out = new AStarParallel(in, new AStarCostFunction(in), numProcessors, numCores).runAlg();
+			out = new AStarAlgorithm(in, new AStarCostFunction(in), numProcessors).runAlg();
 		}
 
 		log.info("Algorithm took " + (System.currentTimeMillis() - start) + " ms");
-		log.info("Is valid?: " + out.dependenciesValid(in));
+		log.info("Schedule length is: " + out.getScheduleLength());
 		log.info("Outputting solution to file: " + outputFile);
 
 		try {

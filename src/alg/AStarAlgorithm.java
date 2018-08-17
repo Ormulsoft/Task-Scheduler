@@ -160,7 +160,7 @@ public class AStarAlgorithm implements Algorithm {
 		initial.setVerticesLabel(init.getVertexLabelProperty());
 		_openStates.add(initial);
 
-		while (_openStates.size() > 0 && StaticUtils.getRemainingMemory() > 600_000_000L) {
+		while (_openStates.size() > 0 && StaticUtils.getRemainingMemory() > 600000000L) {
 
 			PartialScheduleGrph s = _openStates.poll();
 			String parentSerialized = s.getNormalizedCopy(_numProcessors).serialize();
@@ -203,6 +203,14 @@ public class AStarAlgorithm implements Algorithm {
 			storeInClosedSet(parentSerialized);
 		}
 		return null;
+	}
+
+	private PartialScheduleGrph continueWithDFS() {
+		log.info("Swapping to DFS!");
+		DFSParallel dfs = new DFSParallel(_input, _cost, _numProcessors, 1);
+		_openStates.clear();
+		_closedStates.clear();
+		return dfs.runAlg();
 	}
 
 	// TODO add equivalence check

@@ -1,14 +1,11 @@
 package alg;
 
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveAction;
-
 import alg.cost.CostFunction;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
-public class DFSAlgorithm extends RecursiveAction implements Algorithm {
-	private ForkJoinPool forkJoinPool;
+public class DFSAlgorithm implements Algorithm {
+
 	private final CostFunction _cost;
 	private final ScheduleGrph _input;
 	private final int _numProcessors;
@@ -16,7 +13,6 @@ public class DFSAlgorithm extends RecursiveAction implements Algorithm {
 	private PartialScheduleGrph _bestState;
 
 	public DFSAlgorithm(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores) {
-		this.forkJoinPool = new ForkJoinPool(numCores);
 		this._cost = cost;
 		this._input = input;
 		this._numProcessors = numProcessors;
@@ -33,7 +29,15 @@ public class DFSAlgorithm extends RecursiveAction implements Algorithm {
 
 	@Override
 	public PartialScheduleGrph runAlg() {
-		forkJoinPool.invoke(this);
+
+		_lowerBound = Integer.MAX_VALUE;
+
+		_bestState = new PartialScheduleGrph(0);
+		_bestState.setVerticesLabel(_input.getVertexLabelProperty());
+
+		recursiveSolve(_bestState);
+
+		getSetupOutput(_bestState);
 
 		return _bestState;
 
@@ -64,26 +68,13 @@ public class DFSAlgorithm extends RecursiveAction implements Algorithm {
 	}
 
 	private void updateCurrentBest(PartialScheduleGrph s) {
+
 		int underestimate = s.getScore();
 
 		if (underestimate < _lowerBound) {
-			log.info(s.getScore());
 			_lowerBound = underestimate;
 			_bestState = s;
 		}
-	}
-
-	@Override
-	protected void compute() {
-		_lowerBound = Integer.MAX_VALUE;
-
-		_bestState = new PartialScheduleGrph(0);
-		_bestState.setVerticesLabel(_input.getVertexLabelProperty());
-
-		recursiveSolve(_bestState);
-
-		getSetupOutput(_bestState);
-
 	}
 
 }
