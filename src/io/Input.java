@@ -72,10 +72,6 @@ public class Input {
 			}
 		}
 		
-		for (String l : list) {
-			System.out.println(l);
-		}
-			 
 		// Distinguish between edges and nodes within input
 		List<String> edgesList = new ArrayList<String>();
 		// maps the node ID to its Weight value, so that they can be put into

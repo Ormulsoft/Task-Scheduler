@@ -45,7 +45,7 @@ public class DFSParallel implements Algorithm {
 		}
 	}
 
-	@Override
+
 	public PartialScheduleGrph runAlg() {
 		forkJoinPool.invoke(new DFSTask(_input, _start, _bestState, _cost, _numProcessors, _lowerBound));
 		getSetupOutput(_bestState);

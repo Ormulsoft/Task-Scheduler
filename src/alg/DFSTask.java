@@ -40,14 +40,15 @@ public class DFSTask extends RecursiveAction {
 			return;
 		}
 
-		for (int freeTask : _current.getFree(_input)) {
+		for (int freeTask : _current.getFixedFree(_input)) {
 			for (int proc = 1; proc <= this._numProcessors; proc++) {
 
 				PartialScheduleGrph next = _current.copy();
 				next.addFreeTask(_input, freeTask, proc);
 				_cost.applyCost(next, freeTask, _numProcessors);
-
-				tasks.add(new DFSTask(_input, next, _bestState, _cost, _numProcessors, _lowerBound));
+				if (_current.getScore() < _lowerBound.get()) {
+					tasks.add(new DFSTask(_input, next, _bestState, _cost, _numProcessors, _lowerBound));
+				}
 
 			}
 		}
@@ -59,7 +60,6 @@ public class DFSTask extends RecursiveAction {
 
 		if (underestimate < _lowerBound.get()) {
 			System.out.println(underestimate);
-			System.out.println(_bestState.toDot());
 			_lowerBound.set(underestimate);
 			_bestState.setVertexStartProperty(s.getVertexStartProperty());
 			_bestState.setVertexProcessorProperty(s.getVertexProcessorProperty());

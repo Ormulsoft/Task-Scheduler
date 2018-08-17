@@ -38,6 +38,4 @@ digraph "core_8p_gb_OutTree-Balanced-MaxBf-3_Nodes_21_CCR_0.10_WeightType_Random
 	6 -> 19	 [Weight=2];
 	20	 [Weight=67];
 	7 -> 20	 [Weight=6];
-	21	 [Weight=50];
-	7 -> 21	 [Weight=6];
 }

@@ -27,7 +27,7 @@ public class DFSAlgorithm implements Algorithm {
 		}
 	}
 
-	@Override
+
 	public PartialScheduleGrph runAlg() {
 
 		_lowerBound = Integer.MAX_VALUE;
