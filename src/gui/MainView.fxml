@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label layoutX="214.0" layoutY="28.0" prefHeight="31.0" prefWidth="156.0" text="Visualization">
@@ -16,7 +15,7 @@
       </Label>
       <Label layoutX="418.0" layoutY="312.0" text="States Visited:" />
       <Label layoutX="417.0" layoutY="340.0" text="States Pruned:" />
-      <Label layoutX="509.0" layoutY="312.0" text="0" />
+      <Label fx:id="visited" layoutX="509.0" layoutY="312.0" text="0" />
       <Label layoutX="509.0" layoutY="340.0" text="0" />
       <ImageView fitHeight="183.0" fitWidth="273.0" layoutX="207.0" layoutY="99.0" pickOnBounds="true" preserveRatio="true">
          <image>
