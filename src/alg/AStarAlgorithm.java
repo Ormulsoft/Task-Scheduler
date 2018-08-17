@@ -1,6 +1,7 @@
 package alg;
 
 import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import org.apache.commons.lang.SerializationUtils;
@@ -164,7 +165,7 @@ public class AStarAlgorithm implements Algorithm {
 			PartialScheduleGrph s = _openStates.poll();
 			String parentSerialized = s.getNormalizedCopy(_numProcessors).serialize();
 
-			HashSet<Integer> freeTasks = s.getFree(init);
+			TreeSet<Integer> freeTasks = s.getFree(init);
 
 			// if is a leaf, return the partial.
 			if (freeTasks.size() == 0) {
