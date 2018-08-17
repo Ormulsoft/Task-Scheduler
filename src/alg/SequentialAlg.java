@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import grph.properties.NumericalProperty;
 import toools.collections.primitive.LucIntSet;
+import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
 public class SequentialAlg implements Algorithm {
@@ -137,6 +138,11 @@ public class SequentialAlg implements Algorithm {
 		}
 
 		return retVal;
+	}
+
+	public PartialScheduleGrph runAlg() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

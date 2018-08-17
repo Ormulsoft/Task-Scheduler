@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeSet;
 
 import grph.properties.NumericalProperty;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -132,38 +133,144 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 
 	}
 
-	public HashSet<Integer> getFree(ScheduleGrph inputSaved) {
-		HashSet<Integer> a = new HashSet<Integer>();
+	public TreeSet<Integer> getFree(final ScheduleGrph inputSaved) {
+		TreeSet<Integer> a = new TreeSet<Integer>();
 		// get all source nodes (no in edges) that are not in the
 		// partialschedule
-		for (int srcTask : inputSaved.getSources()) {
-			if (!this.containsVertex(srcTask)) {
-				a.add(srcTask);
-			}
-		}
+		
+		
 		/*
 		 * iterate over tasks in the partial schedule, and add to output ones
 		 * that are free and not contained in the current partial
 		 */
-		for (int task : this.getVertices()) {
-			for (int outEdge : inputSaved.getOutEdges(task)) {
-				int otherVert = inputSaved.getTheOtherVertex(outEdge, task);
-				// check that not contained in current
-				if (!this.containsVertex(otherVert)) {
-					boolean add = true;
-					// check that dependencies are satisfied.
-					for (int e : inputSaved.getInEdges(otherVert)) {
-						if (!this.containsVertex(inputSaved.getTheOtherVertex(e, otherVert))) {
-							add = false;
-							break;
-						}
+		for (int task : inputSaved.getVertices()) {
+			if (!this.containsVertex(task)) {
+				boolean add = true;
+				for (int child: inputSaved.getInNeighbors(task)) {
+					if (!this.containsVertex(child)) {
+						add = false;
 					}
-					if (add) {
-						a.add(otherVert);
-					}
+				}
+				if (add) {
+					a.add(task);
 				}
 			}
 		}
+		
+		boolean meetsConditions = true;
+		int firstChild = -1;
+		int firstParentProc = -1;
+		
+		NumericalProperty procs = this.getVertexProcessorProperty();
+		final NumericalProperty starts = this.getVertexStartProperty();
+		final NumericalProperty edgeWeights = inputSaved.getEdgeWeightProperty();
+		final NumericalProperty vertWeights = inputSaved.getVertexWeightProperty();
+		
+		// Check that free tasks meet conditions to be sorted for fixed task order
+		for (int task : a) {
+			
+			// Condition 3: parents are all on same processor
+			LucIntSet parents = inputSaved.getInNeighbors(task);
+			int numParents = parents.size();
+			if (numParents > 1) { // part of condition one
+				meetsConditions = false;
+				break;
+			}
+			else if (numParents == 1) {
+				if (firstParentProc == -1) {
+					firstParentProc = procs.getValueAsInt((Integer)parents.toArray()[0]);
+				}
+				else {
+					if (procs.getValueAsInt((Integer)parents.toArray()[0]) != firstParentProc) {
+						meetsConditions = false;
+						break;
+					}
+				}
+			}
+			
+			LucIntSet children = inputSaved.getOutNeighbors(task);
+			int numChildren = children.size();
+			if (numChildren > 1) { // other half of condition one
+				meetsConditions = false;
+				break;
+			}
+			else if (numChildren == 1) {
+				if (firstChild == -1) {
+					firstChild = (Integer)children.toArray()[0];
+				}
+				else {
+					if ((Integer)children.toArray()[0] != firstChild) {
+						meetsConditions = false;
+						break;
+					}
+				}
+			}
+			
+		}
+		
+		
+		if (meetsConditions) {
+			
+			
+			TreeSet<Integer> parentSorted = new TreeSet<Integer>(new Comparator<Integer>() {
+
+				public int compare(Integer o1, Integer o2) {
+					return Integer.compare(getDrt(o1), getDrt(o2));
+				}
+				
+				private int getDrt(int task) {
+					LucIntSet parents = inputSaved.getInNeighbors(task);
+					if (parents.size() == 0) {
+						return 0;
+					}
+					else {
+						int parent = (Integer)parents.toArray()[0];
+						int edge = (Integer)inputSaved.getEdgesConnecting(parent, task).toArray()[0];
+						
+						return starts.getValueAsInt(parent) + 
+								vertWeights.getValueAsInt(parent) + 
+								edgeWeights.getValueAsInt(edge);
+					}
+				}
+				
+			});
+			parentSorted.addAll(a);
+			
+			TreeSet<Integer> outSorted = new TreeSet<Integer>(new Comparator<Integer>() {
+
+				public int compare(Integer o1, Integer o2) {
+					return Integer.compare(getOutCost(o2), getOutCost(o1));
+				}
+				
+				private int getOutCost(int task) {
+					LucIntSet children = inputSaved.getOutNeighbors(task);
+					
+					if (children.size() == 0) {
+						return 0;
+					}
+					else {
+						int child = (Integer)children.toArray()[0];
+						int edge = (Integer)inputSaved.getEdgesConnecting(task,child).toArray()[0];
+						
+						return edgeWeights.getValueAsInt(edge);
+					}
+				}
+				
+			});
+			
+			outSorted.addAll(parentSorted);	
+			
+			if (outSorted.size() <= 1) {
+				return outSorted;
+			}
+			else {
+				TreeSet<Integer> retSet = new TreeSet<Integer>();
+				retSet.add(outSorted.iterator().next());
+				return retSet;
+			}
+			
+		}
+		
 		return a;
 	}
 
