@@ -188,6 +188,7 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 				}
 			}
 			
+			// Condition 2: all free tasks with a child have the same child
 			LucIntSet children = inputSaved.getOutNeighbors(task);
 			int numChildren = children.size();
 			if (numChildren > 1) { // other half of condition one
@@ -211,7 +212,7 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		
 		if (meetsConditions) {
 			
-			
+			// Perform sort on parent DRT
 			TreeSet<Integer> parentSorted = new TreeSet<Integer>(new Comparator<Integer>() {
 
 				public int compare(Integer o1, Integer o2) {
@@ -236,6 +237,8 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 			});
 			parentSorted.addAll(a);
 			
+			
+			// Perform sort on child out time (ascending)
 			TreeSet<Integer> outSorted = new TreeSet<Integer>(new Comparator<Integer>() {
 
 				public int compare(Integer o1, Integer o2) {
@@ -260,6 +263,7 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 			
 			outSorted.addAll(parentSorted);	
 			
+			// After sort, return first free task only to force order (or just the set if only contains one)
 			if (outSorted.size() <= 1) {
 				return outSorted;
 			}
