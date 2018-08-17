@@ -17,11 +17,11 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 	 * algorithm runs. Used to represent a potential partial solution for the
 	 * problem on the tree.
 	 * 
-	 * TODO - make this have a reference to the input ScheduleGrph - all
-	 * functions about comparisons to original done here?
+	 * TODO - make this have a reference to the input ScheduleGrph - all functions
+	 * about comparisons to original done here?
 	 */
 	private static final long serialVersionUID = 1L;
-	private double score;
+	private int score;
 	private int _idleTime = 0; // the MOST RECENTLY CALCULATED idle time. can be
 								// idle time of parent until getIdleTime is run
 								// on this in the cost func
@@ -34,11 +34,11 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		this.score = score;
 	}
 
-	public double getScore() {
+	public int getScore() {
 		return this.score;
 	}
 
-	public void setScore(double score) {
+	public void setScore(int score) {
 		this.score = score;
 	}
 
@@ -142,8 +142,8 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 			}
 		}
 		/*
-		 * iterate over tasks in the partial schedule, and add to output ones
-		 * that are free and not contained in the current partial
+		 * iterate over tasks in the partial schedule, and add to output ones that are
+		 * free and not contained in the current partial
 		 */
 		for (int task : this.getVertices()) {
 			for (int outEdge : inputSaved.getOutEdges(task)) {
@@ -200,15 +200,70 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 			return 1;
 	}
 
+	public void addFreeTask(ScheduleGrph init, int task, int pc) {
+
+		// set the start time based on earliest first on a
+		// processor
+
+		// to get the start time, find the time of most
+		// recently
+		// finishing vertex on the same processor,
+		// and store that, also the finish time of the last
+		// dependency. starting time would be the maximum\
+		// of the two.
+		this.addVertex(task);
+		this.getVertexWeightProperty().setValue(task, init.getVertexWeightProperty().getValue(task));
+		this.getVertexProcessorProperty().setValue(task, pc);
+
+		int dependencyUpperBound = 0;
+		for (int taskDp : init.getInNeighbours(task)) {
+			int edgeTime = 0;
+			if (this.getVertexProcessorProperty().getValue(taskDp) != pc) {
+				edgeTime = (int) init.getEdgeWeightProperty().getValue(init.getSomeEdgeConnecting(taskDp, task));
+			}
+
+			int totalTime = (int) (init.getVertexWeightProperty().getValue(taskDp)
+					// needs to be next, not input for start
+					+ this.getVertexStartProperty().getValue(taskDp) + edgeTime);
+			if (totalTime > dependencyUpperBound) {
+				dependencyUpperBound = totalTime;
+			}
+		}
+
+		/**
+		 * find the latest finishing process on the same processor, and factor into the
+		 * timing
+		 * 
+		 * TODO make this a function of the PartialScheduleGrph to suit the abstraction
+		 * Named getProcessorFinishTime() ??
+		 */
+		int processorUpperBound = 0;
+		for (int pcTask : this.getVertices()) {
+			if (this.getVertexProcessorProperty().getValue(pcTask) == pc && pcTask != task) {
+				int totalTime = (int) (this.getVertexWeightProperty().getValue(pcTask)
+						+ this.getVertexStartProperty().getValue(pcTask));
+				if (totalTime > processorUpperBound) {
+					processorUpperBound = totalTime;
+				}
+
+			}
+		}
+
+		//
+		// find the maximum time the task can start on a
+		// processor.
+		this.getVertexStartProperty().setValue(task, Math.max(processorUpperBound, dependencyUpperBound));
+	}
+
 	/**
 	 * Not currently working, seems to break optimal on input 10, more testing
 	 * needed
 	 * 
 	 * Checks whether or not a schedule has any equivalent schedules, and should
-	 * therefore not be expanded. i.e leaves it to the last equivalentschedule
-	 * to be expanded. RELIES ON THE ALGORITHM EVENTUALLY CHECKING THE
-	 * EQUIVALENT SCHEDULE WITH ALL TASKS THAT ARE ON THE SAME PROCESSOR AS
-	 * LASTADDED BEING IN THE INDEX ORDER WHERE POSSIBLE
+	 * therefore not be expanded. i.e leaves it to the last equivalentschedule to be
+	 * expanded. RELIES ON THE ALGORITHM EVENTUALLY CHECKING THE EQUIVALENT SCHEDULE
+	 * WITH ALL TASKS THAT ARE ON THE SAME PROCESSOR AS LASTADDED BEING IN THE INDEX
+	 * ORDER WHERE POSSIBLE
 	 * 
 	 * @param sched
 	 * @param lastAdded
@@ -294,8 +349,7 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 
 	/**
 	 * Helper method for equivalenceCheck which checks that all outgoing
-	 * datatransfers of a set of tasks are unaffected by a change in
-	 * order/position
+	 * datatransfers of a set of tasks are unaffected by a change in order/position
 	 * 
 	 * @param input
 	 * @param newStarts

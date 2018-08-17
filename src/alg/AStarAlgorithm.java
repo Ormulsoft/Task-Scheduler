@@ -9,6 +9,7 @@ import alg.cost.CostFunction;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
+import util.StaticUtils;
 
 /**
  * This implementation of the AStar algorithm is not completely finished, but
@@ -41,8 +42,8 @@ public class AStarAlgorithm implements Algorithm {
 
 	/**
 	 * 
-	 * This function sets up the initial input graph with virtual edges to
-	 * reduce the solution space
+	 * This function sets up the initial input graph with virtual edges to reduce
+	 * the solution space
 	 * 
 	 * @param input
 	 * @return
@@ -52,20 +53,19 @@ public class AStarAlgorithm implements Algorithm {
 		ScheduleGrph correctedInput = (ScheduleGrph) SerializationUtils.clone(input);
 		// FORKS AND TODO JOINS
 		/*
-		 * for (int vert : input.getVertices()) { TreeMap<Integer,
-		 * List<Integer>> sorted = new TreeMap<Integer, List<Integer>>(); for
-		 * (int depend : input.getOutNeighbors(vert)) { int edge =
-		 * input.getSomeEdgeConnecting(vert, depend); int weight =
-		 * input.getEdgeWeightProperty().getValueAsInt(edge); if
-		 * (sorted.get(weight) != null) { sorted.get(weight).add(depend); } else
-		 * { ArrayList<Integer> a = new ArrayList(); a.add(depend);
-		 * sorted.put(weight, a); }
+		 * for (int vert : input.getVertices()) { TreeMap<Integer, List<Integer>> sorted
+		 * = new TreeMap<Integer, List<Integer>>(); for (int depend :
+		 * input.getOutNeighbors(vert)) { int edge = input.getSomeEdgeConnecting(vert,
+		 * depend); int weight = input.getEdgeWeightProperty().getValueAsInt(edge); if
+		 * (sorted.get(weight) != null) { sorted.get(weight).add(depend); } else {
+		 * ArrayList<Integer> a = new ArrayList(); a.add(depend); sorted.put(weight, a);
+		 * }
 		 * 
-		 * } int curr = -1; for (List<Integer> l : sorted.values()) { for (int
-		 * head : l) {
+		 * } int curr = -1; for (List<Integer> l : sorted.values()) { for (int head : l)
+		 * {
 		 * 
-		 * if (curr != -1) { correctedInput.addDirectedSimpleEdge(curr, head); }
-		 * curr = head; }
+		 * if (curr != -1) { correctedInput.addDirectedSimpleEdge(curr, head); } curr =
+		 * head; }
 		 * 
 		 * } }
 		 */
@@ -159,7 +159,7 @@ public class AStarAlgorithm implements Algorithm {
 		initial.setVerticesLabel(init.getVertexLabelProperty());
 		_openStates.add(initial);
 
-		while (_openStates.size() > 0) {
+		while (_openStates.size() > 0 && StaticUtils.getRemainingMemory() > 600_000_000L) {
 
 			PartialScheduleGrph s = _openStates.poll();
 			String parentSerialized = s.getNormalizedCopy(_numProcessors).serialize();
@@ -179,64 +179,9 @@ public class AStarAlgorithm implements Algorithm {
 					for (int pc = 1; pc <= _numProcessors; pc++) {
 
 						PartialScheduleGrph next = s.copy();
-						next.addVertex(task);
-						next.getVertexWeightProperty().setValue(task, init.getVertexWeightProperty().getValue(task));
-						next.getVertexProcessorProperty().setValue(task, pc);
-
-						// set the start time based on earliest first on a
-						// processor
-
-						// to get the start time, find the time of most
-						// recently
-						// finishing vertex on the same processor,
-						// and store that, also the finish time of the last
-						// dependency. starting time would be the maximum\
-						// of the two.
-
-						int dependencyUpperBound = 0;
-						for (int taskDp : init.getInNeighbours(task)) {
-							int edgeTime = 0;
-							if (next.getVertexProcessorProperty().getValue(taskDp) != pc) {
-								edgeTime = (int) init.getEdgeWeightProperty()
-										.getValue(init.getSomeEdgeConnecting(taskDp, task));
-							}
-
-							int totalTime = (int) (init.getVertexWeightProperty().getValue(taskDp)
-									// needs to be next, not input for start
-									+ next.getVertexStartProperty().getValue(taskDp) + edgeTime);
-							if (totalTime > dependencyUpperBound) {
-								dependencyUpperBound = totalTime;
-							}
-						}
-
+						next.addFreeTask(init, task, pc);
 						/**
-						 * find the latest finishing process on the same
-						 * processor, and factor into the timing
-						 * 
-						 * TODO make this a function of the PartialScheduleGrph
-						 * to suit the abstraction Named
-						 * getProcessorFinishTime() ??
-						 */
-						int processorUpperBound = 0;
-						for (int pcTask : next.getVertices()) {
-							if (next.getVertexProcessorProperty().getValue(pcTask) == pc && pcTask != task) {
-								int totalTime = (int) (next.getVertexWeightProperty().getValue(pcTask)
-										+ next.getVertexStartProperty().getValue(pcTask));
-								if (totalTime > processorUpperBound) {
-									processorUpperBound = totalTime;
-								}
-
-							}
-						}
-						//
-						// find the maximum time the task can start on a
-						// processor.
-						next.getVertexStartProperty().setValue(task,
-								Math.max(processorUpperBound, dependencyUpperBound));
-
-						/**
-						 * If the algorithm timed out, default to a "valid"
-						 * solution
+						 * If the algorithm timed out, default to a "valid" solution
 						 */
 						long timeRunning = System.currentTimeMillis() - startTime;
 						if (timeRunning > ALGORITHM_TIMEOUT) {
@@ -246,9 +191,7 @@ public class AStarAlgorithm implements Algorithm {
 						} else {
 							// use the cost function object to apply the cost
 							_cost.applyCost(next, task, _numProcessors);
-
 						}
-
 						String serialized = next.getNormalizedCopy(_numProcessors).serialize();
 						if (!storedInClosedSet(serialized)) {
 							_openStates.add(next);

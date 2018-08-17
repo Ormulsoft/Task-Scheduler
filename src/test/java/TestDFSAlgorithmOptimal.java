@@ -5,14 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import alg.AStarAlgorithm;
+import alg.DFSAlgorithm;
 import alg.cost.AStarCostFunction;
 import grph.properties.NumericalProperty;
 import io.Input;
 import toools.collections.primitive.LucIntSet;
 import util.ScheduleGrph;
 
-public class TestAStarAlgorithmOptimal {
+public class TestDFSAlgorithmOptimal {
 
 	static ScheduleGrph _7In;
 	static ScheduleGrph _8In;
@@ -55,70 +55,69 @@ public class TestAStarAlgorithmOptimal {
 	@Test
 	public void node7Proc2Core1() {
 		System.out.println("node7Proc2Core1");
-		ScheduleGrph out = new AStarAlgorithm(_7In, new AStarCostFunction(_7In), 2).runAlg();
+		ScheduleGrph out = new DFSAlgorithm(_7In, new AStarCostFunction(_7In), 2).runAlg();
 		assertEquals(28, getEndTime(out));
 	}
 
 	@Test
 	public void node8Proc2Core1() {
 		System.out.println("node8Proc2Core1");
-		ScheduleGrph out = new AStarAlgorithm(_8In, new AStarCostFunction(_8In), 2).runAlg();
+		ScheduleGrph out = new DFSAlgorithm(_8In, new AStarCostFunction(_8In), 2).runAlg();
 		assertEquals(581, getEndTime(out));
 	}
 
 	@Test
 	public void node9Proc2Core1() {
 		System.out.println("node9Proc2Core1");
-		ScheduleGrph out = new AStarAlgorithm(_9In, new AStarCostFunction(_9In), 2).runAlg();
+		ScheduleGrph out = new DFSAlgorithm(_9In, new AStarCostFunction(_9In), 2).runAlg();
 		assertEquals(55, getEndTime(out));
 	}
 
 	@Test
 	public void node10Proc2Core1() {
 		System.out.println("node10Proc2Core1");
-		ScheduleGrph out = new AStarAlgorithm(_10In, new AStarCostFunction(_10In), 2).runAlg();
+		ScheduleGrph out = new DFSAlgorithm(_10In, new AStarCostFunction(_10In), 2).runAlg();
 		assertEquals(50, getEndTime(out));
 	}
 
 	/*
 	 * @Test public void node11Proc2Core1() {
 	 * System.out.println("node11Proc2Core1"); ScheduleGrph out = new
-	 * AStarAlgorithm(_11In, new AStarCostFunction(_11In), 2).runAlg();
+	 * DFSAlgorithm(_11In, new AStarCostFunction(_11In), 2).runAlg();
 	 * assertEquals(getEndTime(out), 350); }
 	 */
-
 	@Test
 	public void node7Proc4Core1() {
 		System.out.println("node7Proc4Core1");
-		ScheduleGrph out = new AStarAlgorithm(_7In, new AStarCostFunction(_7In), 4).runAlg();
+		ScheduleGrph out = new DFSAlgorithm(_7In, new AStarCostFunction(_7In), 4).runAlg();
 		assertEquals(22, getEndTime(out));
 	}
 
 	@Test
 	public void node8Proc4Core1() {
 		System.out.println("node8Proc4Core1");
-		ScheduleGrph out = new AStarAlgorithm(_8In, new AStarCostFunction(_8In), 4).runAlg();
+		ScheduleGrph out = new DFSAlgorithm(_8In, new AStarCostFunction(_8In), 4).runAlg();
 		assertEquals(581, getEndTime(out));
 	}
 
 	@Test
 	public void node9Proc4Core1() {
 		System.out.println("node9Proc4Core1");
-		ScheduleGrph out = new AStarAlgorithm(_9In, new AStarCostFunction(_9In), 4).runAlg();
+		ScheduleGrph out = new DFSAlgorithm(_9In, new AStarCostFunction(_9In), 4).runAlg();
 		assertEquals(55, getEndTime(out));
 	}
 
 	@Test
 	public void node10Proc4Core1() {
 		System.out.println("node10Proc4Core1");
-		ScheduleGrph out = new AStarAlgorithm(_10In, new AStarCostFunction(_10In), 4).runAlg();
+		ScheduleGrph out = new DFSAlgorithm(_10In, new AStarCostFunction(_10In), 4).runAlg();
 		assertEquals(50, getEndTime(out));
 	}
 
 	@Test
 	public void node11Proc4Core1() {
 		System.out.println("node11Proc4Core1");
-		ScheduleGrph out = new AStarAlgorithm(_11In, new AStarCostFunction(_11In), 4).runAlg();
+		ScheduleGrph out = new DFSAlgorithm(_11In, new AStarCostFunction(_11In), 4).runAlg();
 		assertEquals(getEndTime(out), 227);
 	}
 }
