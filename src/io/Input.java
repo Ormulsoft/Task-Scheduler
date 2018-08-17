@@ -51,12 +51,31 @@ public class Input {
 			// Only add if it doesn't contain '{', '}', or only whitespace.
 			if ((currentLine.indexOf('{') == -1) && (currentLine.indexOf('}') == -1)) {
 				if (!currentLine.trim().isEmpty()) {
+					
+					String appendedLine = currentLine;
+				
+					// If the line starts with a number.
+					if (Character.isDigit(currentLine.trim().charAt(0))) {
+						
+						String thisLine = currentLine;
+						
+						while (!thisLine.contains("Weight=") && input.hasNextLine()) {
+							String theLineAfter = input.nextLine();
+							appendedLine += theLineAfter;
+							thisLine = theLineAfter;
+						}
+						
 					// String is not empty and not just whitespace
-					list.add(currentLine);
+						list.add(appendedLine);
+					}
 				}
 			}
 		}
-
+		
+		for (String l : list) {
+			System.out.println(l);
+		}
+			 
 		// Distinguish between edges and nodes within input
 		List<String> edgesList = new ArrayList<String>();
 		// maps the node ID to its Weight value, so that they can be put into
@@ -65,7 +84,7 @@ public class Input {
 		TreeMap<Integer, Integer> nodes = new TreeMap<Integer, Integer>();
 
 		for (String l : list) {
-			if (l.contains("[Weight=")) {
+			if (l.contains("Weight=")) {
 				if (l.indexOf('>') >= 0) {
 					// It must be an edge
 					edgesList.add(l);
@@ -74,8 +93,8 @@ public class Input {
 					Integer label = Integer.parseInt(String.valueOf(l.trim().split("\\s+")[0]));
 
 					// get weight of task
-					l = l.substring(l.indexOf("=") + 1);
-					l = l.substring(0, l.indexOf("]"));
+					l = l.substring(l.indexOf("Weight=") + 7);
+					l = l.substring(0, l.indexOf("];"));
 					int weight = Integer.parseInt(l);
 
 					nodes.put(label, weight);
