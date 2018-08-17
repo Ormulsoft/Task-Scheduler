@@ -35,7 +35,9 @@ public class AStarAlgorithm implements Algorithm {
 	private final CostFunction cost;
 	
 	private int statesVisited;
-
+	private int counter = 0;
+	ScheduleListener _listen;
+	
 	
 	private InformationModel info;
 
@@ -46,6 +48,14 @@ public class AStarAlgorithm implements Algorithm {
 		// info.addListener(guiControl);
 		this.cost = cost;
 		statesVisited = 0;
+	}
+	
+	public AStarAlgorithm(CostFunction cost, ScheduleListener listen) {
+		info = new InformationModel();
+		// info.addListener(guiControl);
+		this.cost = cost;
+		statesVisited = 0;
+		_listen = listen;
 	}
 
 	/**
@@ -145,16 +155,7 @@ public class AStarAlgorithm implements Algorithm {
 	long costTime = 0;
 	
 	private void update(){
-		FXMLLoader loader = new FXMLLoader(
-				getClass().getResource("/gui/MainView.fxml"));
 		
-		try {
-			Parent root = (Parent) loader.load();
-			Controller guiController = loader.getController();
-			guiController.updateLabel();
-		} catch (IOException e){
-			
-		}
 		
 	}
 
@@ -211,10 +212,13 @@ public class AStarAlgorithm implements Algorithm {
 				for (int task : freeTasks) {
 					for (int pc = 1; pc <= numProcessors; pc++) {
 						
-					///// Visualisation /////////
+						///// Visualisation /////////
 						statesVisited++;
 						info.setIterations(statesVisited);
-						update();
+
+						_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations);
+						counter++;
+						//update();
 //						info.fire(new ScheduleEvent(ScheduleEvent.EventType.NewState));
 						
 						///////////////////////
