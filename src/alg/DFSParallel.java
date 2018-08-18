@@ -17,7 +17,7 @@ public class DFSParallel implements Algorithm {
 	private PartialScheduleGrph _bestState;
 	private ForkJoinPool forkJoinPool;
 	private HashSet<String> _closed;
-	
+
 	private PartialScheduleGrph _start = new PartialScheduleGrph(0);
 
 	public DFSParallel(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores) {
@@ -30,7 +30,7 @@ public class DFSParallel implements Algorithm {
 		this._bestState.addVertices(input.getVertices());
 		this._bestState.setVertexWeightProperty(input.getVertexWeightProperty());
 		this._bestState.setVerticesLabel(input.getVertexLabelProperty());
-		
+
 		this._closed = new HashSet<String>();
 
 	}
@@ -49,9 +49,9 @@ public class DFSParallel implements Algorithm {
 		}
 	}
 
-
 	public PartialScheduleGrph runAlg() {
-		forkJoinPool.invoke(new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, _lowerBound));
+		_bestState.setVerticesLabel(_input.getVertexLabelProperty());
+		forkJoinPool.invoke(new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, -1, _lowerBound));
 		getSetupOutput(_bestState);
 
 		return _bestState;

@@ -19,8 +19,8 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 	 * algorithm runs. Used to represent a potential partial solution for the
 	 * problem on the tree.
 	 * 
-	 * TODO - make this have a reference to the input ScheduleGrph - all functions
-	 * about comparisons to original done here?
+	 * TODO - make this have a reference to the input ScheduleGrph - all
+	 * functions about comparisons to original done here?
 	 */
 	private static final long serialVersionUID = 1L;
 	private int score;
@@ -132,7 +132,7 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 	}
 
 	public MinimalScheduleGrph serialize() {
-		
+
 		return new MinimalScheduleGrph(this);
 
 	}
@@ -154,8 +154,8 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 			}
 		}
 		/*
-		 * iterate over tasks in the partial schedule, and add to output ones that are
-		 * free and not contained in the current partial
+		 * iterate over tasks in the partial schedule, and add to output ones
+		 * that are free and not contained in the current partial
 		 */
 		for (int task : this.getVertices()) {
 			for (int outEdge : inputSaved.getOutEdges(task)) {
@@ -185,8 +185,8 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		// partialschedule
 
 		/*
-		 * iterate over tasks in the partial schedule, and add to output ones that are
-		 * free and not contained in the current partial
+		 * iterate over tasks in the partial schedule, and add to output ones
+		 * that are free and not contained in the current partial
 		 */
 		for (int task : inputSaved.getVertices()) {
 			if (!this.containsVertex(task)) {
@@ -211,7 +211,8 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		final NumericalProperty edgeWeights = inputSaved.getEdgeWeightProperty();
 		final NumericalProperty vertWeights = inputSaved.getVertexWeightProperty();
 
-		// Check that free tasks meet conditions to be sorted for fixed task order
+		// Check that free tasks meet conditions to be sorted for fixed task
+		// order
 		for (int task : a) {
 
 			// Condition 3: parents are all on same processor
@@ -299,7 +300,8 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 
 			outSorted.addAll(parentSorted);
 
-			// After sort, return first free task only to force order (or just the set if
+			// After sort, return first free task only to force order (or just
+			// the set if
 			// only contains one)
 			if (outSorted.size() <= 1) {
 				return outSorted;
@@ -378,11 +380,11 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		}
 
 		/**
-		 * find the latest finishing process on the same processor, and factor into the
-		 * timing
+		 * find the latest finishing process on the same processor, and factor
+		 * into the timing
 		 * 
-		 * TODO make this a function of the PartialScheduleGrph to suit the abstraction
-		 * Named getProcessorFinishTime() ??
+		 * TODO make this a function of the PartialScheduleGrph to suit the
+		 * abstraction Named getProcessorFinishTime() ??
 		 */
 		int processorUpperBound = 0;
 		for (int pcTask : this.getVertices()) {
@@ -407,21 +409,21 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 	 * needed
 	 * 
 	 * Checks whether or not a schedule has any equivalent schedules, and should
-	 * therefore not be expanded. i.e leaves it to the last equivalentschedule to be
-	 * expanded. RELIES ON THE ALGORITHM EVENTUALLY CHECKING THE EQUIVALENT SCHEDULE
-	 * WITH ALL TASKS THAT ARE ON THE SAME PROCESSOR AS LASTADDED BEING IN THE INDEX
-	 * ORDER WHERE POSSIBLE
+	 * therefore not be expanded. i.e leaves it to the last equivalentschedule
+	 * to be expanded. RELIES ON THE ALGORITHM EVENTUALLY CHECKING THE
+	 * EQUIVALENT SCHEDULE WITH ALL TASKS THAT ARE ON THE SAME PROCESSOR AS
+	 * LASTADDED BEING IN THE INDEX ORDER WHERE POSSIBLE
 	 * 
 	 * @param sched
 	 * @param lastAdded
 	 * @return
 	 */
-	private boolean equivalenceCheck(ScheduleGrph input, int lastAdded, int numProcessors) {
+	public boolean equivalenceCheck(ScheduleGrph input, int lastAdded, int numProcessors) {
 		ArrayList<Integer> tasksOnP = new ArrayList<Integer>();
 		final NumericalProperty starts = this.getVertexStartProperty();
 		NumericalProperty procs = this.getVertexProcessorProperty();
 		NumericalProperty vertWeights = this.getVertexWeightProperty();
-		NumericalProperty edgeWeights = this.getEdgeWeightProperty();
+		NumericalProperty edgeWeights = input.getEdgeWeightProperty();
 
 		// Create an ordered list of all the tasks on the same processor as
 		// lastAdded
@@ -448,7 +450,7 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		int i = tasksOnP.size() - 2;
 
 		// While a task can "bubble up"
-		while (i >= 0 && lastAdded < tasksOnP.get(i) && !this.areVerticesAdjacent(tasksOnP.get(i), lastAdded)) {
+		while (i >= 0 && lastAdded < tasksOnP.get(i) && !input.areVerticesAdjacent(tasksOnP.get(i), lastAdded)) {
 
 			// swap lastadded with task before it
 			Collections.swap(tasksOnP, tasksOnP.indexOf((Integer) lastAdded), i);
@@ -464,11 +466,11 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 				}
 
 				// Find earliest time based on dependencies
-				for (int dep : this.getInNeighbors(thisTask)) {
+				for (int dep : input.getInNeighbors(thisTask)) {
 					int drt = starts.getValueAsInt(dep) + vertWeights.getValueAsInt(dep);
 
 					if (procs.getValueAsInt(dep) != p) {
-						int edge = (Integer) this.getEdgesConnecting(dep, thisTask).toArray()[0];
+						int edge = (Integer) input.getEdgesConnecting(dep, thisTask).toArray()[0];
 						drt += edgeWeights.getValueAsInt(edge);
 					}
 
@@ -496,7 +498,8 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 
 	/**
 	 * Helper method for equivalenceCheck which checks that all outgoing
-	 * datatransfers of a set of tasks are unaffected by a change in order/position
+	 * datatransfers of a set of tasks are unaffected by a change in
+	 * order/position
 	 * 
 	 * @param input
 	 * @param newStarts
@@ -510,7 +513,7 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		NumericalProperty weights = this.getVertexWeightProperty();
 		NumericalProperty edgeWeights = input.getEdgeWeightProperty();
 		NumericalProperty procs = this.getVertexProcessorProperty();
-		LucIntSet placedTasks = this.getVertices();
+		LucIntSet placedTasks = input.getVertices();
 
 		// Check that the children of each affected task are unaffected
 		for (int task : newStarts.keySet()) {
