@@ -18,7 +18,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
-
+/**
+ * This class was designed by user: Roland from StackOverflow
+ * https://stackoverflow.com/questions/27975898/gantt-chart-from-scratch
+ */
 public class GanttChart<X,Y> extends XYChart<X,Y> {
 
     public static class ExtraData {
@@ -55,7 +58,7 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 
     }
 
-    private double blockHeight = 10;
+    private double blockHeight = 100;
 
     public GanttChart(@NamedArg("xAxis") Axis<X> xAxis, @NamedArg("yAxis") Axis<Y> yAxis) {
         this(xAxis, yAxis, FXCollections.<Series<X, Y>>observableArrayList());
@@ -73,13 +76,14 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
         return ((ExtraData) obj).getStyleClass();
     }
 
-    private static double getLength( Object obj) {
-        return ((ExtraData) obj).getLength();
+    private static long getLength(Object obj) {
+        return ((ExtraData) obj).length;
     }
     private static String getLabel(Object obj) {
         return ((ExtraData) obj).getLabel();
 }
 
+    
     @Override
     protected void layoutPlotChildren() {
         getData().forEach(e -> getDisplayedDataIterator(e).forEachRemaining(n -> {
@@ -90,11 +94,10 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
             Node block = n.getNode();
             Rectangle rect;
              final String label = getLabel(n.getExtraValue());
-            Text text = new Text(label);
-            text.setFont(Font.font("Courier New", FontWeight.EXTRA_BOLD, 20));
-            text.setTranslateX(x);
-            text.setTranslateY(getBlockHeight());
-            text.setBoundsType(TextBoundsType.VISUAL);
+            Text textLabel = new Text(label);
+            textLabel.setFont(Font.font("Courier New", FontWeight.BOLD,15));
+            textLabel.setTranslateX(x);
+            textLabel.setTranslateY(getBlockHeight());
             if (block != null) {
                 if (block instanceof StackPane) {
                     StackPane region = (StackPane) block;
@@ -105,21 +108,20 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
                     } else {
                         return;
                     }
-                    text.setTranslateX(getLength(n.getExtraValue()) * 0.5d);
-                    text.setTranslateY(getBlockHeight() * 0.09d);
-                    if (!region.getChildren().contains(rect) && !region.getChildren().contains(text)) {
-                        region.getChildren().addAll(text);
+                    textLabel.setTranslateX(getLength(n.getExtraValue()) * 4d);
+                    textLabel.setTranslateY(100 * 0.10d);
+                    if (!region.getChildren().contains(rect) && !region.getChildren().contains(textLabel)) {
+                        region.getChildren().addAll(textLabel);
                     }
                     rect.setWidth(getLength(n.getExtraValue()) * ((getXAxis() instanceof NumberAxis) ? Math.abs(((NumberAxis) getXAxis()).getScale()) : 1));
-                    rect.setHeight((getBlockHeight() * ((getYAxis() instanceof NumberAxis) ? Math.abs(((NumberAxis) getYAxis()).getScale()) : 1)) * (1d / 6d));
-                    y = y - getBlockHeight() * 0.41d;
-                    region.setStyle(getStyleClass(n.getExtraValue()).toString());
+                    rect.setHeight((100 * ((getYAxis() instanceof NumberAxis) ? Math.abs(((NumberAxis) getYAxis()).getScale()) : 1)) * (1d / 6d));
+                    y = y - 10 * 0.41d;
                     region.setShape(null);
                     region.setShape(rect);
                     region.setScaleShape(false);
                     region.setCenterShape(false);
                     region.setCacheShape(false);
-                    region.setTranslateY(getBlockHeight() * 0.35d);
+                    region.setTranslateY(10 * 0.35d);
                     block.setLayoutX(x);
                     block.setLayoutY(y);
                 }

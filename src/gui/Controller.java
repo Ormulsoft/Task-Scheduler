@@ -243,13 +243,8 @@ public class Controller implements ScheduleListener{
 					intializeData();
 					for(int i:a.getVertices().toIntArray()) {
 						XYChart.Series series = chart.getData().get(a.getVertexProcessorProperty().getValueAsInt(i)-1);
-						series.getData().add(new XYChart.Data(a.getVertexStartProperty().getValueAsInt(i),""+ a.getVertexProcessorProperty().getValueAsInt(i), new ExtraData(a.getVertexWeightProperty().getValueAsInt(i), getColour(),a.getVertexLabelProperty().getValueAsString(i))));	
-						
-						   
+							series.getData().add(new XYChart.Data(a.getVertexStartProperty().getValueAsInt(i),""+ a.getVertexProcessorProperty().getValueAsInt(i), new ExtraData(a.getVertexWeightProperty().getValueAsInt(i), getColour(),a.getVertexLabelProperty().getValueAsString(i))));	   	
 					}
-					
-
-			        
 			        }
 				}
 			
@@ -259,19 +254,12 @@ public class Controller implements ScheduleListener{
 	}
 	
 	public String getColour() {
-		if (rand % 2 == 0) {
-			rand++;
-			return this.Colors.get(0);
-		} else {
-			rand++;
-			return this.Colors.get(1);
-		}
+		return this.Colors.get((int) ((Math.random()*2)));
 		
 	}
 	public void initalizeColour() {
 		this.Colors.add("status-red");
 		this.Colors.add("status-green");
-		this.Colors.add("status-blue");
 	}
 	
 	
