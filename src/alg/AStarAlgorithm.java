@@ -51,6 +51,7 @@ public class AStarAlgorithm implements Algorithm {
 	ScheduleListener _listen;
 	private int iterations = 0;
 	
+	
 	private InformationModel info;
 
 	// used to compare the cost values in the PriorityQueue
@@ -193,9 +194,6 @@ public class AStarAlgorithm implements Algorithm {
 		PartialScheduleGrph prev = null;
 		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 		executor.scheduleAtFixedRate(helloRunnable, 0, 1, TimeUnit.SECONDS);
-		
-		ScheduledExecutorService executorSearchSpace = Executors.newScheduledThreadPool(1);
-		executorSearchSpace.scheduleAtFixedRate(searchSpaceRunnable(states), 0, 1, TimeUnit.SECONDS);
 		
 		
 		while (states.size() > 0) {
@@ -425,15 +423,6 @@ public class AStarAlgorithm implements Algorithm {
 	    	_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations,s);
 	    }
 	};
-	
-	
-	private Runnable searchSpaceRunnable(PriorityQueue<PartialScheduleGrph> states) {
-		return new Runnable() {
-		    public void run() {
-		    	_listen.renderSearchSpace(states);
-		    }
-		};
-	}
 	
 	
 	public void fireListener() {
