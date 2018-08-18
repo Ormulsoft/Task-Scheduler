@@ -1,9 +1,15 @@
 package alg;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Set;
+
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.apache.commons.lang.SerializationUtils;
 
@@ -216,13 +222,17 @@ public class AStarAlgorithm implements Algorithm {
 						///// Visualisation /////////
 						statesVisited++;
 						info.setIterations(statesVisited);
-
-						_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations);
+						double memory = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024.0 * 1024.0 * 1024.0 ));
+						
+						
+						_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations, memory);
 						counter++;
+						
+						
 						//update();
 //						info.fire(new ScheduleEvent(ScheduleEvent.EventType.NewState));
 						
-						///////////////////////
+						/////////////////////// 
 
 						PartialScheduleGrph next = s.copy();
 						next.addVertex(task);

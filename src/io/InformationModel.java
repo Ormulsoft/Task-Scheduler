@@ -11,6 +11,10 @@ public class InformationModel {
 	
 	private int _iterations;
 	
+	private double memory;
+	
+	private double cpu;
+	
 	public InformationModel() {
 		_listeners = new ArrayList<ScheduleListener>();
 	}
@@ -33,7 +37,7 @@ public class InformationModel {
 	
 	public void fire(ScheduleEvent event) {
 		for(ScheduleListener listener : _listeners) {
-			listener.update(event, _iterations);
+			listener.update(event, _iterations, memory);
 		}
 	}
 

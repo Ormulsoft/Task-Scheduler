@@ -34,5 +34,7 @@
       </StackedBarChart>
       <Label fx:id="visited" layoutX="579.0" layoutY="349.0" text="0" />
       <Label fx:id="time" layoutX="91.0" layoutY="366.0" text="0" />
+      <Label fx:id="mem" layoutX="268.0" layoutY="366.0" text="0.00" />
+      <Label fx:id="cpuLoad" layoutX="396.0" layoutY="349.0" text="10.00" />
    </children>
 </AnchorPane>

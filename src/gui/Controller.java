@@ -1,5 +1,6 @@
 package gui;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.URL;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
@@ -9,6 +10,10 @@ import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.swing.SwingUtilities;
 import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
@@ -40,6 +45,14 @@ public class Controller implements ScheduleListener{
 	@FXML
 	private Label time;
 	
+	@FXML
+	private Label mem;
+	
+	@FXML
+	private Label cpuLoad;
+	
+	private double cpuCalculation = 10.00;
+	
 	Timer myTimer = new Timer();
 	
 	private double seconds = 0.0;
@@ -52,11 +65,15 @@ public class Controller implements ScheduleListener{
 	HashMap<Integer, XYChart.Series> Processer = new HashMap<Integer, XYChart.Series>();
 	@FXML
 	private void startAlgorithm() {
+		seconds = 0;
+		startBtn.setDisable(true);
+		
 		new Thread(new Runnable() {
 
 			public void run() {
 				ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(io.Main.getIn()), parse).runAlg(io.Main.getIn(), io.Main.getNumCores(), io.Main.getNumProcessers());
-				myTimer.cancel();
+				myTimer.cancel(); 
+				startBtn.setDisable(false);
 			}
 			
 		}).start();
@@ -66,6 +83,14 @@ public class Controller implements ScheduleListener{
 			
 			public void run() {
 				myTimer.scheduleAtFixedRate(task, 1000, 1);
+				
+			}
+		}).start();
+		
+		new Thread(new Runnable() {
+			
+			public void run() {
+				myTimer.scheduleAtFixedRate(cpuTask, 1, 20000);
 				
 			}
 		}).start();
@@ -83,7 +108,7 @@ public class Controller implements ScheduleListener{
     
 	
 	
-	public void update(final ScheduleEvent event, final int iterations) {
+	public void update(final ScheduleEvent event, final int iterations, final double memory) {
 		Platform.runLater(new Runnable() {
 			
 			public void run() {
@@ -94,6 +119,9 @@ public class Controller implements ScheduleListener{
 					
 				}
 				
+				mem.setText(String.format("%.3f", memory));
+//				cpuLoad.setText(""+cpu);
+				//System.out.println(""+cpu);
 			}
 		});
 		
@@ -127,6 +155,49 @@ public class Controller implements ScheduleListener{
 		}
 		
 	};
+	
+	TimerTask cpuTask = new TimerTask(){
+
+		@Override
+		public void run() {
+			
+			try {
+				cpuCalculation = getProcessCpuLoad();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			Platform.runLater(new Runnable() {
+				
+				public void run() {
+					
+					cpuLoad.setText(""+cpuCalculation);
+					
+				}
+			});
+			
+		}
+		
+	};
+	
+	public static double getProcessCpuLoad() throws Exception {
+
+	    MBeanServer mbs    = ManagementFactory.getPlatformMBeanServer();
+	    ObjectName name    = ObjectName.getInstance("java.lang:type=OperatingSystem");
+	    AttributeList list = mbs.getAttributes(name, new String[]{ "ProcessCpuLoad" });
+
+	    if (list.isEmpty())     return Double.NaN;
+
+	    Attribute att = (Attribute)list.get(0);
+	    Double value  = (Double)att.getValue();
+
+	    // usually takes a couple of seconds before we get real values
+	    if (value == -1.0)      return Double.NaN;
+	    // returns a percentage value with 1 decimal point precision
+	    return ((int)(value * 1000) / 10.0);
+	}
 	
 	
 }
