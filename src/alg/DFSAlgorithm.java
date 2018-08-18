@@ -12,7 +12,7 @@ public class DFSAlgorithm implements Algorithm {
 	private int _lowerBound;
 	private PartialScheduleGrph _bestState;
 
-	public DFSAlgorithm(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores) {
+	public DFSAlgorithm(ScheduleGrph input, CostFunction cost, int numProcessors) {
 		this._cost = cost;
 		this._input = input;
 		this._numProcessors = numProcessors;

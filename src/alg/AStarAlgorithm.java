@@ -8,6 +8,7 @@ import org.apache.commons.lang.SerializationUtils;
 
 import alg.cost.CostFunction;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import util.MinimalScheduleGrph;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 import util.StaticUtils;
@@ -32,7 +33,7 @@ public class AStarAlgorithm implements Algorithm {
 
 	// A set of closed states, which is used to remove duplicates
 	protected HashSet<String> _closedStates = new HashSet<String>();
-	protected PriorityBlockingQueue<PartialScheduleGrph> _openStates = new PriorityBlockingQueue<PartialScheduleGrph>(
+	protected PriorityBlockingQueue<MinimalScheduleGrph> _openStates = new PriorityBlockingQueue<MinimalScheduleGrph>(
 			1);
 
 	public AStarAlgorithm(ScheduleGrph input, CostFunction cost, int numProcessors) {
@@ -150,7 +151,7 @@ public class AStarAlgorithm implements Algorithm {
 
 	public PartialScheduleGrph runAlg() {
 
-		ScheduleGrph init = initializeIdenticalTaskEdges(_input);
+		ScheduleGrph init = _input;
 		// used for timeout
 		long startTime = System.nanoTime();
 		int totalVertices = init.getNumberOfVertices();
@@ -158,12 +159,14 @@ public class AStarAlgorithm implements Algorithm {
 		// create an initial empty state
 		PartialScheduleGrph initial = new PartialScheduleGrph(0);
 		initial.setVerticesLabel(init.getVertexLabelProperty());
-		_openStates.add(initial);
+		_openStates.add(initial.serialize());
 
-		while (_openStates.size() > 0) {
-
-			PartialScheduleGrph s = _openStates.poll();
-			String parentSerialized = s.getNormalizedCopy(_numProcessors).serialize();
+		while (_openStates.size() > 0 ) {
+			PartialScheduleGrph s = _openStates.poll().toGraph();
+			s.setVerticesLabel(_input.getVertexLabelProperty());
+			s.setVertexWeightProperty(_input.getVertexWeightProperty());
+			
+			String parentSerialized = s.getNormalizedCopy(_numProcessors).serialize().getSerialString();
 
 			TreeSet<Integer> freeTasks = s.getFixedFree(init);
 
@@ -193,9 +196,9 @@ public class AStarAlgorithm implements Algorithm {
 							// use the cost function object to apply the cost
 							_cost.applyCost(next, task, _numProcessors);
 						}
-						String serialized = next.getNormalizedCopy(_numProcessors).serialize();
+						String serialized = next.getNormalizedCopy(_numProcessors).serialize().getSerialString();
 						if (!storedInClosedSet(serialized)) {
-							_openStates.add(next);
+							_openStates.add(next.serialize());
 						}
 					}
 				}

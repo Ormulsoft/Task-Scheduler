@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import alg.cost.CostFunction;
+import util.MinimalScheduleGrph;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
@@ -25,8 +26,9 @@ public class AStarParallel implements Algorithm {
 	 * 
 	 */
 	public PartialScheduleGrph runAlg() {
+		
 		HashSet<String> closedStates = new HashSet<String>();
-		PriorityBlockingQueue<PartialScheduleGrph> states = new PriorityBlockingQueue<PartialScheduleGrph>(1);
+		PriorityBlockingQueue<MinimalScheduleGrph> states = new PriorityBlockingQueue<MinimalScheduleGrph>(1);
 
 		AStarThread[] t = new AStarThread[this._numCores];
 		Thread[] threads = new Thread[this._numCores];

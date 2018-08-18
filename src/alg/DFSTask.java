@@ -1,6 +1,7 @@
 package alg;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -16,8 +17,9 @@ public class DFSTask extends RecursiveAction {
 	private PartialScheduleGrph _bestState;
 	private final int _numProcessors;
 	private final CostFunction _cost;
+	private HashSet<String> _closed;
 
-	public DFSTask(ScheduleGrph input, PartialScheduleGrph current, PartialScheduleGrph best, CostFunction cost,
+	public DFSTask(ScheduleGrph input, PartialScheduleGrph current, PartialScheduleGrph best, CostFunction cost,HashSet<String> closed,
 			int numProcessors, AtomicLong lowerBound) {
 		_input = input;
 		_current = current;
@@ -25,13 +27,14 @@ public class DFSTask extends RecursiveAction {
 		_numProcessors = numProcessors;
 		_cost = cost;
 		_bestState = best;
+		_closed = closed;
 	}
 
 	@Override
 	protected void compute() {
 		ArrayList<DFSTask> tasks = new ArrayList<DFSTask>();
 
-		if (_current.getScore() >= _lowerBound.get()) {
+		if (_current.getScore() >= _lowerBound.get() || _closed.contains(_current.getNormalizedCopy(_numProcessors).serialize().getSerialString())) {
 			return;
 		}
 
@@ -39,6 +42,8 @@ public class DFSTask extends RecursiveAction {
 			updateCurrentBest(_current);
 			return;
 		}
+		
+		_closed.add(_current.getNormalizedCopy(_numProcessors).serialize().getSerialString());
 
 		for (int freeTask : _current.getFixedFree(_input)) {
 			for (int proc = 1; proc <= this._numProcessors; proc++) {
@@ -47,7 +52,7 @@ public class DFSTask extends RecursiveAction {
 				next.addFreeTask(_input, freeTask, proc);
 				_cost.applyCost(next, freeTask, _numProcessors);
 				if (_current.getScore() < _lowerBound.get()) {
-					tasks.add(new DFSTask(_input, next, _bestState, _cost, _numProcessors, _lowerBound));
+					tasks.add(new DFSTask(_input, next, _bestState, _cost, _closed, _numProcessors, _lowerBound));
 				}
 
 			}

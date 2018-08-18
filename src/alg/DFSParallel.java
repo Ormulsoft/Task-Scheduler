@@ -1,5 +1,6 @@
 package alg;
 
+import java.util.HashSet;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -15,6 +16,8 @@ public class DFSParallel implements Algorithm {
 	private AtomicLong _lowerBound = new AtomicLong();
 	private PartialScheduleGrph _bestState;
 	private ForkJoinPool forkJoinPool;
+	private HashSet<String> _closed;
+	
 	private PartialScheduleGrph _start = new PartialScheduleGrph(0);
 
 	public DFSParallel(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores) {
@@ -22,17 +25,18 @@ public class DFSParallel implements Algorithm {
 		this._cost = cost;
 		this._input = input;
 		this._numProcessors = numProcessors;
-		_lowerBound.set(Long.MAX_VALUE);
+		this._lowerBound.set(Long.MAX_VALUE);
 		this._bestState = new PartialScheduleGrph(0);
 		this._bestState.addVertices(input.getVertices());
 		this._bestState.setVertexWeightProperty(input.getVertexWeightProperty());
 		this._bestState.setVerticesLabel(input.getVertexLabelProperty());
+		
+		this._closed = new HashSet<String>();
 
 	}
 
-	public DFSParallel(ScheduleGrph input, int startScore, CostFunction cost, int numProcessors, int numCores) {
+	public DFSParallel(ScheduleGrph input, HashSet<String> closed, CostFunction cost, int numProcessors, int numCores) {
 		this(input, cost, numProcessors, numCores);
-		_lowerBound.set(startScore);
 
 	}
 
@@ -47,7 +51,7 @@ public class DFSParallel implements Algorithm {
 
 
 	public PartialScheduleGrph runAlg() {
-		forkJoinPool.invoke(new DFSTask(_input, _start, _bestState, _cost, _numProcessors, _lowerBound));
+		forkJoinPool.invoke(new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, _lowerBound));
 		getSetupOutput(_bestState);
 
 		return _bestState;

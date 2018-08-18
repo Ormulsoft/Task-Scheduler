@@ -18,6 +18,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
 import alg.AStarParallel;
+import alg.DFSAlgorithm;
 import alg.DFSParallel;
 import alg.cost.AStarCostFunction;
 import util.PartialScheduleGrph;
@@ -143,7 +144,7 @@ public class Main {
 		if (numCores == 1) {
 			out = new AStarAlgorithm(in, new AStarCostFunction(in), numProcessors).runAlg();
 		} else {
-			out = new AStarParallel(in, new AStarCostFunction(in), numProcessors, numCores).runAlg();
+			out = new DFSParallel(in, new AStarCostFunction(in), numProcessors, numCores).runAlg();
 		}
 
 		log.info("Algorithm took " + (System.currentTimeMillis() - start) + " ms");

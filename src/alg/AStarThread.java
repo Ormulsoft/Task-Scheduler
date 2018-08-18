@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import alg.cost.CostFunction;
+import util.MinimalScheduleGrph;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
@@ -12,7 +13,7 @@ public class AStarThread extends AStarAlgorithm implements Runnable {
 	private PartialScheduleGrph _output;
 
 	public AStarThread(ScheduleGrph input, CostFunction cost, int numProcessors,
-			PriorityBlockingQueue<PartialScheduleGrph> open, HashSet<String> closed) {
+			PriorityBlockingQueue<MinimalScheduleGrph> open, HashSet<String> closed) {
 
 		super(input, cost, numProcessors);
 

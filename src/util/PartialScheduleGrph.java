@@ -131,18 +131,9 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		return out;
 	}
 
-	public String serialize() {
-		String serialized = "";
-		// NumericalProperty weights = this.getVertexWeightProperty();
-		NumericalProperty procs = this.getVertexProcessorProperty();
-		NumericalProperty starts = this.getVertexStartProperty();
-		for (int i : this.getVertices()) {
-			serialized += i;
-			// serialized += weights.getValueAsString(i);
-			serialized += procs.getValueAsString(i);
-			serialized += starts.getValueAsString(i);
-		}
-		return serialized;
+	public MinimalScheduleGrph serialize() {
+		
+		return new MinimalScheduleGrph(this);
 
 	}
 

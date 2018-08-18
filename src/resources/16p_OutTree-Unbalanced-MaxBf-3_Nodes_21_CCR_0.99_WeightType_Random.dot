@@ -101,9 +101,4 @@ digraph "core_16p_gb_OutTree-Unbalanced-MaxBf-3_Nodes_21_CCR_0.99_WeightType_Ran
 		"Start time"=31,
 		Weight=3];
 	9 -> 20	 [Weight=9];
-	21	 ["Finish time"=38,
-		Processor=2,
-		"Start time"=35,
-		Weight=3];
-	9 -> 21	 [Weight=6];
 }
