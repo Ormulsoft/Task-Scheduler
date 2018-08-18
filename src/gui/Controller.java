@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
 import cnrs.i3s.papareto.demo.function.Main;
+import grph.properties.NumericalProperty;
 import javafx.embed.swing.SwingNode;
 import io.Output;
 import io.ScheduleEvent;
@@ -25,6 +26,8 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
@@ -33,8 +36,13 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import toools.collections.Collections;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
+import javafx.scene.control.TooltipBuilder;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.text.TextAlignment;
 import util.ScheduleGrph;
 
 public class Controller implements ScheduleListener{
@@ -151,39 +159,101 @@ public class Controller implements ScheduleListener{
 		boolean isNextLayer = true;
 		int currentLayer = 0;
 		ArrayList<Integer> freeNodes = new ArrayList<Integer>();
-		ArrayList<Integer> nextLayer = new ArrayList<Integer>();
+		HashMap<Integer,Node> added = new HashMap<Integer,Node>();
+		HashMap<Integer,Label> labels = new HashMap<Integer,Label>();
+		
+		NumericalProperty vertWeights = graph.getVertexWeightProperty();
+		NumericalProperty edgeWeights = graph.getEdgeWeightProperty();
+		
+		double anchorWidth = graph.getVertices().size() * 120 + 300;
+		double anchorHeight = graph.getVertices().size() * 120 + 300; 
+		((AnchorPane)display.getContent()).setPrefWidth(anchorWidth);
+		((AnchorPane)display.getContent()).setPrefHeight(anchorHeight);
+		display.setHvalue(0.45);
 		
 		freeNodes.addAll(graph.getSources());
+		
 		
 		while (isNextLayer) {
 			int i = 0;
 			for (int vert : freeNodes) {
-				Circle node = new Circle(20);
+				Circle node = new Circle(36);
+				node.setFill(Color.CADETBLUE);
 				node.setId(Integer.toString(vert));
-				if (freeNodes.size() % 2 == 1) {
-					node.setLayoutX(350 + (60 * ((i + 1)/ 2)  * (Math.pow(-1, i))));
-				}
-				else {
-					node.setLayoutX(350 + (60 * ((i + 1)/ 2)  * (Math.pow(-1, i))));
-				}
-				node.setLayoutY(40 + currentLayer * 80);
+				node.setLayoutX((anchorWidth / 2) + (80 * ((i + 1)/ 2)  * (Math.pow(-1, i))) - (40 * (freeNodes.size() % 2)));
+				node.setLayoutY(40 + currentLayer * 100);
 				((AnchorPane)display.getContent()).getChildren().add(node);
 				
-				for (int child : graph.getOutNeighbors(vert)) {
-					nextLayer.add(child);
-				}
+				Label label = new Label("ID: " + vert + "\nW: " + vertWeights.getValueAsInt(vert));
+				label.setLayoutX(node.getLayoutX() - 20);
+				label.setLayoutY(node.getLayoutY() - 20);
+				label.setScaleX(1.5);
+				label.setScaleY(1.5);
+				label.setTextAlignment(TextAlignment.CENTER);
+				((AnchorPane)display.getContent()).getChildren().add(label);
+				
+				labels.put(vert, label);
+				added.put(vert,node);
 				i++;
 			}
 			
-			if (nextLayer.isEmpty()) {
+			freeNodes.clear();
+			
+			for (int vert : graph.getVertices()) {
+				if (!added.containsKey(vert)) {
+					boolean deps = true;
+					for (int parent : graph.getInNeighbors(vert)) {
+						if (!added.containsKey(parent)) {
+							deps = false;
+							break;
+						}
+					}
+					
+					if (deps) {
+						freeNodes.add(vert);
+					}
+					
+				}
+			}
+			
+			
+			if (freeNodes.isEmpty()) {
 				isNextLayer = false;
 			}
 			else {
-				freeNodes = (ArrayList<Integer>) nextLayer.clone();
-				nextLayer.clear();
 				currentLayer++;
 			}
 		}
+		
+		for (int vert : added.keySet()) {
+			
+			String toolTip = "No parent dependencies";
+			
+			for (int parent : graph.getInNeighbors(vert)) {
+				
+				if (toolTip.equals("No parent dependencies")) {
+					toolTip = "";
+				}
+				
+				int edge = (Integer)graph.getEdgesConnecting(parent, vert).toArray()[0];
+				toolTip += "\nDepends on task " + parent + ", transfer cost " + edgeWeights.getValueAsInt(edge); 
+				
+				Line line = new Line(
+						added.get(parent).getLayoutX(),
+						added.get(parent).getLayoutY(),
+						added.get(vert).getLayoutX(),
+						added.get(vert).getLayoutY());
+				
+				((AnchorPane)display.getContent()).getChildren().add(line);
+				line.toBack();
+			}
+			
+			Tooltip tip = new Tooltip(toolTip.trim());
+			Tooltip.install(added.get(vert), tip);
+			Tooltip.install(labels.get(vert), tip);
+			
+		}
+		
 		
 	}
 	
