@@ -3,14 +3,13 @@ import java.io.IOException;
 import java.net.URL;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
-
 import org.graphstream.graph.Graph;
-
 import java.util.HashMap;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
-
 import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
 import cnrs.i3s.papareto.demo.function.Main;
@@ -38,6 +37,13 @@ public class Controller implements ScheduleListener{
 	@FXML
     private Label visited;
 	
+	@FXML
+	private Label time;
+	
+	Timer myTimer = new Timer();
+	
+	private long seconds = 0;
+	
 	Controller parse = this;
 	@FXML
 	Button startBtn;
@@ -50,10 +56,22 @@ public class Controller implements ScheduleListener{
 
 			public void run() {
 				ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(io.Main.getIn()), parse).runAlg(io.Main.getIn(), io.Main.getNumCores(), io.Main.getNumProcessers());
+				myTimer.cancel();
 			}
 			
 		}).start();
 		intializeData();
+		
+		new Thread(new Runnable() {
+			
+			public void run() {
+				myTimer.scheduleAtFixedRate(task, 1000, 1000);
+				
+			}
+		}).start();
+		
+		
+		
 	}
 	
 	private void addAllData() {
@@ -92,6 +110,23 @@ public class Controller implements ScheduleListener{
 		}
 		addAllData();
 	}
+	
+	TimerTask task = new TimerTask(){
+
+		@Override
+		public void run() {
+			Platform.runLater(new Runnable() {
+				
+				public void run() {
+					seconds++;
+					time.setText(""+seconds);
+					
+				}
+			});
+			
+		}
+		
+	};
 	
 	
 }

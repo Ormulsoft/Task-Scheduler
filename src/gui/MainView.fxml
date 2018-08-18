@@ -33,5 +33,6 @@
         </yAxis>
       </StackedBarChart>
       <Label fx:id="visited" layoutX="579.0" layoutY="349.0" text="0" />
+      <Label fx:id="time" layoutX="91.0" layoutY="366.0" text="0" />
    </children>
 </AnchorPane>
