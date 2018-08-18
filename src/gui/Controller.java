@@ -29,11 +29,17 @@ import javafx.scene.chart.StackedBarChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Circle;
 import util.ScheduleGrph;
 
 public class Controller implements ScheduleListener{
 	final CategoryAxis xAxis = new CategoryAxis();
     final NumberAxis yAxis = new NumberAxis();
+    
+	@FXML
+	ScrollPane _input;
 	@FXML
     private Label visited;
 	
@@ -50,6 +56,14 @@ public class Controller implements ScheduleListener{
 	@FXML
     private StackedBarChart<?, ?> sbc;
 	HashMap<Integer, XYChart.Series> Processer = new HashMap<Integer, XYChart.Series>();
+	
+	
+	@FXML
+	public void initialize() {
+		viewGraph(_input,io.Main.getIn());
+	}
+	
+	
 	@FXML
 	private void startAlgorithm() {
 		new Thread(new Runnable() {
@@ -127,6 +141,15 @@ public class Controller implements ScheduleListener{
 		}
 		
 	};
+	
+	
+	public static void viewGraph(ScrollPane display, ScheduleGrph graph) {
+		for (int vert : graph.getVertices()) {
+			Circle node = new Circle(20);
+			node.setLayoutX(20 + 4 * vert);
+			((AnchorPane)display.getContent()).getChildren().add(node);
+		}
+	}
 	
 	
 }
