@@ -42,7 +42,7 @@ public class Controller implements ScheduleListener{
 	
 	Timer myTimer = new Timer();
 	
-	private long seconds = 0;
+	private double seconds = 0.0;
 	
 	Controller parse = this;
 	@FXML
@@ -65,7 +65,7 @@ public class Controller implements ScheduleListener{
 		new Thread(new Runnable() {
 			
 			public void run() {
-				myTimer.scheduleAtFixedRate(task, 1000, 1000);
+				myTimer.scheduleAtFixedRate(task, 1000, 1);
 				
 			}
 		}).start();
@@ -118,8 +118,8 @@ public class Controller implements ScheduleListener{
 			Platform.runLater(new Runnable() {
 				
 				public void run() {
-					seconds++;
-					time.setText(""+seconds);
+					seconds = seconds + 0.001;
+					time.setText(String.format("%.3f", seconds));
 					
 				}
 			});
