@@ -124,13 +124,11 @@ public class Controller implements ScheduleListener{
 		chart.setMinWidth(600);
 		chart.setMinHeight(600);
 		GanttPane.getChildren().add(chart);	
-		xAxis.setLabel("");
-		xAxis.setTickLabelFill(Color.CHOCOLATE);
-		xAxis.setMinorTickCount(4);
+		xAxis.setLabel("Time");
+		xAxis.setTickLabelFill(Color.BLACK);
 
-		yAxis.setLabel("");
-		yAxis.setTickLabelFill(Color.CHOCOLATE);
-		yAxis.setTickLabelGap(10);
+		yAxis.setLabel("Processor's");
+		yAxis.setTickLabelFill(Color.BLACK);
 		intializeData();
 		yAxis.setCategories(FXCollections.<String>observableArrayList(Processers));
 
