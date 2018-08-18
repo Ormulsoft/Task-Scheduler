@@ -4,6 +4,8 @@ import java.net.URL;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import org.graphstream.graph.Graph;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -29,6 +31,7 @@ import javafx.scene.chart.StackedBarChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import toools.collections.Collections;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
@@ -144,11 +147,44 @@ public class Controller implements ScheduleListener{
 	
 	
 	public static void viewGraph(ScrollPane display, ScheduleGrph graph) {
-		for (int vert : graph.getVertices()) {
-			Circle node = new Circle(20);
-			node.setLayoutX(20 + 4 * vert);
-			((AnchorPane)display.getContent()).getChildren().add(node);
+		
+		boolean isNextLayer = true;
+		int currentLayer = 0;
+		ArrayList<Integer> freeNodes = new ArrayList<Integer>();
+		ArrayList<Integer> nextLayer = new ArrayList<Integer>();
+		
+		freeNodes.addAll(graph.getSources());
+		
+		while (isNextLayer) {
+			int i = 0;
+			for (int vert : freeNodes) {
+				Circle node = new Circle(20);
+				node.setId(Integer.toString(vert));
+				if (freeNodes.size() % 2 == 1) {
+					node.setLayoutX(350 + (60 * ((i + 1)/ 2)  * (Math.pow(-1, i))));
+				}
+				else {
+					node.setLayoutX(350 + (60 * ((i + 1)/ 2)  * (Math.pow(-1, i))));
+				}
+				node.setLayoutY(40 + currentLayer * 80);
+				((AnchorPane)display.getContent()).getChildren().add(node);
+				
+				for (int child : graph.getOutNeighbors(vert)) {
+					nextLayer.add(child);
+				}
+				i++;
+			}
+			
+			if (nextLayer.isEmpty()) {
+				isNextLayer = false;
+			}
+			else {
+				freeNodes = (ArrayList<Integer>) nextLayer.clone();
+				nextLayer.clear();
+				currentLayer++;
+			}
 		}
+		
 	}
 	
 	
