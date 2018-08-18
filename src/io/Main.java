@@ -167,15 +167,8 @@ public class Main extends Application {
 
 					@Override
 					protected Void call() throws Exception {
-						
-						ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
+	
 						log.info("Outputting solution to file: " + outputFile);
-
-						try {
-							Output.export(out, outputFile);
-						} catch (IOException e) {
-							log.error("Failed to export file - is your output filepath valid?", e);
-						}
 
 						log.info("Finished!");
 					

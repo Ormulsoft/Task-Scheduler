@@ -1,5 +1,6 @@
 package alg;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -7,7 +8,13 @@ import java.util.Set;
 import org.apache.commons.lang.SerializationUtils;
 
 import alg.cost.CostFunction;
+import gui.Connector;
+import gui.Controller;
+import io.Main;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
@@ -31,6 +38,9 @@ public class AStarAlgorithm implements Algorithm {
 	public AStarAlgorithm(CostFunction cost) {
 		this.cost = cost;
 	}
+	
+	
+
 
 	/**
 	 * 
@@ -152,6 +162,7 @@ public class AStarAlgorithm implements Algorithm {
 
 		int iterations = 0;
 		while (states.size() > 0) {
+			update();
 			iterations++;
 			boolean foundSameScore = false;
 			PartialScheduleGrph s = states.poll();
@@ -285,6 +296,24 @@ public class AStarAlgorithm implements Algorithm {
 
 	}
 
+	
+	private void update() {
+		FXMLLoader loader = new FXMLLoader(
+				  getClass().getResource(
+				    "/gui/MainView.fxml"
+				  )
+				);
+		
+		try {
+			Parent root = (Parent) loader.load();
+			Controller fooController = loader.getController();
+			Connector.Connecting(fooController);
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	// TODO fix this
 	private void storeEquivalentInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
 		// long start = System.nanoTime();
@@ -321,7 +350,7 @@ public class AStarAlgorithm implements Algorithm {
 	private HashSet<Integer> getFree(ScheduleGrph inputSaved, PartialScheduleGrph pg) {
 		HashSet<Integer> a = new HashSet<Integer>();
 		// get all source nodes (no in edges) that are not in the
-		// partialschedule
+		// partial schedule
 		for (int srcTask : inputSaved.getSources()) {
 			if (!pg.containsVertex(srcTask)) {
 				a.add(srcTask);
