@@ -7,7 +7,7 @@ import java.util.List;
 
 public class InformationModel {
 	
-	private List<ScheduleListener> _listeners;
+	private static List<ScheduleListener> _listeners;
 	
 	private int _iterations;
 	
@@ -30,9 +30,10 @@ public class InformationModel {
 		_iterations = iterations;
 	}
 	
-	private void fire(ScheduleEvent event) {
+	
+	public void fire(ScheduleEvent event) {
 		for(ScheduleListener listener : _listeners) {
-			listener.update(event);
+			listener.update(event, _iterations);
 		}
 	}
 

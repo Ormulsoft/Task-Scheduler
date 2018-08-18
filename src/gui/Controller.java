@@ -1,4 +1,5 @@
 package gui;
+import java.io.IOException;
 import java.net.URL;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
@@ -14,6 +15,12 @@ import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
 import cnrs.i3s.papareto.demo.function.Main;
 import javafx.embed.swing.SwingNode;
+import io.Output;
+import io.ScheduleEvent;
+import io.ScheduleListener;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,27 +29,31 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import util.ScheduleGrph;
-public class Controller  implements Initializable  {
+
+public class Controller implements ScheduleListener{
 	final CategoryAxis xAxis = new CategoryAxis();
     final NumberAxis yAxis = new NumberAxis();
+	@FXML
+    private Label visited;
+	
+	Controller parse = this;
 	@FXML
 	Button startBtn;
 	@FXML
     private StackedBarChart<?, ?> sbc;
-	@FXML
-	Text A;
 	HashMap<Integer, XYChart.Series> Processer = new HashMap<Integer, XYChart.Series>();
 	@FXML
 	private void startAlgorithm() {
-		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(io.Main.getIn())).runAlg(io.Main.getIn(), io.Main.getNumCores(), io.Main.getNumProcessers());
+		new Thread(new Runnable() {
+
+			public void run() {
+				ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(io.Main.getIn()), parse).runAlg(io.Main.getIn(), io.Main.getNumCores(), io.Main.getNumProcessers());
+			}
+			
+		}).start();
 		intializeData();
-		startBtn.setDisable(true);
-		A.setText("lamo");
-	}
-	private void startAlgorithmTest() {
-		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(io.Main.getIn())).runAlg(io.Main.getIn(), io.Main.getNumCores(), io.Main.getNumProcessers());
 	}
 	
 	private void addAllData() {
@@ -51,14 +62,26 @@ public class Controller  implements Initializable  {
 			sbc.getData().add(Processer.get(key));
 		}
 	}
-	Runnable BackgroundinitializeData = () -> {
-		setLabel();
-		};
     
-    public void test(){
-    	intializeData2();
+	
+	
+	public void update(final ScheduleEvent event, final int iterations) {
+		Platform.runLater(new Runnable() {
+			
+			public void run() {
+				if(event.getType() == ScheduleEvent.EventType.NewState){
+					
+					
+					visited.setText(""+iterations);
+					
+				}
+				
+			}
+		});
+		
+	}
+	
 
-    }
 	@FXML
 	private void intializeData() {
 		for(int i = 0;i<io.Main.getNumProcessers();i++) {
@@ -70,24 +93,5 @@ public class Controller  implements Initializable  {
 		addAllData();
 	}
 	
-	public void setLabel() {
-		A = new Text();
-		A.setText("letsGO");
-		
-	}
-	@FXML
-	public void intializeData2() {
-		for(int i = 0;i<io.Main.getNumProcessers();i++) {
-		 XYChart.Series a = new XYChart.Series();
-		 a.setName(""+i);
-		 a.getData().add(new XYChart.Data("LOL" + i,i+2));
-		 Processer.put(i, a);
-		}
-		addAllData();
-	}
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }

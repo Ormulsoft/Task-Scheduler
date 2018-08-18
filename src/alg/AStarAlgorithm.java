@@ -8,9 +8,12 @@ import java.util.Set;
 import org.apache.commons.lang.SerializationUtils;
 
 import alg.cost.CostFunction;
-import gui.Connector;
 import gui.Controller;
 import io.Main;
+import gui.Controller;
+import io.InformationModel;
+import io.ScheduleEvent;
+import io.ScheduleListener;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -32,11 +35,29 @@ public class AStarAlgorithm implements Algorithm {
 	private static final int ALGORITHM_TIMEOUT = 2 * 60 * 1000;
 
 	private final CostFunction cost;
+	
+	private int statesVisited;
+	private int counter = 0;
+	ScheduleListener _listen;
+	
+	
+	private InformationModel info;
 
 	// used to compare the cost values in the PriorityQueue
 
 	public AStarAlgorithm(CostFunction cost) {
+		info = new InformationModel();
+		// info.addListener(guiControl);
 		this.cost = cost;
+		statesVisited = 0;
+	}
+	
+	public AStarAlgorithm(CostFunction cost, ScheduleListener listen) {
+		info = new InformationModel();
+		// info.addListener(guiControl);
+		this.cost = cost;
+		statesVisited = 0;
+		_listen = listen;
 	}
 	
 	
@@ -137,6 +158,7 @@ public class AStarAlgorithm implements Algorithm {
 
 	long serializeTime = 0;
 	long costTime = 0;
+	
 
 	public ScheduleGrph runAlg(ScheduleGrph input, int numCores, int numProcessors) {
 		ScheduleGrph original = input;
@@ -162,7 +184,6 @@ public class AStarAlgorithm implements Algorithm {
 
 		int iterations = 0;
 		while (states.size() > 0) {
-			update();
 			iterations++;
 			boolean foundSameScore = false;
 			PartialScheduleGrph s = states.poll();
@@ -191,6 +212,17 @@ public class AStarAlgorithm implements Algorithm {
 				// foundSameScore = false;
 				for (int task : freeTasks) {
 					for (int pc = 1; pc <= numProcessors; pc++) {
+						
+						///// Visualisation /////////
+						statesVisited++;
+						info.setIterations(statesVisited);
+
+						_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations);
+						counter++;
+						//update();
+//						info.fire(new ScheduleEvent(ScheduleEvent.EventType.NewState));
+						
+						///////////////////////
 
 						PartialScheduleGrph next = s.copy();
 						next.addVertex(task);
@@ -297,23 +329,7 @@ public class AStarAlgorithm implements Algorithm {
 	}
 
 	
-	private void update() {
-		FXMLLoader loader = new FXMLLoader(
-				  getClass().getResource(
-				    "/gui/MainView.fxml"
-				  )
-				);
-		
-		try {
-			Parent root = (Parent) loader.load();
-			Controller fooController = loader.getController();
-			Connector.Connecting(fooController);
-		
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
 	// TODO fix this
 	private void storeEquivalentInClosedSet(PartialScheduleGrph g, Set<String> closedStates) {
 		// long start = System.nanoTime();

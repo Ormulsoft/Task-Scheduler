@@ -7,7 +7,7 @@ public class ScheduleEvent {
 	
 	private EventType _type; 
 	
-	private ScheduleEvent(EventType type){
+	public ScheduleEvent(EventType type){
 		_type = type;
 	}
 	

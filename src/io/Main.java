@@ -18,6 +18,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
+import gui.Controller;
 import javafx.application.Application;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -47,9 +48,7 @@ public class Main extends Application {
 	private static int numOfProcessers;
 	final static Logger log = Logger.getLogger(Main.class);
 	
-	@FXML
-	static
-	ProgressIndicator indicator;
+	private static ScheduleListener listen;
 
 
 	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
@@ -63,6 +62,7 @@ public class Main extends Application {
 
 	public static void main(String[] args) throws URISyntaxException {
 		ParaTask.init();
+		listen = new Controller();
 		log.info("Task scheduler launched");
 		boolean visualization = DEFAULT_VISUALISATION;
 		int numCores = DEFAULT_CORES;
@@ -176,8 +176,8 @@ public class Main extends Application {
 					}
 					
 				};
+
 				
-			new Thread(background).start();
 			
 			gui.MainView.main(null);
 		} else {
