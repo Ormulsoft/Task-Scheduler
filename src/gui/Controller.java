@@ -121,6 +121,8 @@ public class Controller implements ScheduleListener{
 	public void initialize() {
 		_input.updateContent();
 		viewGraph(_input,io.Main.getIn());
+		chart.setMinWidth(600);
+		chart.setMinHeight(600);
 		GanttPane.getChildren().add(chart);	
 		xAxis.setLabel("");
 		xAxis.setTickLabelFill(Color.CHOCOLATE);
@@ -229,7 +231,7 @@ public class Controller implements ScheduleListener{
 					intializeData();
 					for(int i:a.getVertices()) {
 						XYChart.Series series = chart.getData().get(a.getVertexProcessorProperty().getValueAsInt(i)-1);
-						series.getData().add(new XYChart.Data(a.getVertexStartProperty().getValueAsInt(i),""+ a.getVertexProcessorProperty().getValueAsInt(i), new ExtraData(a.getVertexWeightProperty().getValueAsInt(i), getColour(),a.getVertexLabelProperty().getValueAsString(i))));	   	
+						series.getData().add(new XYChart.Data(a.getVertexStartProperty().getValueAsInt(i),""+ a.getVertexProcessorProperty().getValueAsInt(i), new ExtraData(a.getVertexWeightProperty().getValueAsInt(i), getColour(i),a.getVertexLabelProperty().getValueAsString(i))));	   	
 					}
 				}
 			}
@@ -239,8 +241,13 @@ public class Controller implements ScheduleListener{
 
 	}
 
-	public String getColour() {
-		return this.Colors.get((int) ((Math.random()*2)));
+	public String getColour(int i) {
+		if( i%2 == 0) {
+			return this.Colors.get(0);
+		}
+		else {
+			return this.Colors.get(1);
+		}
 
 	}
 	public void initalizeColour() {
