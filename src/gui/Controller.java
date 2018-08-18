@@ -118,6 +118,21 @@ public class Controller implements ScheduleListener{
 	public void initialize() {
 		_input.updateContent();
 		viewGraph(_input,io.Main.getIn());
+		GanttPane.getChildren().add(chart);	
+		xAxis.setLabel("");
+        xAxis.setTickLabelFill(Color.CHOCOLATE);
+        xAxis.setMinorTickCount(4);
+
+        yAxis.setLabel("");
+        yAxis.setTickLabelFill(Color.CHOCOLATE);
+        yAxis.setTickLabelGap(10);
+        intializeData();
+        yAxis.setCategories(FXCollections.<String>observableArrayList(Processers));
+
+        chart.setTitle("Machine Monitoring");
+        chart.setLegendVisible(false);
+        chart.setBlockHeight( 50);
+        chart.getStylesheets().add(getClass().getResource("ganttchart.css").toExternalForm());
 	}
 	
 	
@@ -126,47 +141,8 @@ public class Controller implements ScheduleListener{
 
 		seconds = 0;
 		startBtn.setDisable(true);
-		initalizeColour();
-		if(!GanttPane.getChildren().contains(chart)) {
-			GanttPane.getChildren().add(chart);	
-			xAxis.setLabel("");
-	        xAxis.setTickLabelFill(Color.CHOCOLATE);
-	        xAxis.setMinorTickCount(4);
-
-	        yAxis.setLabel("");
-	        yAxis.setTickLabelFill(Color.CHOCOLATE);
-	        yAxis.setTickLabelGap(10);
-	        intializeData();
-	        yAxis.setCategories(FXCollections.<String>observableArrayList(Processers));
-
-	        chart.setTitle("Machine Monitoring");
-	        chart.setLegendVisible(false);
-	        chart.setBlockHeight( 50);
-	        chart.getStylesheets().add(getClass().getResource("ganttchart.css").toExternalForm());
-		}
-
-
-		
-        /* machine = machines[0];
-        XYChart.Series series1 = new XYChart.Series();
-        series1.getData().add(new XYChart.Data(0, machine, new ExtraData( 1, "status-red")));
-        series1.getData().add(new XYChart.Data(1, machine, new ExtraData( 1, "status-green")));
-        series1.getData().add(new XYChart.Data(2, machine, new ExtraData( 1, "status-red")));
-        series1.getData().add(new XYChart.Data(3, machine, new ExtraData( 1, "status-green")));
-
-        machine = machines[1];
-        XYChart.Series series2 = new XYChart.Series();
-        series2.getData().add(new XYChart.Data(0, machine, new ExtraData( 1, "status-green")));
-        series2.getData().add(new XYChart.Data(1, machine, new ExtraData( 1, "status-green")));
-        series2.getData().add(new XYChart.Data(2, machine, new ExtraData( 2, "status-red")));
-
-        machine = machines[2];
-        XYChart.Series series3 = new XYChart.Series();
-        series3.getData().add(new XYChart.Data(0, machine, new ExtraData( 1, "status-blue")));
-        series3.getData().add(new XYChart.Data(1, machine, new ExtraData( 2, "status-red")));
-        series3.getData().add(new XYChart.Data(3, machine, new ExtraData( 1, "status-green"))); 
-
-        chart.getData().addAll(series1, series2, series3);           */
+		initalizeColour();		
+     
 		new Thread(new Runnable() {
 
 			public void run() {
