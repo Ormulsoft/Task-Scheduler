@@ -8,6 +8,13 @@ import util.MinimalScheduleGrph;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
+/**
+ * An individual thread task for the A* parallel algorithm - calls the
+ * superclass runAlgorithm.
+ * 
+ * @author Matt Frost
+ *
+ */
 public class AStarThread extends AStarAlgorithm implements Runnable {
 
 	private PartialScheduleGrph _output;

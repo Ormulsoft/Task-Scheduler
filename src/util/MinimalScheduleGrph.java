@@ -2,12 +2,19 @@ package util;
 
 import grph.properties.NumericalProperty;
 
-public class MinimalScheduleGrph implements Comparable<MinimalScheduleGrph>{
+/**
+ * A compact serialized form of the original PartialScheduleGrph. The original
+ * objects use too much memory, and are instead queued in this format.
+ * 
+ * @author Matt Frost
+ *
+ */
+public class MinimalScheduleGrph implements Comparable<MinimalScheduleGrph> {
 
 	private String _serialized;
 	private int _score;
 
-	public MinimalScheduleGrph(PartialScheduleGrph in){
+	public MinimalScheduleGrph(PartialScheduleGrph in) {
 		String serialized = "";
 		// NumericalProperty weights = this.getVertexWeightProperty();
 		NumericalProperty procs = in.getVertexProcessorProperty();
@@ -25,14 +32,14 @@ public class MinimalScheduleGrph implements Comparable<MinimalScheduleGrph>{
 		this._score = in.getScore();
 	}
 
-	public int getScore(){
+	public int getScore() {
 		return _score;
 	}
 
-	public String getSerialString(){
+	public String getSerialString() {
 		return _serialized;
 	}
-	
+
 	public int compareTo(MinimalScheduleGrph g) {
 
 		if (this.getScore() < g.getScore())
@@ -40,29 +47,25 @@ public class MinimalScheduleGrph implements Comparable<MinimalScheduleGrph>{
 		else
 			return 1;
 	}
-	
-	
 
-	public PartialScheduleGrph toGraph(){
+	public PartialScheduleGrph toGraph() {
 
 		PartialScheduleGrph out = new PartialScheduleGrph(_score);
 		// NumericalProperty weights = this.getVertexWeightProperty();
-		if(_serialized.length() != 0){
+		if (_serialized.length() != 0) {
 			NumericalProperty procs = out.getVertexProcessorProperty();
 			NumericalProperty starts = out.getVertexStartProperty();
 			String[] ints = _serialized.split("\\|");
-			
-			for (int i = 0; i < ints.length ; i+=3) {
+
+			for (int i = 0; i < ints.length; i += 3) {
 				out.addVertex(Integer.parseInt(ints[i]));
-				procs.setValue(Integer.parseInt(ints[i]), Integer.parseInt(ints[i+1]));
-				starts.setValue(Integer.parseInt(ints[i]), Integer.parseInt(ints[i+2]));
+				procs.setValue(Integer.parseInt(ints[i]), Integer.parseInt(ints[i + 1]));
+				starts.setValue(Integer.parseInt(ints[i]), Integer.parseInt(ints[i + 2]));
 			}
-			
+
 		}
 
-
 		return out;
-
 
 	}
 

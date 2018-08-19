@@ -14,6 +14,13 @@ import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 import util.StaticUtils;
 
+/**
+ * This is an entry point for the DFS parallelized version. Invokes thread pool
+ * on the DFSTask objects.
+ * 
+ * @author Matt Frost
+ *
+ */
 public class DFSParallel implements Algorithm {
 
 	private final CostFunction _cost;
@@ -24,11 +31,18 @@ public class DFSParallel implements Algorithm {
 	private ForkJoinPool forkJoinPool;
 	private HashSet<String> _closed;
 	private ScheduleListener _listen;
-	
+
 	private AtomicLong _iterations = new AtomicLong();
-	
+
 	private PartialScheduleGrph _start = new PartialScheduleGrph(0);
 
+	/**
+	 * 
+	 * @param input
+	 * @param cost
+	 * @param numProcessors
+	 * @param numCores
+	 */
 	public DFSParallel(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores) {
 		this.forkJoinPool = new ForkJoinPool(numCores);
 		this._cost = cost;
@@ -44,11 +58,24 @@ public class DFSParallel implements Algorithm {
 
 	}
 
-	public  DFSParallel(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores, ScheduleListener listen) {
+	/**
+	 * 
+	 * @param input
+	 * @param cost
+	 * @param numProcessors
+	 * @param numCores
+	 * @param listen
+	 */
+	public DFSParallel(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores,
+			ScheduleListener listen) {
 		this(input, cost, numProcessors, numCores);
 		this._listen = listen;
 	}
 
+	/**
+	 * 
+	 * @param finished
+	 */
 	private void getSetupOutput(PartialScheduleGrph finished) {
 		finished.setEdgeWeightProperty(_input.getEdgeWeightProperty());
 		for (int edge : _input.getEdges()) {
@@ -58,22 +85,30 @@ public class DFSParallel implements Algorithm {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public PartialScheduleGrph runAlg() {
-		
 		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 		executor.scheduleAtFixedRate(guiRunnable, 0, 1, TimeUnit.SECONDS);
-		
+
 		_bestState.setVerticesLabel(_input.getVertexLabelProperty());
-		forkJoinPool.invoke(new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, -1, _lowerBound, _iterations));
+		forkJoinPool.invoke(
+				new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, -1, _lowerBound, _iterations));
 		getSetupOutput(_bestState);
 		executor.shutdown();
 		return _bestState;
 	}
-	
+
+	/**
+	 * 
+	 */
 	Runnable guiRunnable = new Runnable() {
 		public void run() {
-			_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations.intValue(),_bestState);
-			_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations.intValue(), StaticUtils.getRemainingMemory());
+			_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations.intValue(),
+					_bestState);
+			_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations.intValue(),
+					StaticUtils.getUsedMemory());
 		}
 	};
 

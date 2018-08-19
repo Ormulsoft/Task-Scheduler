@@ -6,10 +6,10 @@ import grph.properties.NumericalProperty;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * This extends the InMemoryGrph to provide additional fields, such
- * as the properties we need for this particular problem.This extends
- * the InMemoryGrph to provide additional fields, such as the properties we need
- * for this particular problem >>>>>>> a8e40dea54e9b2cc3289608bb61892fe3407f8d6
+ * This extends the InMemoryGrph to provide additional fields, such as the
+ * properties we need for this particular problem.This extends the InMemoryGrph
+ * to provide additional fields, such as the properties we need for this
+ * particular problem
  * 
  * @author Gino
  *

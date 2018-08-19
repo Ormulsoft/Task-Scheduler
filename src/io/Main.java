@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Properties;
-import javafx.embed.swing.JFXPanel;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -16,7 +16,6 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import alg.AStarAlgorithm;
 import alg.DFSAlgorithm;
 import alg.DFSParallel;
 import alg.cost.AStarCostFunction;
@@ -34,15 +33,14 @@ import util.ScheduleGrph;
  */
 public class Main extends Application {
 	private static final int DEFAULT_CORES = 1;
-	private static final  boolean DEFAULT_VISUALISATION = false;
+	private static final boolean DEFAULT_VISUALISATION = false;
 	private static ScheduleGrph in;
-	private static int numOfCores;
+	private static int numOfCores = DEFAULT_CORES;
 	private static int numOfProcessers;
 	private static String _outputFile;
 	final static Logger log = Logger.getLogger(Main.class);
 
 	private static ScheduleListener listen;
-
 
 	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
 
@@ -54,8 +52,6 @@ public class Main extends Application {
 	 */
 
 	public static void main(String[] args) throws URISyntaxException {
-		
-
 
 		listen = new Controller();
 		log.info("Task scheduler launched");
@@ -87,7 +83,6 @@ public class Main extends Application {
 			if (cli.hasOption('o')) {
 				outputFile = cli.getOptionValue('o') + ".dot";
 			}
-
 
 		} catch (ArrayIndexOutOfBoundsException e) {
 			// e.printStackTrace();
@@ -145,9 +140,8 @@ public class Main extends Application {
 	/**
 	 * Begins the task scheduling process
 	 */
-	private static void startScheduling(String inputFile, final String outputFile, boolean visualization, final int numCores,
-			final int numProcessors) {
-
+	private static void startScheduling(String inputFile, final String outputFile, boolean visualization,
+			final int numCores, final int numProcessors) {
 
 		numOfProcessers = numProcessors;
 		numOfCores = numCores;
@@ -158,28 +152,24 @@ public class Main extends Application {
 				+ " core(s)");
 		// PartialScheduleGrph out = new AStarAlgorithm(in, new
 		// AStarCostFunction(in), numProcessors).runAlg();
+		DFSAlgorithm sequential = new DFSAlgorithm(in, new AStarCostFunction(in), numProcessors);
+		DFSParallel parallel = new DFSParallel(in, new AStarCostFunction(in), numProcessors, numCores);
+		if (visualization == true) {
 
-
-
-
-		if(visualization == true){
-		
-		gui.MainView.main(null);
+			gui.MainView.main(null);
 
 		} else {
 			long start = System.currentTimeMillis();
 			PartialScheduleGrph out;
-			if(numCores == 1){
-				out = new DFSAlgorithm(in, new AStarCostFunction(in), numProcessors).runAlg();
-			}else{
-				out = new DFSParallel(in, new AStarCostFunction(in), numProcessors, numCores).runAlg();
+			if (numCores == 1) {
+				out = sequential.runAlg();
+			} else {
+				out = parallel.runAlg();
 			}
 
 			log.info("Algorithm took " + (System.currentTimeMillis() - start) + " ms");
 			log.info("Schedule length is: " + out.getScheduleLength());
 			log.info("Outputting solution to file: " + outputFile);
-
-
 
 			try {
 				Output.export(out, outputFile);
@@ -191,10 +181,9 @@ public class Main extends Application {
 
 		}
 
-
 	}
 
-	public static ScheduleGrph getIn(){
+	public static ScheduleGrph getIn() {
 		return in;
 	}
 
