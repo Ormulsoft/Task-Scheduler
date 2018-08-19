@@ -94,7 +94,7 @@ public class Controller implements ScheduleListener {
 
 		_input.updateContent();
 		_ganttScroll.updateContent();
-		_ganttScroll.setVvalue(0.4);
+		_ganttScroll.setVvalue(0.75);
 		viewGraph(_input, io.Main.getIn());
 		chart.setMinWidth(600);
 		chart.setMinHeight(590);

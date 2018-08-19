@@ -14,6 +14,7 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
@@ -97,18 +98,14 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 
 					public void accept(javafx.scene.chart.XYChart.Data<X, Y> n) {
 						double x, y;
+						String tip = "";
+						
 						x = getXAxis().getDisplayPosition(n.getXValue());
 						y = getYAxis().getDisplayPosition(n.getYValue());
 						if (Double.isNaN(x) || Double.isNaN(y)) return;
 						Node cube = n.getNode();
 						Rectangle rect;
-						final String label = getLabel(n.getExtraValue());
-						Text textLabel = new Text(label);
-						textLabel.setFill(javafx.scene.paint.Color.WHITE);
-						textLabel.setFont(Font.font("Courier New", FontWeight.BOLD,10));
-						textLabel.setTranslateX(x);
-						textLabel.setTranslateY(getBlockHeight());
-						textLabel.setBoundsType(TextBoundsType.VISUAL);
+						
 						if (cube != null) {
 							if (cube instanceof StackPane) {
 								StackPane region = (StackPane) cube;
@@ -118,11 +115,6 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 									rect = (Rectangle) region.getShape();
 								} else {
 									return;
-								}
-								textLabel.setTranslateX(getLength(n.getExtraValue()) * 0.3d);
-								textLabel.setTranslateY(getBlockHeight() * 0.10d);
-								if (!region.getChildren().contains(rect) && !region.getChildren().contains(textLabel)) {
-									region.getChildren().addAll(textLabel);
 								}
 								rect.setWidth(getLength(n.getExtraValue()) * ((getXAxis() instanceof NumberAxis) ? Math.abs(((NumberAxis) getXAxis()).getScale()) : 1));
 								rect.setHeight((100 * ((getYAxis() instanceof NumberAxis) ? Math.abs(((NumberAxis) getYAxis()).getScale()) : 1)) * (1d / 6d));
@@ -137,6 +129,13 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 								cube.setLayoutY(y);
 							}
 						}
+						tip += "Task: " + getLabel(n.getExtraValue()) + "\n";
+						tip += "Start time: " + n.getXValue() + "\n";
+						tip += "End time: " + (Integer.parseInt(n.getXValue().toString()) + getLength(n.getExtraValue())) + "\n";
+						tip += "Weight: " + getLength(n.getExtraValue()) + "\n";
+						tip += "Processor: " + n.getYValue() + "\n";
+						Tooltip toolTip = new Tooltip(tip);
+						Tooltip.install(cube, toolTip);
 
 					}
 
