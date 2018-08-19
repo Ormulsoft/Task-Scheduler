@@ -46,7 +46,10 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
-
+/**
+ * This class deals with interactivity of the user interface during scheduling visualisation. 
+ * @author All
+ */
 public class Controller implements ScheduleListener {
 
 	private final Logger log = Logger.getLogger(getClass());
@@ -73,8 +76,6 @@ public class Controller implements ScheduleListener {
 
 
 	@FXML
-
-
 	Timer myTimer;
 
 	private double seconds = 0.0;
@@ -260,6 +261,11 @@ public class Controller implements ScheduleListener {
 		this.Colors.add("status-green");
 	}
 
+	/**
+	 * This method retrieves the current load on the CPU.	
+	 * @return
+	 * @throws Exception
+	 */
 	public double getProcessCpuLoad() throws Exception {
 
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -272,13 +278,18 @@ public class Controller implements ScheduleListener {
 		Attribute att = (Attribute) list.get(0);
 		Double value = (Double) att.getValue();
 
-		// usually takes a couple of seconds before we get real values
+		// Usually takes a couple of seconds before we get real values
 		if (value == -1.0)
 			return Double.NaN;
-		// returns a percentage value with 1 decimal point precision
+		// Returns a percentage value with 1 decimal point precision
 		return ((int) (value * 1000) / 10.0);
 	}
 
+	/**
+	 * This method deals with the visualization of the input graph on the GUI.
+	 * @param display
+	 * @param graph
+	 */
 	public void viewGraph(ZoomableScrollPane display, ScheduleGrph graph) {
 
 		boolean isNextLayer = true;

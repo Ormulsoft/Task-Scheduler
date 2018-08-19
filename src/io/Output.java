@@ -9,9 +9,9 @@ import util.ScheduleDotWriter;
 import util.ScheduleGrph;
 
 /**
- * This class outputs a dotfile representation of a graph
+ * This class outputs a .DOT representation of a graph
  * 
- * @author matt
+ * @author Matthew Frost
  *
  */
 public class Output {
