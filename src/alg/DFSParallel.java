@@ -96,6 +96,7 @@ public class DFSParallel implements Algorithm {
 		forkJoinPool.invoke(
 				new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, -1, _lowerBound, _iterations));
 		getSetupOutput(_bestState);
+		executor.execute(guiRunnable);
 		executor.shutdown();
 		return _bestState;
 	}
