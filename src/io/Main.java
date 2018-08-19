@@ -194,18 +194,35 @@ public class Main extends Application {
 
 	}
 
+	/**
+	 * Get the input graph that was read in at the input step
+	 * @return
+	 */
 	public static ScheduleGrph getIn() {
 		return in;
 	}
 
+	/**
+	 * Get the number of processors to schedule tasks on specified by the user
+	 * @return
+	 */
 	public static int getNumProcessers() {
 		return numOfProcessers;
 	}
 
+	/**
+	 * Get the number of cores to run the algorithm on specified by the user (or 1 if none specified)
+	 * @return
+	 */
 	public static int getNumCores() {
 		return numOfCores;
 	}
 
+	/**
+	 * Get the output file name to save output as specified by the user 
+	 * (or default to *input name*_OUTPUT.dot 
+	 * @return
+	 */
 	public static String getOutputFilename() {
 		return _outputFile;
 	}
