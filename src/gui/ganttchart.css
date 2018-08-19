@@ -1,17 +1,12 @@
 .status-red {
-    -fx-background-color:rgba(128,0,0,0.7);
+    -fx-background-color: #00A2D3;
      -fx-border-left: 1px;
      -fx-border-right: 1px;
     -fx-border-color:rgba(0,0,128,0.7);
 }
 .status-green {
-    -fx-background-color:rgba(0,128,0,0.7);
+    -fx-background-color: #A0DC22;
        -fx-border-left: 1px;
      -fx-border-right: 1px;
     -fx-border-color:rgba(0,0,128,0.7);
-}
-.status-blue {
-    -fx-background-color:rgba(0,0,128,0.7);
-    -fx-border-width: 3px;
-    -fx-border-color:black;
 }

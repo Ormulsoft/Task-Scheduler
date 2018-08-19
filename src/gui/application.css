@@ -7,6 +7,12 @@
 	-fx-primary: #00A2D3;
 	
 }
+
+@font-face {
+    font-family: 'opensans';
+    src: url(resources/OpenSans-Regular.ttf);
+}
+
 .root {
 	-fx-background-color: -fx-base;
 	
@@ -14,6 +20,7 @@
 
 .label {
 	-fx-text-fill: -fx-primary;
+	-fx-font-family: "opensans";
 	
 	
 }
