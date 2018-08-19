@@ -75,9 +75,7 @@ public class Controller implements ScheduleListener {
 
 
 	@FXML
-	private Label cpuLoad;
 
-	private double cpuCalculation = 10.00;
 
 	Timer myTimer;
 
@@ -124,31 +122,6 @@ public class Controller implements ScheduleListener {
 	@FXML
 	private void startAlgorithm() {
 		myTimer = new Timer();
-		final TimerTask cpuTask = new TimerTask() {
-
-			@Override
-			public void run() {
-
-				try {
-					cpuCalculation = getProcessCpuLoad();
-				} catch (Exception e) {
-				}
-
-				Platform.runLater(new Runnable() {
-
-					public void run() {
-
-						if (!Double.isNaN(cpuCalculation)) {
-							cpuLoad.setText(Double.toString(cpuCalculation));
-						}
-
-					}
-				});
-
-			}
-
-		};
-
 
 		seconds = 0;
 		
@@ -214,15 +187,6 @@ public class Controller implements ScheduleListener {
 		};
 		
 		algService.start();
-		
-
-		new Thread(new Runnable() {
-
-			public void run() {
-				myTimer.scheduleAtFixedRate(cpuTask, 1, 20000);
-
-			}
-		}).start();
 
 	}
 

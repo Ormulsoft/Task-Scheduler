@@ -29,7 +29,7 @@ public class MainView extends Application {
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			
+			primaryStage.setTitle("Ormulsoft: Optimal Task Scheduler");
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			    public void handle(WindowEvent t) {
 			        Platform.exit();

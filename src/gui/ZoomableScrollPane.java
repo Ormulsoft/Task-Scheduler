@@ -11,6 +11,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.event.EventHandler;
+import javafx.scene.input.KeyEvent;
 
 public class ZoomableScrollPane extends ScrollPane {
 	/**
@@ -63,8 +64,14 @@ public class ZoomableScrollPane extends ScrollPane {
         outerNode.setOnScroll(new EventHandler<ScrollEvent>(){
 
 			public void handle(ScrollEvent e) {
+
 				 e.consume();
-		         onScroll(e.getTextDeltaY(), new Point2D(e.getX(), e.getY()));
+				 if (Math.abs(e.getTextDeltaY()) == 0.0) {
+					 onScroll(e.getDeltaY() / 2, new Point2D(e.getX(), e.getY()));
+				 }
+				 else {
+					 onScroll(e.getTextDeltaY() / 2, new Point2D(e.getX(), e.getY()));
+				 }
 			}
            
         });

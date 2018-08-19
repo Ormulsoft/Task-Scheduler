@@ -14,7 +14,7 @@
             <Font name="Showcard Gothic" size="27.0" />
          </font>
       </Label>
-      <Button fx:id="startBtn" layoutX="24.0" layoutY="648.0" mnemonicParsing="false" onAction="#startAlgorithm" prefHeight="124.0" prefWidth="278.0" text="Start!">
+      <Button fx:id="startBtn" layoutX="122.0" layoutY="648.0" mnemonicParsing="false" onAction="#startAlgorithm" prefHeight="124.0" prefWidth="278.0" text="Start!">
          <font>
             <Font size="47.0" />
          </font></Button>
@@ -32,7 +32,7 @@
             </Label>
             </children>
       </AnchorPane>
-      <AnchorPane layoutX="301.0" layoutY="640.0" prefHeight="136.0" prefWidth="861.0">
+      <AnchorPane layoutX="399.0" layoutY="640.0" prefHeight="136.0" prefWidth="861.0">
          <AnchorPane fx:id="timePane" layoutX="20.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0" styleClass="statTile">
             <children>
       		<Label fx:id="time" alignment="CENTER" layoutY="40.0" prefWidth="196.0" text="0">
@@ -73,23 +73,6 @@
                      <Font size="36.0" />
                   </font></Label>
                <Label alignment="CENTER" layoutY="86.0" prefWidth="196.0" text="MB">
-                  <font>
-                     <Font size="25.0" />
-                  </font>
-               </Label>
-            </children>
-         </AnchorPane>
-         <AnchorPane fx:id="cpuPane" layoutX="665.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0" styleClass="statTile">
-            <children>
-               <Label alignment="CENTER" layoutY="12.5" prefWidth="196.0" text="CPU Load">
-                  <font>
-                     <Font size="18.0" />
-                  </font></Label>
-            <Label fx:id="cpuLoad" alignment="CENTER" layoutY="40.0" prefWidth="196.0" text="0">
-                  <font>
-                     <Font size="36.0" />
-                  </font></Label>
-               <Label alignment="CENTER" layoutY="87.0" prefWidth="196.0" text="\%">
                   <font>
                      <Font size="25.0" />
                   </font>
