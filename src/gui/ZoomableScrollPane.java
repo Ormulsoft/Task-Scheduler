@@ -13,10 +13,12 @@ import javafx.scene.layout.VBox;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 
+/**
+ * This class was designed by user Daniel Hari at Stack Overflow
+ * Code modified from https://stackoverflow.com/questions/39827911/javafx-8-scaling-zooming-scrollpane-relative-to-mouse-position
+ */
 public class ZoomableScrollPane extends ScrollPane {
-	/**
-	 * Code modified from https://stackoverflow.com/questions/39827911/javafx-8-scaling-zooming-scrollpane-relative-to-mouse-position
-	 */
+
 	
 	
     private double scaleValue = 0.9;

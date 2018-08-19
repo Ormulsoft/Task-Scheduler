@@ -10,19 +10,28 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+/**
+ * This class acts as the view for the GUI. Generated from the associated FXML file
+ * @author Ormulsoft, various
+ *
+ */
 public class MainView extends Application {
 	final static NumberAxis xAxis = new NumberAxis();
     final static CategoryAxis yAxis = new CategoryAxis();
     final static GanttChart<Number,String> chart = new GanttChart<Number,String>(xAxis,yAxis);
+    
 	@Override
 	public void start(Stage primaryStage) {
 		
 		try {
+			// Load fxml controller
 			FXMLLoader loader = new FXMLLoader(
 					  getClass().getResource(
 					    "/gui/MainView.fxml"
 					  )
 					);
+			
+			// Set up window/stage
 			AnchorPane root =(AnchorPane) FXMLLoader.load(getClass().getResource("MainView.fxml"));
 						loader.getController();
 	        Scene scene = new Scene(root);
@@ -37,7 +46,6 @@ public class MainView extends Application {
 			    }
 			});
 		} catch(Exception e) {
-			e.printStackTrace();
 		}
 		
 		
