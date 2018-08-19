@@ -19,9 +19,10 @@ public class DFSTask extends RecursiveAction {
 	private final CostFunction _cost;
 	private HashSet<String> _closed;
 	private int _lastAdded;
+	private AtomicLong _iterations;
 
 	public DFSTask(ScheduleGrph input, PartialScheduleGrph current, PartialScheduleGrph best, CostFunction cost,
-			HashSet<String> closed, int numProcessors, int lastAdded, AtomicLong lowerBound) {
+			HashSet<String> closed, int numProcessors, int lastAdded, AtomicLong lowerBound, AtomicLong iterations) {
 		_input = input;
 		_current = current;
 		_lowerBound = lowerBound;
@@ -30,10 +31,12 @@ public class DFSTask extends RecursiveAction {
 		_bestState = best;
 		_closed = closed;
 		_lastAdded = lastAdded;
+		_iterations = iterations;
 	}
 
 	@Override
 	protected void compute() {
+		_iterations.set(_iterations.get() + 1);
 		ArrayList<DFSTask> tasks = new ArrayList<DFSTask>();
 		if (_current.getScore() >= _lowerBound.get()
 				|| _closed.contains(_current.getNormalizedCopy(_numProcessors).serialize().getSerialString())
@@ -58,7 +61,7 @@ public class DFSTask extends RecursiveAction {
 				_cost.applyCost(next, freeTask, _numProcessors);
 				if (_current.getScore() < _lowerBound.get()) {
 					tasks.add(new DFSTask(_input, next, _bestState, _cost, _closed, _numProcessors, freeTask,
-							_lowerBound));
+							_lowerBound, _iterations));
 				}
 
 			}
@@ -71,7 +74,6 @@ public class DFSTask extends RecursiveAction {
 
 		if (underestimate < _lowerBound.get()) {
 
-			System.out.println(underestimate);
 			_lowerBound.set(underestimate);
 			_bestState.setVertexStartProperty(s.getVertexStartProperty());
 			_bestState.setVertexProcessorProperty(s.getVertexProcessorProperty());

@@ -1,12 +1,18 @@
 package alg;
 
 import java.util.HashSet;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import alg.cost.CostFunction;
+import io.ScheduleEvent;
+import io.ScheduleListener;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
+import util.StaticUtils;
 
 public class DFSParallel implements Algorithm {
 
@@ -17,7 +23,10 @@ public class DFSParallel implements Algorithm {
 	private PartialScheduleGrph _bestState;
 	private ForkJoinPool forkJoinPool;
 	private HashSet<String> _closed;
-
+	private ScheduleListener _listen;
+	
+	private AtomicLong _iterations = new AtomicLong();
+	
 	private PartialScheduleGrph _start = new PartialScheduleGrph(0);
 
 	public DFSParallel(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores) {
@@ -35,9 +44,9 @@ public class DFSParallel implements Algorithm {
 
 	}
 
-	public DFSParallel(ScheduleGrph input, HashSet<String> closed, CostFunction cost, int numProcessors, int numCores) {
+	public  DFSParallel(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores, ScheduleListener listen) {
 		this(input, cost, numProcessors, numCores);
-
+		this._listen = listen;
 	}
 
 	private void getSetupOutput(PartialScheduleGrph finished) {
@@ -50,11 +59,22 @@ public class DFSParallel implements Algorithm {
 	}
 
 	public PartialScheduleGrph runAlg() {
+		
+		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+		executor.scheduleAtFixedRate(guiRunnable, 0, 1, TimeUnit.SECONDS);
+		
 		_bestState.setVerticesLabel(_input.getVertexLabelProperty());
-		forkJoinPool.invoke(new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, -1, _lowerBound));
+		forkJoinPool.invoke(new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, -1, _lowerBound, _iterations));
 		getSetupOutput(_bestState);
-
+		executor.shutdown();
 		return _bestState;
 	}
+	
+	Runnable guiRunnable = new Runnable() {
+		public void run() {
+			_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations.intValue(),_bestState);
+			_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations.intValue(), StaticUtils.getRemainingMemory());
+		}
+	};
 
 }
