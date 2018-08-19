@@ -15,6 +15,10 @@ public class AStarCostFunction implements CostFunction {
 
 	ScheduleGrph input;
 
+	/**
+	 * Constructor. Creates a new cost function with the specified input graph stored for use in generation
+	 * @param input
+	 */
 	public AStarCostFunction(ScheduleGrph input) {
 		this.input = input;
 	}
@@ -49,6 +53,8 @@ public class AStarCostFunction implements CostFunction {
 
 	/**
 	 * Gets the max Computational bottom level value for specified vertex
+	 * @param addedVertex The vertex to calculate bottom level on
+	 * @return
 	 */
 	public int getComputationalBottomLevel(int addedVertex) {
 
@@ -67,13 +73,12 @@ public class AStarCostFunction implements CostFunction {
 	}
 
 	/**
-	 * Returns the FIT(s) function representing the idle time bound of a parital
+	 * Returns the FIT(s) function representing the idle time bound of a partial
 	 * schedule.
 	 * 
-	 * @param sched
-	 *            The partial schedule whose bound is to be calculated
-	 * @param numProcessors
-	 *            The number of processors being used for task allocation
+	 * @param schedThe partial schedule whose bound is to be calculated
+	 * @param numProcessors The number of processors being used for task allocation
+	 * @param addedVertex The most recently added task
 	 * @return The idle time bound of this schedule
 	 */
 	public int getIdleTimeFit(PartialScheduleGrph sched, int numProcessors, int addedVertex) {
@@ -110,6 +115,13 @@ public class AStarCostFunction implements CostFunction {
 		return (int) Math.ceil((totalIdle + totalWeight) / (double) numProcessors);
 	}
 
+	/**
+	 * Get the Data Ready Time of the graph
+	 * @param addedVertex The most recently added task
+	 * @param g The graph to calculate DRT for
+	 * @param processor The processor to calculate DRT on
+	 * @return
+	 */
 	public int getDRT(int addedVertex, PartialScheduleGrph g, int processor) {
 		// TODO change this!
 		int maxFinTime = 0;
@@ -131,24 +143,30 @@ public class AStarCostFunction implements CostFunction {
 
 	}
 	
-	  public  void applyCostParallel(PartialScheduleGrph g, int addedVertex, int numProcessors) {
+	/**
+	 * Apply the cost function to a graph while running on multiple cores in parallel
+	 * @param g The graph to apply the cost function to
+	 * @param addedVertex The most recently added task
+	 * @param numProcessors The number of processors available to assign tasks to
+	 */
+	public  void applyCostParallel(PartialScheduleGrph g, int addedVertex, int numProcessors) {
 			int maxFinish = 0;
 		int maxBL = 0;
-
+	
 		int maxDRT = getComputationalBottomLevel(addedVertex) + (int) g.getVertexStartProperty().getValue(addedVertex);
 		for (int i : g.getVertices()) {
 			// get the end time from the highest start time + weight combination
 			int val = (int) g.getVertexStartProperty().getValue(i) + (int) g.getVertexWeightProperty().getValue(i);
 			if (val > maxFinish) {
 				maxFinish = val;
-
+	
 			}
 			int valBL = this.getComputationalBottomLevel(i) + (int) g.getVertexStartProperty().getValue(i);
 			if (valBL > maxBL) {
 				maxBL = valBL;
 			}
 		}
-
+	
 		for (int i : g.getFree(input)) {
 			int minProc = -1;
 			for (int proc = 1; proc <= numProcessors; proc++) {
@@ -161,11 +179,11 @@ public class AStarCostFunction implements CostFunction {
 				maxDRT = minProc + this.getComputationalBottomLevel(i);
 			}
 		}
-
+	
 		int max = Math.max(maxFinish, Math.max(maxBL, Math.max(getIdleTimeFit(g, numProcessors, maxFinish), maxDRT)));
-
+	
 		g.setScore(max);
-
+	
 	}
 
 

@@ -16,6 +16,12 @@ public interface CostFunction {
 
 	final static Logger log = Logger.getLogger(Algorithm.class);
 
+	/**
+	 * Applies this cost function to the specified schedule graph, setting its score
+	 * @param g The graph to apply the cost function to
+	 * @param vertex The most recently added task
+	 * @param numProcessors The number of processors available to assign tasks to
+	 */
 	public void applyCost(PartialScheduleGrph g, int vertex, int numProcessors);
 
 }
