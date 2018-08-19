@@ -90,7 +90,7 @@ public class DFSParallel implements Algorithm {
 	 */
 	public PartialScheduleGrph runAlg() {
 		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-		executor.scheduleAtFixedRate(guiRunnable, 0, 1, TimeUnit.SECONDS);
+		executor.scheduleAtFixedRate(guiRunnable, 0, 200, TimeUnit.MILLISECONDS);
 
 		_bestState.setVerticesLabel(_input.getVertexLabelProperty());
 		forkJoinPool.invoke(

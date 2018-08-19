@@ -27,7 +27,6 @@ public class DFSAlgorithm implements Algorithm {
 	private int _lowerBound;
 	private PartialScheduleGrph _bestState;
 	private HashSet<String> _closed = new HashSet<String>();
-	private ScheduledExecutorService executor;
 	private final ScheduleListener _listen;
 	private int _iterations = 0;
 
@@ -80,8 +79,8 @@ public class DFSAlgorithm implements Algorithm {
 	 * recursion
 	 */
 	public PartialScheduleGrph runAlg() {
-		executor = Executors.newScheduledThreadPool(1);
-		executor.scheduleAtFixedRate(statsRunnable, 0, 1, TimeUnit.SECONDS);
+		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+		executor.scheduleAtFixedRate(statsRunnable, 0, 200, TimeUnit.MILLISECONDS);
 
 		_lowerBound = Integer.MAX_VALUE;
 
@@ -147,7 +146,7 @@ public class DFSAlgorithm implements Algorithm {
 		if (underestimate < _lowerBound) {
 			_lowerBound = underestimate;
 			_bestState = s;
-			executor.execute(graphRunnable);
+			_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations, _bestState);
 		}
 	}
 
@@ -158,12 +157,6 @@ public class DFSAlgorithm implements Algorithm {
 		public void run() {
 			_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations,
 					StaticUtils.getUsedMemory());
-		}
-	};
-	
-	Runnable graphRunnable = new Runnable() {
-		public void run() {
-			_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations, _bestState);
 		}
 	};
 
