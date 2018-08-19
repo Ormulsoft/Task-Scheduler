@@ -35,7 +35,6 @@ public class DFSTask extends RecursiveAction {
 	@Override
 	protected void compute() {
 		ArrayList<DFSTask> tasks = new ArrayList<DFSTask>();
-		System.out.println(_current.toDot());
 		if (_current.getScore() >= _lowerBound.get()
 				|| _closed.contains(_current.getNormalizedCopy(_numProcessors).serialize().getSerialString())
 				|| (_lastAdded != -1 && _current.equivalenceCheck(_input, _lastAdded, _numProcessors))) {

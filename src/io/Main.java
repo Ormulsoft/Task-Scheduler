@@ -16,6 +16,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import alg.DFSAlgorithm;
 import alg.DFSParallel;
 import alg.cost.AStarCostFunction;
 import util.PartialScheduleGrph;
@@ -138,8 +139,11 @@ public class Main {
 		// AStarCostFunction(in), numProcessors).runAlg();
 		long start = System.currentTimeMillis();
 		PartialScheduleGrph out;
-
-		out = new DFSParallel(in, new AStarCostFunction(in), numProcessors, numCores).runAlg();
+		if(numCores == 1){
+			out = new DFSAlgorithm(in, new AStarCostFunction(in), numProcessors).runAlg();
+		}else{
+			out = new DFSParallel(in, new AStarCostFunction(in), numProcessors, numCores).runAlg();
+		}
 
 		log.info("Algorithm took " + (System.currentTimeMillis() - start) + " ms");
 		log.info("Schedule length is: " + out.getScheduleLength());
