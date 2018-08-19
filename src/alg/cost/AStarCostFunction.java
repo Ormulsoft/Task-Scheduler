@@ -1,6 +1,7 @@
 package alg.cost;
 
 import grph.properties.NumericalProperty;
+import pt.*;
 import toools.collections.primitive.LucIntSet;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
@@ -22,7 +23,6 @@ public class AStarCostFunction implements CostFunction {
 	public void applyCost(PartialScheduleGrph g, int addedVertex, int numProcessors) {
 
 		int maxDRT = getComputationalBottomLevel(addedVertex) + (int) g.getVertexStartProperty().getValue(addedVertex);
-
 		int maxBL = 0;
 
 		maxBL = Math.max(g.getLastFBottomLevel(),
@@ -131,5 +131,43 @@ public class AStarCostFunction implements CostFunction {
 		return 0;
 
 	}
+	
+	  public  void applyCostParallel(PartialScheduleGrph g, int addedVertex, int numProcessors) {
+			int maxFinish = 0;
+		int maxBL = 0;
+
+		int maxDRT = getComputationalBottomLevel(addedVertex) + (int) g.getVertexStartProperty().getValue(addedVertex);
+		for (int i : g.getVertices()) {
+			// get the end time from the highest start time + weight combination
+			int val = (int) g.getVertexStartProperty().getValue(i) + (int) g.getVertexWeightProperty().getValue(i);
+			if (val > maxFinish) {
+				maxFinish = val;
+
+			}
+			int valBL = this.getComputationalBottomLevel(i) + (int) g.getVertexStartProperty().getValue(i);
+			if (valBL > maxBL) {
+				maxBL = valBL;
+			}
+		}
+
+		for (int i : g.getFree(input)) {
+			int minProc = -1;
+			for (int proc = 1; proc <= numProcessors; proc++) {
+				int valDRT = this.getDRT(i, g, proc);
+				if (valDRT < minProc || minProc == -1) {
+					minProc = valDRT;
+				}
+			}
+			if (minProc + this.getComputationalBottomLevel(i) > maxDRT) {
+				maxDRT = minProc + this.getComputationalBottomLevel(i);
+			}
+		}
+
+		int max = Math.max(maxFinish, Math.max(maxBL, Math.max(getIdleTimeFit(g, numProcessors, maxFinish), maxDRT)));
+
+		g.setScore(max);
+
+	}
+
 
 }

@@ -51,12 +51,27 @@ public class Input {
 			// Only add if it doesn't contain '{', '}', or only whitespace.
 			if ((currentLine.indexOf('{') == -1) && (currentLine.indexOf('}') == -1)) {
 				if (!currentLine.trim().isEmpty()) {
+					
+					String appendedLine = currentLine;
+				
+					// If the line starts with a number.
+					if (Character.isDigit(currentLine.trim().charAt(0))) {
+						
+						String thisLine = currentLine;
+						
+						while (!thisLine.contains("Weight=") && input.hasNextLine()) {
+							String theLineAfter = input.nextLine();
+							appendedLine += theLineAfter;
+							thisLine = theLineAfter;
+						}
+						
 					// String is not empty and not just whitespace
-					list.add(currentLine);
+						list.add(appendedLine);
+					}
 				}
 			}
 		}
-
+		
 		// Distinguish between edges and nodes within input
 		List<String> edgesList = new ArrayList<String>();
 		// maps the node ID to its Weight value, so that they can be put into
@@ -65,7 +80,7 @@ public class Input {
 		TreeMap<Integer, Integer> nodes = new TreeMap<Integer, Integer>();
 
 		for (String l : list) {
-			if (l.contains("[Weight=")) {
+			if (l.contains("Weight=")) {
 				if (l.indexOf('>') >= 0) {
 					// It must be an edge
 					edgesList.add(l);
@@ -74,8 +89,8 @@ public class Input {
 					Integer label = Integer.parseInt(String.valueOf(l.trim().split("\\s+")[0]));
 
 					// get weight of task
-					l = l.substring(l.indexOf("=") + 1);
-					l = l.substring(0, l.indexOf("]"));
+					l = l.substring(l.indexOf("Weight=") + 7);
+					l = l.substring(0, l.indexOf("];"));
 					int weight = Integer.parseInt(l);
 
 					nodes.put(label, weight);
@@ -89,17 +104,20 @@ public class Input {
 		NumericalProperty vertWeights = new NumericalProperty("Weight");
 		NumericalProperty vertLabels = new NumericalProperty("Labels");
 
+		TreeMap<Integer, Integer> nodesToId = new TreeMap<Integer, Integer>();
 		// Collections.sort(nodesList);
 		// Add each vertex from input file
 		for (Map.Entry<Integer, Integer> entry : nodes.entrySet()) {
+
 			Integer key = entry.getKey();
 			Integer weight = entry.getValue();
 
 			int vert = outputGraph.addVertex();
 			vertLabels.setValue(vert, key);
 			vertWeights.setValue(vert, weight);
-		}
 
+			nodesToId.put(key, vert);
+		}
 		outputGraph.setVertexWeightProperty(vertWeights);
 		outputGraph.setVerticesLabel(vertLabels);
 
@@ -119,9 +137,8 @@ public class Input {
 			e = e.substring(0, e.indexOf("]"));
 
 			int weight = Integer.parseInt(e);
-
 			// Add edge to graph
-			int newEdge = outputGraph.addSimpleEdge(srcNode, destNode, true);
+			int newEdge = outputGraph.addSimpleEdge(nodesToId.get(srcNode), nodesToId.get(destNode), true);
 
 			// Update the edge's width with the weight
 			edgeWeights.setValue(newEdge, weight);

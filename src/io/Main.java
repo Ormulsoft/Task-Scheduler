@@ -17,7 +17,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
+import alg.DFSParallel;
 import alg.cost.AStarCostFunction;
+import gui.Controller;
+import javafx.application.Application;
+import javafx.stage.Stage;
+import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
 /**
@@ -26,11 +31,18 @@ import util.ScheduleGrph;
  * @author All
  *
  */
-public class Main {
+public class Main extends Application {
 	private static final int DEFAULT_CORES = 1;
-	private static final boolean DEFAULT_VISUALISATION = false;
-
+	private static final  boolean DEFAULT_VISUALISATION = false;
+	private static ScheduleGrph in;
+	private static int numOfCores;
+	private static int numOfProcessers;
+	private static String _outputFile;
+	
 	final static Logger log = Logger.getLogger(Main.class);
+
+	private static ScheduleListener listen;
+
 
 	private static final String DEFAULT_OUTPUT_TEMPLATE = "%s-OUTPUT.dot";
 
@@ -40,19 +52,22 @@ public class Main {
 	 * @param args
 	 * @throws URISyntaxException
 	 */
-	public static void main(String[] args) throws URISyntaxException {
 
+	public static void main(String[] args) throws URISyntaxException {
+		listen = new Controller();
 		log.info("Task scheduler launched");
 		boolean visualization = DEFAULT_VISUALISATION;
 		int numCores = DEFAULT_CORES;
-
+		String inputFile = null;
+		String outputFile = null;
+		int numProcessors = 0;
 		// interpret CLI options and args
 		try {
-			int numProcessors = Integer.parseInt(args[1]);
-			String inputFile = args[0];
+			numProcessors = Integer.parseInt(args[1]);
+			inputFile = args[0];
 
 			// Input file argument
-			String outputFile = String.format(DEFAULT_OUTPUT_TEMPLATE, FilenameUtils.getBaseName(inputFile));
+			outputFile = String.format(DEFAULT_OUTPUT_TEMPLATE, FilenameUtils.getBaseName(inputFile));
 
 			CommandLine cli = parseCLIArgs(args);
 			// Number of cores
@@ -69,7 +84,7 @@ public class Main {
 			if (cli.hasOption('o')) {
 				outputFile = cli.getOptionValue('o') + ".dot";
 			}
-			startScheduling(inputFile, outputFile, visualization, numCores, numProcessors);
+
 
 		} catch (ArrayIndexOutOfBoundsException e) {
 			// e.printStackTrace();
@@ -77,6 +92,7 @@ public class Main {
 			e.printStackTrace();
 			System.exit(0);
 		}
+		startScheduling(inputFile, outputFile, visualization, numCores, numProcessors);
 	}
 
 	/**
@@ -126,24 +142,75 @@ public class Main {
 	/**
 	 * Begins the task scheduling process
 	 */
-	private static void startScheduling(String inputFile, String outputFile, boolean visualization, int numCores,
-			int numProcessors) {
+	private static void startScheduling(String inputFile, final String outputFile, boolean visualization, final int numCores,
+			final int numProcessors) {
 
+
+		numOfProcessers = numProcessors;
+		numOfCores = numCores;
+		_outputFile = outputFile;
 		log.info("Reading input file");
-		ScheduleGrph in = Input.readDotInput(inputFile);
+		in = Input.readDotInput(inputFile);
 		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
 				+ " core(s)");
-		ScheduleGrph out = new AStarAlgorithm(new AStarCostFunction(in)).runAlg(in, numCores, numProcessors);
+		// PartialScheduleGrph out = new AStarAlgorithm(in, new
+		// AStarCostFunction(in), numProcessors).runAlg();
 
-		log.info("Is valid?: " + out.dependenciesValid(in));
-		log.info("Outputting solution to file: " + outputFile);
 
-		try {
-			Output.export(out, outputFile);
-		} catch (IOException e) {
-			log.error("Failed to export file - is your output filepath valid?", e);
+
+
+		if(visualization == true){
+
+			gui.MainView.main(null);
+
+		} else {
+			long start = System.currentTimeMillis();
+			PartialScheduleGrph out;
+			if(numCores == 1){
+				out = new AStarAlgorithm(in, new AStarCostFunction(in), numProcessors).runAlg();
+			}else{
+				out = new DFSParallel(in, new AStarCostFunction(in), numProcessors, numCores).runAlg();
+			}
+
+			log.info("Algorithm took " + (System.currentTimeMillis() - start) + " ms");
+			log.info("Schedule length is: " + out.getScheduleLength());
+			log.info("Outputting solution to file: " + outputFile);
+
+
+
+			try {
+				Output.export(out, outputFile);
+			} catch (IOException e) {
+				log.error("Failed to export file - is your output filepath valid?", e);
+			}
+
+			log.info("Finished!");
+
 		}
 
-		log.info("Finished!");
+
 	}
+
+	public static ScheduleGrph getIn(){
+		return in;
+	}
+
+	public static int getNumProcessers() {
+		return numOfProcessers;
+	}
+
+	public static int getNumCores() {
+		return numOfCores;
+	}
+
+	public static String getOutputFilename() {
+		return _outputFile;
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
 }

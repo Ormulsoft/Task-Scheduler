@@ -1,3 +1,4 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>Softeng-306-Group-15</groupId>
@@ -8,7 +9,7 @@
   <repositories>
 	<repository>
 		<id>lhogie.i3s.maven.repo</id>
-		<name>Luc Hogie Maven repository</name>
+		<name>Luc Hogie Maven   repository</name>
 		<url>http://www.i3s.unice.fr/~hogie/maven_repository/</url>
     </repository>
   </repositories>  
@@ -87,6 +88,20 @@
 		<artifactId>commons-cli</artifactId>
 		<version>1.4</version>
 	</dependency>
+	<dependency>
+    		<groupId>parallel.auckland.ac.nz</groupId>
+    		<artifactId>PTCompiler</artifactId>
+    		<version>0.9.4</version>
+    		<scope>system</scope>
+    		<systemPath>${basedir}/PTCompiler-0.9.4.jar</systemPath>
+		</dependency>
+		<dependency>
+    		<groupId>PTRuntime</groupId>
+    		<artifactId>PTRuntime</artifactId>
+    		<version>0.9.4</version>
+    		<scope>system</scope>
+    		<systemPath>${basedir}/PTRuntime-0.9.4(1).jar</systemPath>
+</dependency>
   </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>
