@@ -25,6 +25,7 @@
 .statTile {
 	
 	-fx-background-color: -fx-primary;
+	-fx-background-radius: 7;
 	
 }
 .statTile .label {
@@ -33,4 +34,6 @@
 
 .button {
 	-fx-background-color: #A0DC22;
+	-fx-background-radius: 7;
+	
 }

@@ -17,7 +17,7 @@
          <font>
             <Font size="47.0" />
          </font></Button>
-      <AnchorPane layoutX="14.0" layoutY="68.0" prefHeight="566.0" prefWidth="582.0">
+      <AnchorPane layoutX="14.0" layoutY="79.0" prefHeight="544.0" prefWidth="582.0">
 			<children>
              	<Label layoutX="244.0" prefHeight="17.0" prefWidth="81.0" text="Input Graph" />
                 <ScrollPane fx:id="_input" layoutX="14.0" layoutY="14.0" pannable="true" prefHeight="489.0" prefWidth="560.0">
@@ -28,30 +28,69 @@
                 <Label layoutX="14.0" layoutY="515.0" prefHeight="14.0" prefWidth="560.0" text="Click and drag to pan, scroll with the mouse to zoom in/out. Mouse over a node to see dependencies." />
             </children>
       </AnchorPane>
-      <AnchorPane fx:id="GanttPane" layoutX="596.0" layoutY="68.0" prefHeight="554.0" prefWidth="591.0" />
+      <AnchorPane fx:id="GanttPane" layoutX="596.0" layoutY="53.0" prefHeight="554.0" prefWidth="591.0" />
       <AnchorPane layoutX="301.0" layoutY="640.0" prefHeight="136.0" prefWidth="861.0">
          <AnchorPane fx:id="timePane" layoutX="20.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0" styleClass="statTile">
             <children>
-      		<Label fx:id="time" alignment="CENTER" layoutY="69.0" prefWidth="196.0" text="0" />
-               <Label alignment="CENTER" layoutY="23.0" prefWidth="196.0" text="Time Elapsed" />
+      		<Label fx:id="time" alignment="CENTER" layoutY="40.0" prefWidth="196.0" text="0">
+                  <font>
+                     <Font size="36.0" />
+                  </font></Label>
+               <Label alignment="CENTER" layoutY="12.5" prefWidth="196.0" text="Time Elapsed">
+                  <font>
+                     <Font size="18.0" />
+                  </font></Label>
+               <Label alignment="CENTER" layoutY="89.0" prefWidth="196.0" text="seconds">
+                  <font>
+                     <Font size="18.0" />
+                  </font>
+               </Label>
             </children>
          </AnchorPane>
          <AnchorPane fx:id="iterationsPane" layoutX="235.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0" styleClass="statTile">
             <children>
-               <Label alignment="CENTER" layoutY="23.0" prefWidth="196.0" text="States Visited" />
-      		<Label fx:id="visited" alignment="CENTER" layoutY="69.0" prefWidth="196.0" text="0" />
+               <Label alignment="CENTER" layoutY="12.5" prefWidth="196.0" text="States Visited">
+                  <font>
+                     <Font size="18.0" />
+                  </font></Label>
+      		<Label fx:id="visited" alignment="CENTER" layoutY="40.0" prefWidth="196.0" text="0">
+                  <font>
+                     <Font size="36.0" />
+                  </font></Label>
             </children>
          </AnchorPane>
          <AnchorPane fx:id="memoryPane" layoutX="450.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0" styleClass="statTile">
             <children>
-               <Label alignment="CENTER" layoutX="1.0" layoutY="23.0" prefWidth="196.0" text="Memory Usage" />
-      		<Label fx:id="mem" alignment="CENTER" layoutX="1.0" layoutY="69.0" prefWidth="196.0" text="0.00" />
+               <Label alignment="CENTER" layoutX="1.0" layoutY="12.5" prefWidth="196.0" text="Memory Usage">
+                  <font>
+                     <Font size="18.0" />
+                  </font></Label>
+      		<Label fx:id="mem" alignment="CENTER" layoutX="1.0" layoutY="40.0" prefWidth="196.0" text="0.00">
+                  <font>
+                     <Font size="36.0" />
+                  </font></Label>
+               <Label alignment="CENTER" layoutY="86.0" prefWidth="196.0" text="MB">
+                  <font>
+                     <Font size="25.0" />
+                  </font>
+               </Label>
             </children>
          </AnchorPane>
          <AnchorPane fx:id="cpuPane" layoutX="665.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0" styleClass="statTile">
             <children>
-               <Label alignment="CENTER" layoutY="23.0" prefWidth="196.0" text="CPU Load" />
-            <Label fx:id="cpuLoad" alignment="CENTER" layoutY="69.0" prefWidth="196.0" text="10.00" />
+               <Label alignment="CENTER" layoutY="12.5" prefWidth="196.0" text="CPU Load">
+                  <font>
+                     <Font size="18.0" />
+                  </font></Label>
+            <Label fx:id="cpuLoad" alignment="CENTER" layoutY="40.0" prefWidth="196.0" text="10.00">
+                  <font>
+                     <Font size="36.0" />
+                  </font></Label>
+               <Label alignment="CENTER" layoutY="87.0" prefWidth="196.0" text="\%">
+                  <font>
+                     <Font size="25.0" />
+                  </font>
+               </Label>
             </children>
          </AnchorPane>
 	  </AnchorPane>

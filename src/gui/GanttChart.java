@@ -1,4 +1,5 @@
 package gui;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -105,6 +106,7 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 						Rectangle rect;
 						final String label = getLabel(n.getExtraValue());
 						Text textLabel = new Text(label);
+						textLabel.setFill(javafx.scene.paint.Color.WHITE);
 						textLabel.setFont(Font.font("Courier New", FontWeight.BOLD,10));
 						textLabel.setTranslateX(x);
 						textLabel.setTranslateY(getBlockHeight());

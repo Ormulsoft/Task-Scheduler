@@ -122,17 +122,17 @@ public class Controller implements ScheduleListener{
 		_input.updateContent();
 		viewGraph(_input,io.Main.getIn());
 		chart.setMinWidth(600);
-		chart.setMinHeight(600);
+		chart.setMinHeight(590);
 		GanttPane.getChildren().add(chart);	
 		xAxis.setLabel("Time");
-		xAxis.setTickLabelFill(Color.BLACK);
+		xAxis.setTickLabelFill(Color.WHITE);
 
-		yAxis.setLabel("Processor's");
-		yAxis.setTickLabelFill(Color.BLACK);
+		yAxis.setLabel("Processor No.");
+		yAxis.setTickLabelFill(Color.WHITE);
 		intializeData();
 		yAxis.setCategories(FXCollections.<String>observableArrayList(Processers));
 
-		chart.setTitle("Machine Monitoring");
+		chart.setTitle("Current best schedule:");
 		chart.setLegendVisible(false);
 		chart.setBlockHeight( 50);
 		chart.getStylesheets().add(getClass().getResource("ganttchart.css").toExternalForm());
