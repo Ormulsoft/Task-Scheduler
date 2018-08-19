@@ -20,6 +20,7 @@ import alg.DFSAlgorithm;
 import alg.DFSParallel;
 import alg.cost.AStarCostFunction;
 import gui.Controller;
+import gui.ScheduleListener;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import util.PartialScheduleGrph;

@@ -6,8 +6,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import alg.cost.CostFunction;
-import io.ScheduleEvent;
-import io.ScheduleListener;
+import gui.ScheduleEvent;
+import gui.ScheduleListener;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 import util.StaticUtils;

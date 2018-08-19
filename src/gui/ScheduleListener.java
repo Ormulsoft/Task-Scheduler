@@ -1,7 +1,8 @@
-package io;
+package gui;
 
 import java.util.HashSet;
 import java.util.PriorityQueue;
+
 import util.PartialScheduleGrph;
 
 public interface ScheduleListener {

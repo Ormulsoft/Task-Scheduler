@@ -20,8 +20,6 @@ import alg.cost.AStarCostFunction;
 import grph.properties.NumericalProperty;
 import gui.GanttChart.ExtraData;
 import io.Output;
-import io.ScheduleEvent;
-import io.ScheduleListener;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

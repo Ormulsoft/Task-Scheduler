@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import alg.cost.CostFunction;
-import io.ScheduleEvent;
-import io.ScheduleListener;
+import gui.ScheduleEvent;
+import gui.ScheduleListener;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 import util.StaticUtils;
