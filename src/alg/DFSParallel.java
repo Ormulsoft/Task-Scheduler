@@ -106,10 +106,12 @@ public class DFSParallel implements Algorithm {
 	 */
 	Runnable guiRunnable = new Runnable() {
 		public void run() {
+
 			_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations.intValue(),
 					_bestState);
 			_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations.intValue(),
 					StaticUtils.getUsedMemory());
+
 		}
 	};
 
