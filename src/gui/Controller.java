@@ -22,10 +22,15 @@ import gui.GanttChart.ExtraData;
 import io.Output;
 import io.ScheduleEvent;
 import io.ScheduleListener;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
@@ -40,6 +45,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
@@ -88,7 +94,9 @@ public class Controller implements ScheduleListener {
 	private ArrayList<String> Processers = new ArrayList<String>();
 	private ArrayList<String> Colors = new ArrayList<String>();
 	private int rand = 0;
-
+	private Timeline GUITimeUpdate;
+	
+	
 	@FXML
 	public void initialize() {
 
@@ -141,34 +149,25 @@ public class Controller implements ScheduleListener {
 
 		};
 
-		final TimerTask task = new TimerTask() {
-
-			@Override
-			public void run() {
-				Platform.runLater(new Runnable() {
-
-					public void run() {
-						seconds = seconds + 0.001;
-						time.setText(String.format("%.3f", seconds));
-
-					}
-				});
-
-			}
-
-		};
 
 		seconds = 0;
+		
+		GUITimeUpdate = new Timeline(new KeyFrame(Duration.millis( 1 ),
+			new EventHandler<ActionEvent>() {
+						public void handle(ActionEvent event) {
+							seconds = seconds + 0.001;
+							time.setText(String.format("%.3f", seconds));				
+						}
+					})
+				);
+		GUITimeUpdate.setCycleCount( Animation.INDEFINITE );
+		GUITimeUpdate.play();
+		
+
+		
 		startBtn.setDisable(true);
 		initalizeColour();
 
-		new Thread(new Runnable() {
-
-			public void run() {
-				myTimer.scheduleAtFixedRate(task, 1, 1);
-
-			}
-		}).start();
 
 		Service<PartialScheduleGrph> algService = new Service<PartialScheduleGrph>() {
 
@@ -202,6 +201,7 @@ public class Controller implements ScheduleListener {
 				
 				log.info("Schedule length is: " + getValue().getScheduleLength());
 				log.info("Outputting solution to file: " + io.Main.getOutputFilename());
+				GUITimeUpdate.stop();
 				myTimer.cancel();
 				try {
 					Output.export(getValue(), io.Main.getOutputFilename());
