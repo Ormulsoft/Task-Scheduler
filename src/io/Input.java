@@ -29,17 +29,14 @@ public class Input {
 	 * 
 	 * @param path
 	 * @return
+	 * @throws FileNotFoundException
 	 */
-	public static ScheduleGrph readDotInput(String path) {
+	public static ScheduleGrph readDotInput(String path) throws FileNotFoundException {
 		log.debug("Reading input DOT file");
 		File file = new File(path);
 		Scanner input = null;
 
-		try {
-			input = new Scanner(file);
-		} catch (FileNotFoundException e) {
-			log.error("File was not found!", e);
-		}
+		input = new Scanner(file);
 
 		List<String> list = new ArrayList<String>();
 
@@ -51,27 +48,27 @@ public class Input {
 			// Only add if it doesn't contain '{', '}', or only whitespace.
 			if ((currentLine.indexOf('{') == -1) && (currentLine.indexOf('}') == -1)) {
 				if (!currentLine.trim().isEmpty()) {
-					
+
 					String appendedLine = currentLine;
-				
+
 					// If the line starts with a number.
 					if (Character.isDigit(currentLine.trim().charAt(0))) {
-						
+
 						String thisLine = currentLine;
-						
+
 						while (!thisLine.contains("Weight=") && input.hasNextLine()) {
 							String theLineAfter = input.nextLine();
 							appendedLine += theLineAfter;
 							thisLine = theLineAfter;
 						}
-						
-					// String is not empty and not just whitespace
+
+						// String is not empty and not just whitespace
 						list.add(appendedLine);
 					}
 				}
 			}
 		}
-		
+
 		// Distinguish between edges and nodes within input
 		List<String> edgesList = new ArrayList<String>();
 		// maps the node ID to its Weight value, so that they can be put into
@@ -144,7 +141,7 @@ public class Input {
 			edgeWeights.setValue(newEdge, weight);
 
 		}
-
+		input.close();
 		outputGraph.setEdgeWeightProperty(edgeWeights);
 
 		return outputGraph;

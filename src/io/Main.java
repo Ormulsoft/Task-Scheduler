@@ -147,7 +147,12 @@ public class Main extends Application {
 		numOfCores = numCores;
 		_outputFile = outputFile;
 		log.info("Reading input file");
-		in = Input.readDotInput(inputFile);
+		try {
+			in = Input.readDotInput(inputFile);
+		} catch (FileNotFoundException e) {
+			log.info("Input filename is invalid!");
+			System.exit(1);
+		}
 		log.info("Started scheduling algorithm with params: " + numProcessors + " processor(s), " + numCores
 				+ " core(s)");
 		// PartialScheduleGrph out = new AStarAlgorithm(in, new
