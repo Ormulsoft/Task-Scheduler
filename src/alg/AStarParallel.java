@@ -8,6 +8,15 @@ import util.MinimalScheduleGrph;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
+/**
+ * A parallelized version of the A* default algorithm. Uses the standard java
+ * threads which concurrently access the same Open / closed Queues.
+ * 
+ * NO LONGER USED
+ * 
+ * @author Matt Frost
+ *
+ */
 public class AStarParallel implements Algorithm {
 
 	private int _numCores;
@@ -15,6 +24,13 @@ public class AStarParallel implements Algorithm {
 	private ScheduleGrph _input;
 	private CostFunction _cost;
 
+	/**
+	 * 
+	 * @param input
+	 * @param cost
+	 * @param numProcessors
+	 * @param numCores
+	 */
 	public AStarParallel(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores) {
 		this._numCores = numCores;
 		this._numProcessors = numProcessors;
@@ -26,7 +42,7 @@ public class AStarParallel implements Algorithm {
 	 * 
 	 */
 	public PartialScheduleGrph runAlg() {
-		
+
 		HashSet<String> closedStates = new HashSet<String>();
 		PriorityBlockingQueue<MinimalScheduleGrph> states = new PriorityBlockingQueue<MinimalScheduleGrph>(1);
 

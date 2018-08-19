@@ -9,6 +9,13 @@ import alg.cost.CostFunction;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
+/**
+ * The DFS Task class provides a fork-join recursive action for the DFS / BB A*
+ * algorithm
+ * 
+ * @author Matt Frost
+ *
+ */
 public class DFSTask extends RecursiveAction {
 
 	private ScheduleGrph _input;

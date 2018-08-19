@@ -12,16 +12,16 @@ import grph.properties.NumericalProperty;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import toools.collections.primitive.LucIntSet;
 
-public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
+/**
+ * The PartialScheduleGrph extends the Grph libraries graphing classes, and
+ * provides an object that represents a Partial schedule in the scheduling
+ * algorithm state space
+ * 
+ * @author Matt Frost / Gino
+ *
+ */
+public class PartialScheduleGrph extends ScheduleGrph implements Comparable<PartialScheduleGrph> {
 
-	/**
-	 * A graphing class for an intermediary partial schedule generated during
-	 * algorithm runs. Used to represent a potential partial solution for the
-	 * problem on the tree.
-	 * 
-	 * TODO - make this have a reference to the input ScheduleGrph - all
-	 * functions about comparisons to original done here?
-	 */
 	private static final long serialVersionUID = 1L;
 	private int score;
 	private int _idleTime = 0; // the MOST RECENTLY CALCULATED idle time. can be
@@ -335,20 +335,6 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 		return false;
 	}
 
-	public int compareTo(Object o) {
-		PartialScheduleGrph g = (PartialScheduleGrph) o;
-		if (this.getScore() == g.getScore()) {
-			if (this.timeAdded > g.getTimeAdded())
-				return -1;
-			else
-				return 1;
-		}
-		if (this.getScore() < g.getScore())
-			return -1;
-		else
-			return 1;
-	}
-
 	public void addFreeTask(ScheduleGrph init, int task, int pc) {
 
 		// set the start time based on earliest first on a
@@ -563,5 +549,18 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable {
 			}
 		}
 		return true;
+	}
+
+	public int compareTo(PartialScheduleGrph g) {
+		if (this.getScore() == g.getScore()) {
+			if (this.timeAdded > g.getTimeAdded())
+				return -1;
+			else
+				return 1;
+		}
+		if (this.getScore() < g.getScore())
+			return -1;
+		else
+			return 1;
 	}
 }
