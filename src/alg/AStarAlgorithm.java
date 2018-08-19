@@ -1,9 +1,19 @@
 package alg;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.apache.commons.lang.SerializationUtils;
 
@@ -35,11 +45,11 @@ public class AStarAlgorithm implements Algorithm {
 	private static final int ALGORITHM_TIMEOUT = 2 * 60 * 1000;
 
 	private final CostFunction cost;
-	
+	private PartialScheduleGrph s;
 	private int statesVisited;
 	private int counter = 0;
 	ScheduleListener _listen;
-	
+	private int iterations = 0;
 	
 	private InformationModel info;
 
@@ -181,12 +191,17 @@ public class AStarAlgorithm implements Algorithm {
 		long deepCopyTime = 0;
 		long totTime = System.nanoTime();
 		PartialScheduleGrph prev = null;
-
-		int iterations = 0;
+		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+		executor.scheduleAtFixedRate(helloRunnable, 0, 1, TimeUnit.SECONDS);
+		
+		ScheduledExecutorService executorSearchSpace = Executors.newScheduledThreadPool(1);
+		executorSearchSpace.scheduleAtFixedRate(searchSpaceRunnable(states), 0, 1, TimeUnit.SECONDS);
+		
+		
 		while (states.size() > 0) {
 			iterations++;
 			boolean foundSameScore = false;
-			PartialScheduleGrph s = states.poll();
+			 s = states.poll();
 
 			// if is a leaf, return the partial.
 			HashSet<Integer> freeTasks = getFree(input, s);
@@ -206,6 +221,8 @@ public class AStarAlgorithm implements Algorithm {
 				log.info("Number of states at end: " + states.size());
 				log.info("Number of closed states: " + closedStates.size());
 				log.info("Number of iterations: " + iterations);
+				executor.shutdown();
+				_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations,s);
 				return s;
 			} else if (!this.storedInClosedSet(s, closedStates)) {
 				// loop over all free vertices
@@ -216,13 +233,18 @@ public class AStarAlgorithm implements Algorithm {
 						///// Visualisation /////////
 						statesVisited++;
 						info.setIterations(statesVisited);
-
-						_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations);
+						double memory = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024.0 * 1024.0 * 1024.0 ));
+						
+						
+						_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations, memory);
 						counter++;
+						
+						
 						//update();
 //						info.fire(new ScheduleEvent(ScheduleEvent.EventType.NewState));
 						
-						///////////////////////
+						/////////////////////// 
+
 
 						PartialScheduleGrph next = s.copy();
 						next.addVertex(task);
@@ -396,6 +418,27 @@ public class AStarAlgorithm implements Algorithm {
 			}
 		}
 		return a;
+	}
+	
+	Runnable helloRunnable = new Runnable() {
+	    public void run() {
+	    	_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations,s);
+	    }
+	};
+	
+	
+	private Runnable searchSpaceRunnable(PriorityQueue<PartialScheduleGrph> states) {
+		return new Runnable() {
+		    public void run() {
+		    	_listen.renderSearchSpace(states);
+		    }
+		};
+	}
+	
+	
+	public void fireListener() {
+		
+		_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations,s);
 	}
 
 }
