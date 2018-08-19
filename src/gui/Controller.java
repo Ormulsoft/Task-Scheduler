@@ -24,6 +24,8 @@ import io.ScheduleEvent;
 import io.ScheduleListener;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
@@ -160,37 +162,51 @@ public class Controller implements ScheduleListener {
 			}
 		}).start();
 
-		new Thread(new Runnable() {
+		Service<PartialScheduleGrph> algService = new Service<PartialScheduleGrph>() {
 
-			public void run() {
-				long start = System.currentTimeMillis();
-				PartialScheduleGrph out;
-				sequential = new DFSAlgorithm(io.Main.getIn(), new AStarCostFunction(io.Main.getIn()),
-						io.Main.getNumProcessers(), parse);
+			@Override
+			protected Task<PartialScheduleGrph> createTask() {
+				
+				
+				return new Task<PartialScheduleGrph>(){
+					
+					@Override
+					protected PartialScheduleGrph call() {
+						long start = System.currentTimeMillis();
+						PartialScheduleGrph out;
+						if(io.Main.getNumCores() == 1){
+							out = new DFSAlgorithm(io.Main.getIn(), new AStarCostFunction(io.Main.getIn()), io.Main.getNumProcessers(), parse).runAlg();
+						}else{
+							out = new DFSParallel(io.Main.getIn(), new AStarCostFunction(io.Main.getIn()), io.Main.getNumProcessers(),io.Main.getNumCores(),  parse).runAlg();
+						}
+						
+						log.info("Algorithm took " + (System.currentTimeMillis() - start) + " ms");
+						return out;
+					}
+					
+				};
+			}
+			
+			
 
-				parallel = new DFSParallel(io.Main.getIn(), new AStarCostFunction(io.Main.getIn()),
-						io.Main.getNumProcessers(), io.Main.getNumCores(), parse);
-				if (io.Main.getNumCores() == 1) {
-					out = sequential.runAlg();
-				} else {
-					out = parallel.runAlg();
-				}
-				cpuTask.run();
-				log.info("Algorithm took " + (System.currentTimeMillis() - start) + " ms");
-
-				log.info("Schedule length is: " + out.getScheduleLength());
+			@Override
+			protected void succeeded() {
+				
+				log.info("Schedule length is: " + getValue().getScheduleLength());
 				log.info("Outputting solution to file: " + io.Main.getOutputFilename());
 				myTimer.cancel();
 				try {
-					Output.export(out, io.Main.getOutputFilename());
+					Output.export(getValue(), io.Main.getOutputFilename());
 				} catch (IOException e) {
 
 				}
 				startBtn.setDisable(false);
-
 			}
-
-		}).start();
+			
+		};
+		
+		algService.start();
+		
 
 		new Thread(new Runnable() {
 
