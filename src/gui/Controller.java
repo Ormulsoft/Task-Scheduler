@@ -208,7 +208,7 @@ public class Controller implements ScheduleListener {
 				} catch (IOException e) {
 
 				}
-				startBtn.setDisable(false);
+				startBtn.setText("Done!");
 			}
 			
 		};

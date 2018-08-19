@@ -6,6 +6,8 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicLong;
 
 import alg.cost.CostFunction;
+import io.ScheduleEvent;
+import io.ScheduleListener;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
@@ -27,7 +29,10 @@ public class DFSTask extends RecursiveAction {
 	private HashSet<String> _closed;
 	private int _lastAdded;
 	private AtomicLong _iterations;
+	private ScheduleListener _listen;
+	private boolean _vis = false;
 
+	// No vis
 	public DFSTask(ScheduleGrph input, PartialScheduleGrph current, PartialScheduleGrph best, CostFunction cost,
 			HashSet<String> closed, int numProcessors, int lastAdded, AtomicLong lowerBound, AtomicLong iterations) {
 		_input = input;
@@ -41,6 +46,15 @@ public class DFSTask extends RecursiveAction {
 		_iterations = iterations;
 	}
 
+	// With vis
+	public DFSTask(ScheduleGrph input, PartialScheduleGrph current, PartialScheduleGrph best, CostFunction cost,
+			HashSet<String> closed, int numProcessors, int lastAdded, AtomicLong lowerBound, AtomicLong iterations, ScheduleListener listen) {
+		this(input, current, best, cost, closed, numProcessors, lastAdded, lowerBound, iterations);
+		_listen = listen;
+		this._vis = true;
+	}
+	
+	
 	@Override
 	protected void compute() {
 		_iterations.set(_iterations.get() + 1);
@@ -67,8 +81,14 @@ public class DFSTask extends RecursiveAction {
 				next.addFreeTask(_input, freeTask, proc);
 				_cost.applyCost(next, freeTask, _numProcessors);
 				if (_current.getScore() < _lowerBound.get()) {
-					tasks.add(new DFSTask(_input, next, _bestState, _cost, _closed, _numProcessors, freeTask,
-							_lowerBound, _iterations));
+					if (_vis) {
+						tasks.add(new DFSTask(_input, next, _bestState, _cost, _closed, _numProcessors, freeTask,
+								_lowerBound, _iterations,_listen));
+					}
+					else {
+						tasks.add(new DFSTask(_input, next, _bestState, _cost, _closed, _numProcessors, freeTask,
+								_lowerBound, _iterations));	
+					}
 				}
 
 			}
@@ -84,6 +104,9 @@ public class DFSTask extends RecursiveAction {
 			_lowerBound.set(underestimate);
 			_bestState.setVertexStartProperty(s.getVertexStartProperty());
 			_bestState.setVertexProcessorProperty(s.getVertexProcessorProperty());
+			if (this._vis) {
+				_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations.intValue(), _bestState);
+			}
 		}
 	}
 

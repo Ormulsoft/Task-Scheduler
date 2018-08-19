@@ -94,16 +94,23 @@ public class DFSParallel implements Algorithm {
 		ScheduledExecutorService executor = null;
 		if (_vis) {
 			executor = Executors.newScheduledThreadPool(1);
-			executor.scheduleAtFixedRate(guiRunnable, 0, 200, TimeUnit.MILLISECONDS);
+			executor.scheduleAtFixedRate(statsRunnable, 0, 200, TimeUnit.MILLISECONDS);
 		}
 
 		_bestState.setVerticesLabel(_input.getVertexLabelProperty());
-		forkJoinPool.invoke(
-				new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, -1, _lowerBound, _iterations));
+		if (_vis) {
+			forkJoinPool.invoke(
+					new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, -1, _lowerBound, _iterations,_listen));
+		}
+		else {
+			forkJoinPool.invoke(
+					new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, -1, _lowerBound, _iterations));
+		}
+		
 		getSetupOutput(_bestState);
 		
 		if (_vis) {
-			executor.execute(guiRunnable);
+			executor.execute(statsRunnable);
 			executor.shutdown();
 		}
 
@@ -113,15 +120,14 @@ public class DFSParallel implements Algorithm {
 	/**
 	 * 
 	 */
-	Runnable guiRunnable = new Runnable() {
+	Runnable statsRunnable = new Runnable() {
 		public void run() {
 
-			_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations.intValue(),
-					_bestState);
 			_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations.intValue(),
 					StaticUtils.getUsedMemory());
 
 		}
 	};
-
+	
+	
 }
