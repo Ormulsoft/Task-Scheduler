@@ -17,7 +17,7 @@ import toools.collections.primitive.LucIntSet;
  * provides an object that represents a Partial schedule in the scheduling
  * algorithm state space
  * 
- * @author Matt Frost / Gino
+ * @author Matt / Eugene
  *
  */
 public class PartialScheduleGrph extends ScheduleGrph implements Comparable<PartialScheduleGrph> {
@@ -31,43 +31,87 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable<Part
 	private String serialized = null;
 	private long timeAdded = 0;
 
+	/**
+	 * Constructor with specific score value, useful for cloning from a parent.
+	 * @param score The score to assign to this partial schedule
+	 */
 	public PartialScheduleGrph(int score) {
 		super();
 		this.score = score;
 	}
 
+	/**
+	 * Get the current score of this partial schedule, used for ranking in the algorithm
+	 * @return
+	 */
 	public int getScore() {
 		return this.score;
 	}
 
+	/**
+	 * Set the score of this partial schedule, used for ranking in the algorithm
+	 * @param score The score value to set
+	 */
 	public void setScore(int score) {
 		this.score = score;
 	}
 
+	/**
+	 * Get the last calculated idle time of this partial schedule, either an outdated value inherited from parent,
+	 * or an iteratively calculated value usually set during the cost function
+	 * @return
+	 */
 	public int getLastIdleTime() {
 		return this._idleTime;
 	}
 
+	/**
+	 * Set the idle time of this partial schedule
+	 * @param idleTime The total amount of Idle Time on this schedule
+	 */
 	public void setIdleTime(int idleTime) {
 		this._idleTime = idleTime;
 	}
 
+	/**
+	 * Set the time this schedule was added to a list/set. e.g closedSet, used in comparing between
+	 * schedules with the same score.
+	 * @param t The time value to set as
+	 */
 	public void setTimeAdded(long t) {
 		this.timeAdded = t;
 	}
 
+	/**
+	 * Get the time this schedule was added to a list/set. e.g closedSet, used in comparing between
+	 * schedules with the same score.
+	 * @return
+	 */
 	public long getTimeAdded() {
 		return this.timeAdded;
 	}
 
+	/**
+	 * Get the last known bottom level cost of this schedule. Either an outdated value inherited from parent,
+	 * or an iteratively calculated value usually set during the cost function
+	 * @return
+	 */
 	public int getLastFBottomLevel() {
 		return this._fBTW;
 	}
 
+	/**
+	 * Set the bottom level time of this schedule
+	 * @param fbtw The bottom level cost to set for this schedule
+	 */
 	public void setFBottomLevel(int fbtw) {
 		this._fBTW = fbtw;
 	}
 
+	/**
+	 * Get the overall finish time of this schedule
+	 * @return
+	 */
 	public int getScheduleLength() {
 		int max = 0;
 		for (int vert : this.getVertices()) {
@@ -82,23 +126,33 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable<Part
 
 	public static long time = 0;
 
+	/**
+	 * Create and return a copy of this schedule including data such as task starts, score, 
+	 * processor starts etc
+	 * @return
+	 */
 	public PartialScheduleGrph copy() {
 		long start = System.nanoTime();
+		// init new schedule
 		PartialScheduleGrph g = new PartialScheduleGrph(0);
 		time += System.nanoTime() - start;
+		
+		// copy vertices and labels
 		g.addVertices(this.getVertices());
 		g.setVerticesLabel(this.getVertexLabelProperty());
 
+		// copy weights starts and processor assignments
 		g.setVertexWeightProperty(this.getVertexWeightProperty());
 		NumericalProperty procs = g.getVertexProcessorProperty();
 		NumericalProperty starts = g.getVertexStartProperty();
-		// weights.setValue(.getValue(i));
+	
 		for (int i : this.getVertices()) {
 
 			procs.setValue(i, this.getVertexProcessorProperty().getValue(i));
 			starts.setValue(i, this.getVertexStartProperty().getValue(i));
 		}
 
+		// Copy score metrics
 		g.setScore(score);
 		g.setIdleTime(_idleTime);
 		g.setFBottomLevel(_fBTW);
@@ -107,10 +161,16 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable<Part
 
 	}
 
+	/**
+	 * Returns a normalized copy of this schedule, where processors are in a specific fixed order,
+	 * to allow comparison between two schedules that are identical aside from processor names
+	 * @param numProcessor The number of processors available for this schedule
+	 * @return
+	 */
 	public PartialScheduleGrph getNormalizedCopy(int numProcessor) {
 		PartialScheduleGrph out = this.copy();
 
-		// System.out.println(out.getVerticesForProcessor(2).size());
+		// Reorder processors based on start time
 		for (int i = 1; i <= numProcessor; i++) {
 			try {
 				IntSet procVertices = this.getVerticesForProcessor(i);
@@ -131,12 +191,21 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable<Part
 		return out;
 	}
 
+	/**
+	 * Serialize this schedule into a MinimalScheduleGrph for low memory saving
+	 * @return
+	 */
 	public MinimalScheduleGrph serialize() {
 
 		return new MinimalScheduleGrph(this);
 
 	}
 
+	/**
+	 * Get the list of currently free tasks for this partial schedule
+	 * @param inputSaved The graph read as input used to calculate this partial schedule
+	 * @return
+	 */
 	public HashSet<Integer> getFree(ScheduleGrph inputSaved) {
 		HashSet<Integer> a = new HashSet<Integer>();
 		// get all source nodes (no in edges) that are not in the
@@ -179,6 +248,12 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable<Part
 		return a;
 	}
 
+	/**
+	 * Get the list of currently free tasks for this partial schedule using the Fixed Task Order
+	 * pruning strategy.
+	 * @param inputSaved The graph read as input used to calculate this partial schedule
+	 * @return
+	 */
 	public TreeSet<Integer> getFixedFree(final ScheduleGrph inputSaved) {
 		TreeSet<Integer> a = new TreeSet<Integer>();
 		// get all source nodes (no in edges) that are not in the
@@ -316,6 +391,10 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable<Part
 		return a;
 	}
 
+	/**
+	 * Set the value of the serialized version of this schedule
+	 * @param s The string to store as the serialized schedule
+	 */
 	public void setSerialized(String s) {
 		this.serialized = s;
 	}
@@ -335,6 +414,12 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable<Part
 		return false;
 	}
 
+	/**
+	 * Add a free task to the earliest possible time on this schedule on the specified processor
+	 * @param init The schedule graph read as input used to generate this partial schedule
+	 * @param task The task to add
+	 * @param pc The processor to add the task to
+	 */
 	public void addFreeTask(ScheduleGrph init, int task, int pc) {
 
 		// set the start time based on earliest first on a
@@ -368,9 +453,6 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable<Part
 		/**
 		 * find the latest finishing process on the same processor, and factor
 		 * into the timing
-		 * 
-		 * TODO make this a function of the PartialScheduleGrph to suit the
-		 * abstraction Named getProcessorFinishTime() ??
 		 */
 		int processorUpperBound = 0;
 		for (int pcTask : this.getVertices()) {
@@ -391,17 +473,15 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable<Part
 	}
 
 	/**
-	 * Not currently working, seems to break optimal on input 10, more testing
-	 * needed
-	 * 
 	 * Checks whether or not a schedule has any equivalent schedules, and should
 	 * therefore not be expanded. i.e leaves it to the last equivalentschedule
 	 * to be expanded. RELIES ON THE ALGORITHM EVENTUALLY CHECKING THE
 	 * EQUIVALENT SCHEDULE WITH ALL TASKS THAT ARE ON THE SAME PROCESSOR AS
 	 * LASTADDED BEING IN THE INDEX ORDER WHERE POSSIBLE
 	 * 
-	 * @param sched
-	 * @param lastAdded
+	 * @param input The schedule graph read as input used to generate this partial schedule
+	 * @param lastAdded The most recently added task on this partial schedule
+	 * @param numProcessors The number of processors available to schedule tasks on
 	 * @return
 	 */
 	public boolean equivalenceCheck(ScheduleGrph input, int lastAdded, int numProcessors) {
@@ -487,10 +567,9 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable<Part
 	 * datatransfers of a set of tasks are unaffected by a change in
 	 * order/position
 	 * 
-	 * @param input
-	 * @param newStarts
-	 *            A map of task id to start time, after the change
-	 * @param numProcessors
+	 * @param input The schedule graph read as input used to generate this partial schedule
+	 * @param newStarts A map of task id to start time, after the change
+	 * @param numProcessors The number of processors available to schedule tasks on
 	 * @return
 	 */
 	public boolean outgoingCommsOK(ScheduleGrph input, HashMap<Integer, Integer> newStarts, int numProcessors) {
@@ -551,6 +630,10 @@ public class PartialScheduleGrph extends ScheduleGrph implements Comparable<Part
 		return true;
 	}
 
+	/**
+	 * The compareTo method for ranking partial schedules. 
+	 * Based on score, otherwise based on time added if scores are equal
+	 */
 	public int compareTo(PartialScheduleGrph g) {
 		if (this.getScore() == g.getScore()) {
 			if (this.timeAdded > g.getTimeAdded())

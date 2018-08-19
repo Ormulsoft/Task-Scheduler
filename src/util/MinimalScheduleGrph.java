@@ -14,6 +14,10 @@ public class MinimalScheduleGrph implements Comparable<MinimalScheduleGrph> {
 	private String _serialized;
 	private int _score;
 
+	/**
+	 * The constructor for generating a MinimalScheduleGrph based on a PartialScheduleGrph
+	 * @param in The Partial Schedule to serialize
+	 */
 	public MinimalScheduleGrph(PartialScheduleGrph in) {
 		String serialized = "";
 		// NumericalProperty weights = this.getVertexWeightProperty();
@@ -32,14 +36,25 @@ public class MinimalScheduleGrph implements Comparable<MinimalScheduleGrph> {
 		this._score = in.getScore();
 	}
 
+	/**
+	 * Get the score of this schedule, used for ranking/comparing.
+	 * @return
+	 */
 	public int getScore() {
 		return _score;
 	}
 
+	/**
+	 * Get the serialization string of this schedule
+	 * @return
+	 */
 	public String getSerialString() {
 		return _serialized;
 	}
 
+	/**
+	 * Implementation of the compareTo method, uses score to rank.
+	 */
 	public int compareTo(MinimalScheduleGrph g) {
 
 		if (this.getScore() < g.getScore())
@@ -48,6 +63,10 @@ public class MinimalScheduleGrph implements Comparable<MinimalScheduleGrph> {
 			return 1;
 	}
 
+	/**
+	 * Generate a full PartialScheduleGrph from this minimal version
+	 * @return
+	 */
 	public PartialScheduleGrph toGraph() {
 
 		PartialScheduleGrph out = new PartialScheduleGrph(_score);
