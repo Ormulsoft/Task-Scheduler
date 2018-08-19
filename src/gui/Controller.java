@@ -49,6 +49,10 @@ public class Controller implements ScheduleListener {
 	@FXML
 	ZoomableScrollPane _input;
 	@FXML
+	ZoomableScrollPane _ganttScroll;
+	
+	
+	@FXML
 	private Label visited;
 	@FXML
 	private AnchorPane GanttPane;
@@ -61,6 +65,8 @@ public class Controller implements ScheduleListener {
 
 	@FXML
 	private Label mem;
+	
+
 
 	@FXML
 	private Label cpuLoad;
@@ -87,6 +93,8 @@ public class Controller implements ScheduleListener {
 	public void initialize() {
 
 		_input.updateContent();
+		_ganttScroll.updateContent();
+		_ganttScroll.setVvalue(0.4);
 		viewGraph(_input, io.Main.getIn());
 		chart.setMinWidth(600);
 		chart.setMinHeight(590);
@@ -99,7 +107,7 @@ public class Controller implements ScheduleListener {
 		intializeData();
 		yAxis.setCategories(FXCollections.<String>observableArrayList(Processers));
 
-		chart.setTitle("Current best schedule:");
+		chart.setTitle("");
 		chart.setLegendVisible(false);
 		chart.setBlockHeight(50);
 		chart.getStylesheets().add(getClass().getResource("ganttchart.css").toExternalForm());

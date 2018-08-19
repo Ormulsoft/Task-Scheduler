@@ -18,7 +18,7 @@ public class ZoomableScrollPane extends ScrollPane {
 	 */
 	
 	
-    private double scaleValue = 0.7;
+    private double scaleValue = 0.9;
     private double zoomIntensity = 0.02;
     private Node target;
     private Node zoomNode;

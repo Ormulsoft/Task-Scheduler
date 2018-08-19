@@ -7,7 +7,7 @@
 <?import javafx.scene.text.Font?>
 <?import gui.ZoomableScrollPane?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
    <children>
       <Label layoutX="470.0" layoutY="14.0" prefHeight="39.0" prefWidth="287.0" text="Optimal Task Scheduler" textFill="#b17221">
          <font>
@@ -18,20 +18,20 @@
          <font>
             <Font size="47.0" />
          </font></Button>
-      <AnchorPane layoutX="14.0" layoutY="79.0" prefHeight="544.0" prefWidth="582.0">
+      <AnchorPane layoutX="14.0" layoutY="55.0" prefHeight="544.0" prefWidth="582.0">
 			<children>
-                <ZoomableScrollPane fx:id="_input" layoutX="14.0" layoutY="14.0" pannable="true" prefHeight="489.0" prefWidth="560.0">
+                <ZoomableScrollPane fx:id="_input" layoutX="14.0" layoutY="41.0" pannable="true" prefHeight="489.0" prefWidth="560.0">
                    <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="561.0" prefWidth="640.0" />
                    </content>
                 </ZoomableScrollPane>
-                <Label layoutX="14.0" layoutY="515.0" prefHeight="14.0" prefWidth="560.0" text="Click &amp; Drag to pan. Scroll to zoom in/out. Mouse-over a node to view it's dependencies.">
+             	<Label layoutX="230.0" prefHeight="30.0" prefWidth="122.0" text="Input Graph">
                <font>
-                  <Font size="14.0" />
-               </font></Label>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
             </children>
       </AnchorPane>
-      <AnchorPane fx:id="GanttPane" layoutX="596.0" layoutY="53.0" prefHeight="554.0" prefWidth="591.0" />
       <AnchorPane layoutX="301.0" layoutY="640.0" prefHeight="136.0" prefWidth="861.0">
          <AnchorPane fx:id="timePane" layoutX="20.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0" styleClass="statTile">
             <children>
@@ -97,10 +97,25 @@
             </children>
          </AnchorPane>
 	  </AnchorPane>
-       	<Label layoutX="255.0" layoutY="55.0" prefHeight="30.0" prefWidth="122.0" text="Input Graph">
+      <AnchorPane layoutX="602.0" layoutY="55.0" prefHeight="544.0" prefWidth="570.0">
+         <children>
+            <Label layoutX="178.0" layoutY="-1.0" prefHeight="30.0" prefWidth="214.0" text="Current Best Schedule">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            <ZoomableScrollPane fx:id="_ganttScroll" layoutY="41.0" pannable="true" prefHeight="489.0" prefWidth="570.0">
+      	      <content>
+            	         <AnchorPane fx:id="GanttPane" layoutX="0" layoutY="0" prefHeight="554.0" prefWidth="560.0" />
+      	      </content>
+            </ZoomableScrollPane>
+         </children>
+      </AnchorPane>
+          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="86.0" layoutY="607.0" prefHeight="20.0" prefWidth="1029.0" text="Click &amp; Drag to pan. Scroll to zoom in/out. Mouse-over a task on either the Input Graph or the Current Best Schedule to view info such as dependencies or start times.">
          <font>
-            <Font name="System Bold" size="20.0" />
+            <Font size="14.0" />
          </font>
       </Label>
    </children>
 </AnchorPane>
+
