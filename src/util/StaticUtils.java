@@ -7,7 +7,8 @@ public class StaticUtils {
 		return Runtime.getRuntime().maxMemory() - allocatedMemory;
 	}
 	
-	public double getUsedMemory(){
-		return ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024.0 * 1024.0 * 1024.0 ));		
+	public static double getUsedMemory(){
+		return ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024.0 * 1024.0 ));
+		
 	}
 }

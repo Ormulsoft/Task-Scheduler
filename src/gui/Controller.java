@@ -144,7 +144,15 @@ public class Controller implements ScheduleListener{
 
 		seconds = 0;
 		startBtn.setDisable(true);
-		initalizeColour();		
+		initalizeColour();
+		
+		new Thread(new Runnable() {
+
+			public void run() {
+				myTimer.scheduleAtFixedRate(task, 1, 1);
+
+			}
+		}).start();
 
 		new Thread(new Runnable() {
 
@@ -168,13 +176,7 @@ public class Controller implements ScheduleListener{
 			}
 
 		}).start();
-		new Thread(new Runnable() {
-
-			public void run() {
-				myTimer.scheduleAtFixedRate(task, 1000, 1);
-
-			}
-		}).start();
+		
 
 		new Thread(new Runnable() {
 
@@ -201,9 +203,8 @@ public class Controller implements ScheduleListener{
 
 				}
 
-				mem.setText(String.format("%.3f", memory));
-				//				cpuLoad.setText(""+cpu);
-				//System.out.println(""+cpu);
+				mem.setText(""+(int)(memory));
+				
 			}
 		});
 

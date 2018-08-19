@@ -100,7 +100,7 @@ public class DFSAlgorithm implements Algorithm {
 	Runnable guiRunnable = new Runnable() {
 		public void run() {
 			_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations,_bestState);
-			_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations, StaticUtils.getRemainingMemory());
+			_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations, StaticUtils.getUsedMemory());
 		}
 	};
 
