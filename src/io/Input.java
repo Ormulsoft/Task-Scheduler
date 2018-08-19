@@ -28,8 +28,8 @@ public class Input {
 	 * The main method of this class, takes the filepath to the dot file, and
 	 * returns the parsed Grph Graph.
 	 * 
-	 * @param path
-	 * @return
+	 * @param path the path to the input .DOT file
+	 * @return a ScheduleGrph object that is populated with info. from the .DOT file.
 	 * @throws FileNotFoundException
 	 */
 	public static ScheduleGrph readDotInput(String path) throws FileNotFoundException {

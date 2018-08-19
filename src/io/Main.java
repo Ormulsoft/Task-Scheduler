@@ -86,7 +86,7 @@ public class Main extends Application {
 			}
 
 		} catch (ArrayIndexOutOfBoundsException e) {
-			// e.printStackTrace();
+
 			log.error("Please pass the required inputs - { <input file name> <number of processors> }");
 			System.exit(0);
 		}
@@ -138,7 +138,13 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Begins the task scheduling process
+	 * Begins the task scheduling process.
+	 * 
+	 * @param inputFile	Path to input .DOT file
+	 * @param outputFile	Path to output .DOT file
+	 * @param visualization	Toggle visualization
+	 * @param numCores	Number of cores to use for parallelization
+	 * @param numProcessors Number of processors to use for scheduling
 	 */
 	private static void startScheduling(String inputFile, final String outputFile, boolean visualization,
 			final int numCores, final int numProcessors) {
@@ -205,9 +211,6 @@ public class Main extends Application {
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
-		// TODO Auto-generated method stub
-
-	}
+	public void start(Stage primaryStage) throws Exception {}
 
 }
