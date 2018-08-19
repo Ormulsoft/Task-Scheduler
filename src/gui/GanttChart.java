@@ -13,6 +13,7 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ValueAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -35,7 +36,7 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 			this.length = lengthMs;
 			this.label = label;
 			this.styleClass = styleClass;
-		}
+					}
 		public long getLength() {
 			return length;
 		}
@@ -59,7 +60,7 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 
 	}
 
-	private double blockHeight = 100;
+	private double cubeHeight = 10;
 
 	public GanttChart(@NamedArg("xAxis") Axis<X> xAxis, @NamedArg("yAxis") Axis<Y> yAxis) {
 		this(xAxis, yAxis, FXCollections.<Series<X, Y>>observableArrayList());
@@ -100,16 +101,17 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 						x = getXAxis().getDisplayPosition(n.getXValue());
 						y = getYAxis().getDisplayPosition(n.getYValue());
 						if (Double.isNaN(x) || Double.isNaN(y)) return;
-						Node block = n.getNode();
+						Node cube = n.getNode();
 						Rectangle rect;
 						final String label = getLabel(n.getExtraValue());
 						Text textLabel = new Text(label);
-						textLabel.setFont(Font.font("Courier New", FontWeight.BOLD,15));
+						textLabel.setFont(Font.font("Courier New", FontWeight.BOLD,10));
 						textLabel.setTranslateX(x);
 						textLabel.setTranslateY(getBlockHeight());
-						if (block != null) {
-							if (block instanceof StackPane) {
-								StackPane region = (StackPane) block;
+						textLabel.setBoundsType(TextBoundsType.VISUAL);
+						if (cube != null) {
+							if (cube instanceof StackPane) {
+								StackPane region = (StackPane) cube;
 								if (region.getShape() == null) {
 									rect = new Rectangle(getLength(n.getExtraValue()), getBlockHeight());
 								} else if (region.getShape() instanceof Rectangle) {
@@ -117,27 +119,27 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 								} else {
 									return;
 								}
-								textLabel.setTranslateX(getLength(n.getExtraValue()) * 4d);
-								textLabel.setTranslateY(100 * 0.10d);
+								textLabel.setTranslateX(getLength(n.getExtraValue()) * 0.3d);
+								textLabel.setTranslateY(getBlockHeight() * 0.10d);
 								if (!region.getChildren().contains(rect) && !region.getChildren().contains(textLabel)) {
 									region.getChildren().addAll(textLabel);
 								}
 								rect.setWidth(getLength(n.getExtraValue()) * ((getXAxis() instanceof NumberAxis) ? Math.abs(((NumberAxis) getXAxis()).getScale()) : 1));
 								rect.setHeight((100 * ((getYAxis() instanceof NumberAxis) ? Math.abs(((NumberAxis) getYAxis()).getScale()) : 1)) * (1d / 6d));
-								y = y - 10 * 0.41d;
+								y = y - getBlockHeight() * 0.41d;
 								region.setShape(null);
 								region.setShape(rect);
 								region.setScaleShape(false);
 								region.setCenterShape(false);
 								region.setCacheShape(false);
-								region.setTranslateY(10 * 0.35d);
-								block.setLayoutX(x);
-								block.setLayoutY(y);
+								region.setTranslateY(getBlockHeight() * 0.35d);
+								cube.setLayoutX(x);
+								cube.setLayoutY(y);
 							}
 						}
-						
+
 					}
-					
+
 				});
 			}
 
@@ -148,11 +150,11 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 	}
 
 	public double getBlockHeight() {
-		return blockHeight;
+		return cubeHeight;
 	}
 
-	public void setBlockHeight( double blockHeight) {
-		this.blockHeight = blockHeight;
+	public void setBlockHeight( double cubeHeight) {
+		this.cubeHeight = cubeHeight;
 	}
 
 	@Override protected void dataItemAdded(Series<X,Y> series, int itemIndex, Data<X,Y> item) {

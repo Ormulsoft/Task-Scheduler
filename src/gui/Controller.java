@@ -121,14 +121,14 @@ public class Controller implements ScheduleListener{
 	public void initialize() {
 		_input.updateContent();
 		viewGraph(_input,io.Main.getIn());
+		chart.setMinWidth(600);
+		chart.setMinHeight(600);
 		GanttPane.getChildren().add(chart);	
-		xAxis.setLabel("");
-		xAxis.setTickLabelFill(Color.CHOCOLATE);
-		xAxis.setMinorTickCount(4);
+		xAxis.setLabel("Time");
+		xAxis.setTickLabelFill(Color.BLACK);
 
-		yAxis.setLabel("");
-		yAxis.setTickLabelFill(Color.CHOCOLATE);
-		yAxis.setTickLabelGap(10);
+		yAxis.setLabel("Processor's");
+		yAxis.setTickLabelFill(Color.BLACK);
 		intializeData();
 		yAxis.setCategories(FXCollections.<String>observableArrayList(Processers));
 
@@ -144,7 +144,15 @@ public class Controller implements ScheduleListener{
 
 		seconds = 0;
 		startBtn.setDisable(true);
-		initalizeColour();		
+		initalizeColour();
+		
+		new Thread(new Runnable() {
+
+			public void run() {
+				myTimer.scheduleAtFixedRate(task, 1, 1);
+
+			}
+		}).start();
 
 		new Thread(new Runnable() {
 
@@ -168,13 +176,7 @@ public class Controller implements ScheduleListener{
 			}
 
 		}).start();
-		new Thread(new Runnable() {
-
-			public void run() {
-				myTimer.scheduleAtFixedRate(task, 1000, 1);
-
-			}
-		}).start();
+		
 
 		new Thread(new Runnable() {
 
@@ -201,9 +203,8 @@ public class Controller implements ScheduleListener{
 
 				}
 
-				mem.setText(String.format("%.3f", memory));
-				//				cpuLoad.setText(""+cpu);
-				//System.out.println(""+cpu);
+				mem.setText(""+(int)(memory));
+				
 			}
 		});
 
@@ -229,7 +230,7 @@ public class Controller implements ScheduleListener{
 					intializeData();
 					for(int i:a.getVertices()) {
 						XYChart.Series series = chart.getData().get(a.getVertexProcessorProperty().getValueAsInt(i)-1);
-						series.getData().add(new XYChart.Data(a.getVertexStartProperty().getValueAsInt(i),""+ a.getVertexProcessorProperty().getValueAsInt(i), new ExtraData(a.getVertexWeightProperty().getValueAsInt(i), getColour(),a.getVertexLabelProperty().getValueAsString(i))));	   	
+						series.getData().add(new XYChart.Data(a.getVertexStartProperty().getValueAsInt(i),""+ a.getVertexProcessorProperty().getValueAsInt(i), new ExtraData(a.getVertexWeightProperty().getValueAsInt(i), getColour(i),a.getVertexLabelProperty().getValueAsString(i))));	   	
 					}
 				}
 			}
@@ -239,8 +240,13 @@ public class Controller implements ScheduleListener{
 
 	}
 
-	public String getColour() {
-		return this.Colors.get((int) ((Math.random()*2)));
+	public String getColour(int i) {
+		if( i%2 == 0) {
+			return this.Colors.get(0);
+		}
+		else {
+			return this.Colors.get(1);
+		}
 
 	}
 	public void initalizeColour() {
