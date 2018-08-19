@@ -44,3 +44,9 @@
 	-fx-background-radius: 7;
 	
 }
+
+.button:hover {
+	-fx-background-color: green;
+	-fx-cursor: hand;
+	
+}
