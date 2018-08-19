@@ -7,6 +7,7 @@ import org.graphstream.graph.Graph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,7 +15,6 @@ import java.util.TimerTask;
 import javax.swing.SwingUtilities;
 import alg.AStarAlgorithm;
 import alg.cost.AStarCostFunction;
-import cnrs.i3s.papareto.demo.function.Main;
 import grph.properties.NumericalProperty;
 import javafx.embed.swing.SwingNode;
 import io.Output;
@@ -43,6 +43,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.TextAlignment;
+import util.PartialScheduleGrph;
 import util.ScheduleGrph;
 
 public class Controller implements ScheduleListener{
@@ -50,7 +51,9 @@ public class Controller implements ScheduleListener{
     final NumberAxis yAxis = new NumberAxis();
     
 	@FXML
-	ScrollPane _input;
+	ZoomableScrollPane _input;
+	@FXML
+	ZoomableScrollPane _searchSpace;
 	@FXML
     private Label visited;
 	
@@ -71,6 +74,8 @@ public class Controller implements ScheduleListener{
 	
 	@FXML
 	public void initialize() {
+		_input.updateContent();
+		_searchSpace.updateContent();
 		viewGraph(_input,io.Main.getIn());
 	}
 	
@@ -154,7 +159,7 @@ public class Controller implements ScheduleListener{
 	};
 	
 	
-	public static void viewGraph(ScrollPane display, ScheduleGrph graph) {
+	public void viewGraph(ZoomableScrollPane display, ScheduleGrph graph) {
 		
 		boolean isNextLayer = true;
 		int currentLayer = 0;
@@ -167,8 +172,8 @@ public class Controller implements ScheduleListener{
 		
 		double anchorWidth = graph.getVertices().size() * 120 + 300;
 		double anchorHeight = graph.getVertices().size() * 120 + 300; 
-		((AnchorPane)display.getContent()).setPrefWidth(anchorWidth);
-		((AnchorPane)display.getContent()).setPrefHeight(anchorHeight);
+		((AnchorPane)display.getTarget()).setPrefWidth(anchorWidth);
+		((AnchorPane)display.getTarget()).setPrefHeight(anchorHeight);
 		display.setHvalue(0.45);
 		
 		freeNodes.addAll(graph.getSources());
@@ -182,7 +187,7 @@ public class Controller implements ScheduleListener{
 				node.setId(Integer.toString(vert));
 				node.setLayoutX((anchorWidth / 2) + (80 * ((i + 1)/ 2)  * (Math.pow(-1, i))) - (40 * (freeNodes.size() % 2)));
 				node.setLayoutY(40 + currentLayer * 100);
-				((AnchorPane)display.getContent()).getChildren().add(node);
+				((AnchorPane)display.getTarget()).getChildren().add(node);
 				
 				Label label = new Label("ID: " + vert + "\nW: " + vertWeights.getValueAsInt(vert));
 				label.setLayoutX(node.getLayoutX() - 20);
@@ -190,7 +195,7 @@ public class Controller implements ScheduleListener{
 				label.setScaleX(1.5);
 				label.setScaleY(1.5);
 				label.setTextAlignment(TextAlignment.CENTER);
-				((AnchorPane)display.getContent()).getChildren().add(label);
+				((AnchorPane)display.getTarget()).getChildren().add(label);
 				
 				labels.put(vert, label);
 				added.put(vert,node);
@@ -244,7 +249,7 @@ public class Controller implements ScheduleListener{
 						added.get(vert).getLayoutX(),
 						added.get(vert).getLayoutY());
 				
-				((AnchorPane)display.getContent()).getChildren().add(line);
+				((AnchorPane)display.getTarget()).getChildren().add(line);
 				line.toBack();
 			}
 			
@@ -254,6 +259,12 @@ public class Controller implements ScheduleListener{
 			
 		}
 		
+		
+	}
+	
+	
+	
+	public void renderSearchSpace(PriorityQueue<PartialScheduleGrph> states) {
 		
 	}
 	
