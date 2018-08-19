@@ -100,7 +100,7 @@ public class Controller implements ScheduleListener{
 
 	private double cpuCalculation = 10.00;
 
-	Timer myTimer = new Timer();
+	Timer myTimer;
 
 	private double seconds = 0.0;
 
@@ -141,6 +141,49 @@ public class Controller implements ScheduleListener{
 
 	@FXML
 	private void startAlgorithm() {
+		myTimer = new Timer();
+		TimerTask cpuTask = new TimerTask(){
+
+			@Override
+			public void run() {
+
+				try {
+					cpuCalculation = getProcessCpuLoad();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+				Platform.runLater(new Runnable() {
+
+					public void run() {
+
+						cpuLoad.setText(""+cpuCalculation);
+
+					}
+				});
+
+			}
+
+		};
+
+		TimerTask task = new TimerTask(){
+
+			@Override
+			public void run() {
+				Platform.runLater(new Runnable() {
+
+					public void run() {
+						seconds = seconds + 0.001;
+						time.setText(String.format("%.3f", seconds));
+
+					}
+				});
+
+			}
+
+		};
 
 		seconds = 0;
 		startBtn.setDisable(true);
@@ -255,48 +298,7 @@ public class Controller implements ScheduleListener{
 	}
 
 
-	TimerTask task = new TimerTask(){
-
-		@Override
-		public void run() {
-			Platform.runLater(new Runnable() {
-
-				public void run() {
-					seconds = seconds + 0.001;
-					time.setText(String.format("%.3f", seconds));
-
-				}
-			});
-
-		}
-
-	};
-
-	TimerTask cpuTask = new TimerTask(){
-
-		@Override
-		public void run() {
-
-			try {
-				cpuCalculation = getProcessCpuLoad();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-
-			Platform.runLater(new Runnable() {
-
-				public void run() {
-
-					cpuLoad.setText(""+cpuCalculation);
-
-				}
-			});
-
-		}
-
-	};
+	
 
 
 	public double getProcessCpuLoad() throws Exception {
