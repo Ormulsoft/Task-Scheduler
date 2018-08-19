@@ -8,8 +8,6 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-<?import gui.ZoomableScrollPane?>
-
 
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
    <children>
@@ -18,18 +16,39 @@
             <Font name="Berlin Sans FB" size="27.0" />
          </font>
       </Label>
-      <Button fx:id="startBtn" layoutX="24.0" layoutY="679.0" mnemonicParsing="false" onAction="#startAlgorithm" prefHeight="58.0" prefWidth="143.0" text="Start!" />
-      <AnchorPane layoutX="14.0" layoutY="68.0" prefHeight="566.0" prefWidth="582.0">
-			<children>
-             	<Label layoutX="14.0" layoutY="0" prefHeight="14.0" prefWidth="560.0" text="Input Graph"/>
-                <ZoomableScrollPane fx:id="_input" layoutX="14.0" layoutY="14.0" pannable="true" prefHeight="489.0" prefWidth="560.0">
-                   <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="561.0" prefWidth="640.0" />
-                   </content>
-                </ZoomableScrollPane>
-                <Label layoutX="14.0" layoutY="515.0" prefHeight="14.0" prefWidth="560.0" text="Click and drag to pan, scroll with the mouse to zoom in/out. Mouse over a node to see dependencies."/>
-            </children>
-      </AnchorPane>
+      <Button fx:id="startBtn" layoutX="37.0" layoutY="668.0" mnemonicParsing="false" onAction="#startAlgorithm" prefHeight="80.0" prefWidth="196.0" text="Start!" />
+      <TabPane layoutX="14.0" layoutY="68.0" prefHeight="566.0" prefWidth="582.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Search Space">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ZoomableScrollPane fx:id="_searchSpace" layoutX="14.0" layoutY="14.0" prefHeight="489.0" prefWidth="560.0">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="561.0" prefWidth="640.0" />
+                          </content>
+                        </ZoomableScrollPane>
+                        <Slider fx:id="_searchSpaceZoom" layoutX="14.0" layoutY="515.0" prefHeight="14.0" prefWidth="560.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Input Graph">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ScrollPane fx:id="_input" layoutX="14.0" layoutY="14.0" pannable="true" prefHeight="489.0" prefWidth="560.0">
+                           <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="561.0" prefWidth="640.0" />
+                           </content>
+                        </ScrollPane>
+                        <Label layoutX="14.0" layoutY="515.0" prefHeight="14.0" prefWidth="560.0" text="Click and drag to pan, scroll with the mouse to zoom in/out. Mouse over a node to see dependencies." />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
       <AnchorPane fx:id="GanttPane" layoutX="596.0" layoutY="68.0" prefHeight="554.0" prefWidth="591.0" />
       <AnchorPane fx:id="_statsPane" layoutX="301.0" layoutY="640.0" prefHeight="136.0" prefWidth="861.0">
          <AnchorPane fx:id="timePane" layoutX="40.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0">
