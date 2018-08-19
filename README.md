@@ -1,3 +1,10 @@
+
+<div align="center">
+<a><img style="display:inline-block;" src="./ormulsoft.png" ></a>
+<br>
+</div>
+
+
 # Group 15 - Task Scheduling Project
 
 This an implementation of the task scheduling system for SOFTENG306 Assignment 1.
