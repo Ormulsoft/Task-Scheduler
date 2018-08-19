@@ -220,6 +220,7 @@ public class Main extends Application {
 	public static int getNumCores() {
 		return numOfCores;
 	}
+	
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
