@@ -1,32 +1,14 @@
 package gui;
-import javafx.embed.swing.JFXPanel;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-
-import javax.swing.JFrame;
-
-import gui.GanttChart.ExtraData;
-import cnrs.i3s.papareto.demo.function.Main;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.embed.swing.SwingNode;
-import javafx.fxml.FXML;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.StackedBarChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class MainView extends Application {
 	final static NumberAxis xAxis = new NumberAxis();
@@ -47,6 +29,13 @@ public class MainView extends Application {
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			
+			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			    public void handle(WindowEvent t) {
+			        Platform.exit();
+			        System.exit(0);
+			    }
+			});
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

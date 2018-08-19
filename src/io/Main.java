@@ -183,7 +183,7 @@ public class Main extends Application {
 			}
 
 			log.info("Finished!");
-
+			System.exit(0);
 		}
 
 	}
