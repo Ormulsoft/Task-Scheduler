@@ -198,33 +198,53 @@ public class Controller implements ScheduleListener{
 			}
 		}).start();
 
-		new Thread(new Runnable() {
+		Service<PartialScheduleGrph> algService = new Service<PartialScheduleGrph>() {
 
-			public void run() {
-				long start = System.currentTimeMillis();
-				PartialScheduleGrph out;
-				if(io.Main.getNumCores() == 1){
-					out = new DFSAlgorithm(io.Main.getIn(), new AStarCostFunction(io.Main.getIn()), io.Main.getNumProcessers(), parse).runAlg();
-				}else{
-					out = new DFSParallel(io.Main.getIn(), new AStarCostFunction(io.Main.getIn()), io.Main.getNumProcessers(),io.Main.getNumCores(),  parse).runAlg();
-				}
+			@Override
+			protected Task<PartialScheduleGrph> createTask() {
 				
-				cpuTask.run();
 				
-				log.info("Algorithm took " + (System.currentTimeMillis() - start) + " ms");
-				log.info("Schedule length is: " + out.getScheduleLength());
+				return new Task<PartialScheduleGrph>(){
+					
+					@Override
+					protected PartialScheduleGrph call() throws Exception {
+						long start = System.currentTimeMillis();
+						PartialScheduleGrph out;
+						if(io.Main.getNumCores() == 1){
+							out = new DFSAlgorithm(io.Main.getIn(), new AStarCostFunction(io.Main.getIn()), io.Main.getNumProcessers(), parse).runAlg();
+						}else{
+							out = new DFSParallel(io.Main.getIn(), new AStarCostFunction(io.Main.getIn()), io.Main.getNumProcessers(),io.Main.getNumCores(),  parse).runAlg();
+						}
+						
+						log.info("Algorithm took " + (System.currentTimeMillis() - start) + " ms");
+						return out;
+					}
+					
+				};
+			}
+			
+			
+
+			@Override
+			protected void succeeded() {
+				
+				
+				
+				log.info("Schedule length is: " + getValue().getScheduleLength());
 				log.info("Outputting solution to file: " + io.Main.getOutputFilename());
 				myTimer.cancel();
 				try {
-					Output.export(out, io.Main.getOutputFilename());
+					Output.export(getValue(), io.Main.getOutputFilename());
 				} catch (IOException e) {
 
-				} 
+				}
 				startBtn.setDisable(false);
-
 			}
-
-		}).start();
+			
+		};
+		
+		algService.start();
+		
 
 		new Thread(new Runnable() {
 
