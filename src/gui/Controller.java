@@ -16,6 +16,7 @@ import org.graphstream.graph.Graph;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.ResourceBundle;
 import java.util.Timer;
@@ -76,8 +77,6 @@ public class Controller implements ScheduleListener{
 	@FXML
 	ZoomableScrollPane _input;
 	@FXML
-	ZoomableScrollPane _searchSpace;
-	@FXML
     private Label visited;
 	@FXML 
 	private AnchorPane GanttPane;
@@ -93,6 +92,8 @@ public class Controller implements ScheduleListener{
 	
 	@FXML
 	private Label cpuLoad;
+	
+	
 	
 	private double cpuCalculation = 10.00;
 	
@@ -116,7 +117,6 @@ public class Controller implements ScheduleListener{
 	@FXML
 	public void initialize() {
 		_input.updateContent();
-		_searchSpace.updateContent();
 		viewGraph(_input,io.Main.getIn());
 	}
 	
@@ -438,9 +438,6 @@ public class Controller implements ScheduleListener{
 		}
 	}
 	
-	
-	public void renderSearchSpace(PriorityQueue<PartialScheduleGrph> states) {
-	}
 	
 	
 }
