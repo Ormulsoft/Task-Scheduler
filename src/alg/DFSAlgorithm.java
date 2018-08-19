@@ -28,6 +28,7 @@ public class DFSAlgorithm implements Algorithm {
 		this._cost = cost;
 		this._input = input;
 		this._numProcessors = numProcessors;
+		this._listen = listen;
 	}
 
 	private void getSetupOutput(PartialScheduleGrph finished) {

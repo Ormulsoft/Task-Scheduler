@@ -52,7 +52,7 @@ public class DFSTask extends RecursiveAction {
 
 		_closed.add(_current.getNormalizedCopy(_numProcessors).serialize().getSerialString());
 
-		for (int freeTask : _current.getFixedFree(_input)) {
+		for (int freeTask : _current.getFree(_input)) {
 			for (int proc = 1; proc <= this._numProcessors; proc++) {
 
 				PartialScheduleGrph next = _current.copy();
