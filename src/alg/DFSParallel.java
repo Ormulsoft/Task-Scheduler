@@ -31,7 +31,7 @@ public class DFSParallel implements Algorithm {
 	private ForkJoinPool forkJoinPool;
 	private HashSet<String> _closed;
 	private ScheduleListener _listen;
-
+	private boolean _vis;
 	private AtomicLong _iterations = new AtomicLong();
 
 	private PartialScheduleGrph _start = new PartialScheduleGrph(0);
@@ -55,6 +55,7 @@ public class DFSParallel implements Algorithm {
 		this._bestState.setVerticesLabel(input.getVertexLabelProperty());
 
 		this._closed = new HashSet<String>();
+		_vis = false;
 
 	}
 
@@ -70,6 +71,7 @@ public class DFSParallel implements Algorithm {
 			ScheduleListener listen) {
 		this(input, cost, numProcessors, numCores);
 		this._listen = listen;
+		_vis = true;
 	}
 
 	/**
@@ -89,15 +91,22 @@ public class DFSParallel implements Algorithm {
 	 * 
 	 */
 	public PartialScheduleGrph runAlg() {
-		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-		executor.scheduleAtFixedRate(guiRunnable, 0, 200, TimeUnit.MILLISECONDS);
+		ScheduledExecutorService executor = null;
+		if (_vis) {
+			executor = Executors.newScheduledThreadPool(1);
+			executor.scheduleAtFixedRate(guiRunnable, 0, 200, TimeUnit.MILLISECONDS);
+		}
 
 		_bestState.setVerticesLabel(_input.getVertexLabelProperty());
 		forkJoinPool.invoke(
 				new DFSTask(_input, _start, _bestState, _cost, _closed, _numProcessors, -1, _lowerBound, _iterations));
 		getSetupOutput(_bestState);
-		executor.execute(guiRunnable);
-		executor.shutdown();
+		
+		if (_vis) {
+			executor.execute(guiRunnable);
+			executor.shutdown();
+		}
+
 		return _bestState;
 	}
 
