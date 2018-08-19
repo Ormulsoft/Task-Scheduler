@@ -2,6 +2,8 @@ package test.java;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.FileNotFoundException;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,11 +47,16 @@ public class TestAStarAlgorithmOptimal {
 
 	@Before
 	public void init() {
-		_7In = Input.readDotInput("src/resources/Nodes_7_OutTree.dot");
-		_8In = Input.readDotInput("src/resources/Nodes_8_Random.dot");
-		_9In = Input.readDotInput("src/resources/Nodes_9_SeriesParallel.dot");
-		_10In = Input.readDotInput("src/resources/Nodes_10_Random.dot");
-		_11In = Input.readDotInput("src/resources/Nodes_11_OutTree.dot");
+		try {
+			_7In = Input.readDotInput("src/resources/Nodes_7_OutTree.dot");
+			_8In = Input.readDotInput("src/resources/Nodes_8_Random.dot");
+			_9In = Input.readDotInput("src/resources/Nodes_9_SeriesParallel.dot");
+			_10In = Input.readDotInput("src/resources/Nodes_10_Random.dot");
+			_11In = Input.readDotInput("src/resources/Nodes_11_OutTree.dot");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
