@@ -22,11 +22,13 @@ The system is required to output an **optimal** schedule, that is, a valid sched
 The design of this system uses dedicated IO classes, and object-oriented hierarchical structures for the various graphing and algorithm components. This design is exlpored in detail within the Wiki.
 
 ## Algorithm
-The currently implemented algorithm is the standard A* algorithm. The cost function currently uses computational bottom level, and
-lastest finishing time.
+The currently implemented branch-and-bound algorithm uses a cost function calculated by computational bottom level, idle time and
+lastest finishing time when finding an optimal schedule.
 
 # Running
 To install this project, please download the runnable JAR File submitted.<br/> Enter the following on the command line: `java -jar <filename.jar> <input_graph.DOT> <num_processors> <options...>`
+
+NOTE: On Canvas, the submitted .jar file is named `Scheduler-2.jar`.
 
 ## Options
 The following options are supported by the system: 
