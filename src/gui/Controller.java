@@ -45,6 +45,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -150,16 +151,16 @@ public class Controller implements ScheduleListener{
 				try {
 					cpuCalculation = getProcessCpuLoad();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 
 
 				Platform.runLater(new Runnable() {
 
 					public void run() {
-
-						cpuLoad.setText(""+cpuCalculation);
+						if (!Double.isNaN(cpuCalculation)) {
+							cpuLoad.setText(Double.toString(cpuCalculation));
+						}
+						
 
 					}
 				});
@@ -201,13 +202,18 @@ public class Controller implements ScheduleListener{
 
 			public void run() {
 				long start = System.currentTimeMillis();
-				ScheduleGrph out;
+				PartialScheduleGrph out;
 				if(io.Main.getNumCores() == 1){
 					out = new DFSAlgorithm(io.Main.getIn(), new AStarCostFunction(io.Main.getIn()), io.Main.getNumProcessers(), parse).runAlg();
 				}else{
 					out = new DFSParallel(io.Main.getIn(), new AStarCostFunction(io.Main.getIn()), io.Main.getNumProcessers(),io.Main.getNumCores(),  parse).runAlg();
 				}
+				
+				cpuTask.run();
+				
 				log.info("Algorithm took " + (System.currentTimeMillis() - start) + " ms");
+				log.info("Schedule length is: " + out.getScheduleLength());
+				log.info("Outputting solution to file: " + io.Main.getOutputFilename());
 				myTimer.cancel();
 				try {
 					Output.export(out, io.Main.getOutputFilename());
@@ -219,7 +225,6 @@ public class Controller implements ScheduleListener{
 			}
 
 		}).start();
-		
 
 		new Thread(new Runnable() {
 
@@ -271,9 +276,13 @@ public class Controller implements ScheduleListener{
 				if(event.getType() == ScheduleEvent.EventType.NewState){
 					chart.getData().clear();
 					intializeData();
-					for(int i:a.getVertices()) {
-						XYChart.Series series = chart.getData().get(a.getVertexProcessorProperty().getValueAsInt(i)-1);
-						series.getData().add(new XYChart.Data(a.getVertexStartProperty().getValueAsInt(i),""+ a.getVertexProcessorProperty().getValueAsInt(i), new ExtraData(a.getVertexWeightProperty().getValueAsInt(i), getColour(i),a.getVertexLabelProperty().getValueAsString(i))));	   	
+					try {
+						for(int i:a.getVertices()) {
+							XYChart.Series series = chart.getData().get(a.getVertexProcessorProperty().getValueAsInt(i)-1);
+							series.getData().add(new XYChart.Data(a.getVertexStartProperty().getValueAsInt(i),""+ a.getVertexProcessorProperty().getValueAsInt(i), new ExtraData(a.getVertexWeightProperty().getValueAsInt(i), getColour(i),a.getVertexLabelProperty().getValueAsString(i))));	   	
+						}
+					}
+					catch (NullPointerException e) {
 					}
 				}
 			}

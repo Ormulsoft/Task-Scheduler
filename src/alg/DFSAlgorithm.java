@@ -59,6 +59,7 @@ public class DFSAlgorithm implements Algorithm {
 		recursiveSolve(_bestState, -1);
 
 		getSetupOutput(_bestState);
+		executor.execute(guiRunnable);
 		executor.shutdown();
 		return _bestState;
 
