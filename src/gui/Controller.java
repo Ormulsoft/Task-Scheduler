@@ -335,7 +335,7 @@ public class Controller implements ScheduleListener{
 			int i = 0;
 			for (int vert : freeNodes) {
 				Circle node = new Circle(36);
-				node.setFill(Color.CADETBLUE);
+				node.setFill(Color.web("#00A2D3"));
 				node.setId(Integer.toString(vert));
 				node.setLayoutX((anchorWidth / 2) + (80 * ((i + 1)/ 2)  * (Math.pow(-1, i))) - (40 * (freeNodes.size() % 2)));
 				node.setLayoutY(40 + currentLayer * 100);
@@ -347,6 +347,7 @@ public class Controller implements ScheduleListener{
 				label.setScaleX(1.5);
 				label.setScaleY(1.5);
 				label.setTextAlignment(TextAlignment.CENTER);
+				label.getStyleClass().add("node-labels");
 				((AnchorPane)display.getTarget()).getChildren().add(label);
 
 				labels.put(vert, label);

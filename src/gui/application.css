@@ -1,1 +1,36 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+
+* {
+	/* Frequently referred to colours. */
+	-fx-base: #3D4956;
+	-fx-primary: #00A2D3;
+	
+}
+.root {
+	-fx-background-color: -fx-base;
+	
+}
+
+.label {
+	-fx-text-fill: -fx-primary;
+	
+	
+}
+
+.node-labels {
+	-fx-text-fill: white;
+	
+}
+.statTile {
+	
+	-fx-background-color: -fx-primary;
+	
+}
+.statTile .label {
+	-fx-text-fill: white;
+}
+
+.button {
+	-fx-background-color: #A0DC22;
+}

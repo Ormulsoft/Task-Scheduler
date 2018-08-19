@@ -7,14 +7,17 @@
 <?import javafx.scene.text.Font?>
 <?import gui.ZoomableScrollPane?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" stylesheets="@application.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
    <children>
       <Label layoutX="470.0" layoutY="14.0" prefHeight="39.0" prefWidth="287.0" text="Optimal Task Scheduler" textFill="#b17221">
          <font>
-            <Font name="Berlin Sans FB" size="27.0" />
+            <Font name="Showcard Gothic" size="27.0" />
          </font>
       </Label>
-      <Button fx:id="startBtn" layoutX="24.0" layoutY="679.0" mnemonicParsing="false" onAction="#startAlgorithm" prefHeight="58.0" prefWidth="143.0" text="Start!" />
+      <Button fx:id="startBtn" layoutX="24.0" layoutY="648.0" mnemonicParsing="false" onAction="#startAlgorithm" prefHeight="124.0" prefWidth="278.0" text="Start!">
+         <font>
+            <Font size="47.0" />
+         </font></Button>
       <AnchorPane layoutX="14.0" layoutY="68.0" prefHeight="566.0" prefWidth="582.0">
 			<children>
              	<Label layoutX="244.0" prefHeight="17.0" prefWidth="81.0" text="Input Graph" />
@@ -27,26 +30,26 @@
             </children>
       </AnchorPane>
       <AnchorPane fx:id="GanttPane" layoutX="596.0" layoutY="68.0" prefHeight="554.0" prefWidth="591.0" />
-      <AnchorPane fx:id="_statsPane" layoutX="301.0" layoutY="640.0" prefHeight="136.0" prefWidth="861.0">
-         <AnchorPane fx:id="timePane" layoutX="40.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0">
+      <AnchorPane layoutX="301.0" layoutY="640.0" prefHeight="136.0" prefWidth="861.0">
+         <AnchorPane fx:id="timePane" layoutX="20.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0" styleClass="statTile">
             <children>
       		<Label fx:id="time" alignment="CENTER" layoutY="69.0" prefWidth="196.0" text="0" />
                <Label alignment="CENTER" layoutY="23.0" prefWidth="196.0" text="Time Elapsed" />
             </children>
          </AnchorPane>
-         <AnchorPane fx:id="iterationsPane" layoutX="242.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0">
+         <AnchorPane fx:id="iterationsPane" layoutX="235.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0" styleClass="statTile">
             <children>
                <Label alignment="CENTER" layoutY="23.0" prefWidth="196.0" text="States Visited" />
       		<Label fx:id="visited" alignment="CENTER" layoutY="69.0" prefWidth="196.0" text="0" />
             </children>
          </AnchorPane>
-         <AnchorPane fx:id="memoryPane" layoutX="450.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0">
+         <AnchorPane fx:id="memoryPane" layoutX="450.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0" styleClass="statTile">
             <children>
                <Label alignment="CENTER" layoutX="1.0" layoutY="23.0" prefWidth="196.0" text="Memory Usage" />
       		<Label fx:id="mem" alignment="CENTER" layoutX="1.0" layoutY="69.0" prefWidth="196.0" text="0.00" />
             </children>
          </AnchorPane>
-         <AnchorPane fx:id="cpuPane" layoutX="665.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0">
+         <AnchorPane fx:id="cpuPane" layoutX="665.0" layoutY="8.0" prefHeight="124.0" prefWidth="196.0" styleClass="statTile">
             <children>
                <Label alignment="CENTER" layoutY="23.0" prefWidth="196.0" text="CPU Load" />
             <Label fx:id="cpuLoad" alignment="CENTER" layoutY="69.0" prefWidth="196.0" text="10.00" />
