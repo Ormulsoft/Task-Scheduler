@@ -56,6 +56,7 @@ public class TestAStarAlgorithmOptimal {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+
 		}
 	}
 

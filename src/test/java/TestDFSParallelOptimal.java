@@ -54,10 +54,11 @@ public class TestDFSParallelOptimal {
 			_10In = Input.readDotInput("src/resources/Nodes_10_Random.dot");
 			_11In = Input.readDotInput("src/resources/Nodes_11_OutTree.dot");
 		} catch (FileNotFoundException e) {
+
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Test

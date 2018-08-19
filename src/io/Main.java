@@ -87,7 +87,6 @@ public class Main extends Application {
 		} catch (ArrayIndexOutOfBoundsException e) {
 			// e.printStackTrace();
 			log.error("Please pass the required inputs - { <input file name> <number of processors> }");
-			e.printStackTrace();
 			System.exit(0);
 		}
 		startScheduling(inputFile, outputFile, visualization, numCores, numProcessors);
