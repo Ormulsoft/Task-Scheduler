@@ -14,7 +14,8 @@ import grph.properties.NumericalProperty;
 import util.ScheduleGrph;
 
 /**
- * This class handles the input parsing of the DotFiles.
+ * This class handles the parsing of the .DOT files into a format that is 
+ * appropriate for use in our algorithm implementations (i.e. A ScheduleGrph object)
  * 
  * @author Shane Barboza
  *
@@ -62,7 +63,6 @@ public class Input {
 							thisLine = theLineAfter;
 						}
 
-						// String is not empty and not just whitespace
 						list.add(appendedLine);
 					}
 				}
@@ -71,21 +71,22 @@ public class Input {
 
 		// Distinguish between edges and nodes within input
 		List<String> edgesList = new ArrayList<String>();
-		// maps the node ID to its Weight value, so that they can be put into
-		// the
+
+		// Maps the node ID to its Weight value, so that they can be put into the
 		// Grph library easily.
 		TreeMap<Integer, Integer> nodes = new TreeMap<Integer, Integer>();
 
 		for (String l : list) {
 			if (l.contains("Weight=")) {
-				if (l.indexOf('>') >= 0) {
-					// It must be an edge
+				if (l.indexOf('>') >= 0) { // It must be an edge
+					
 					edgesList.add(l);
-				} else {
-					// get id/name of task
+				} else {				   // It must be a node
+					
+					// Get id/name of task
 					Integer label = Integer.parseInt(String.valueOf(l.trim().split("\\s+")[0]));
 
-					// get weight of task
+					// Get weight of task
 					l = l.substring(l.indexOf("Weight=") + 7);
 					l = l.substring(0, l.indexOf("];"));
 					int weight = Integer.parseInt(l);
@@ -102,7 +103,7 @@ public class Input {
 		NumericalProperty vertLabels = new NumericalProperty("Labels");
 
 		TreeMap<Integer, Integer> nodesToId = new TreeMap<Integer, Integer>();
-		// Collections.sort(nodesList);
+
 		// Add each vertex from input file
 		for (Map.Entry<Integer, Integer> entry : nodes.entrySet()) {
 
@@ -119,6 +120,7 @@ public class Input {
 		outputGraph.setVerticesLabel(vertLabels);
 
 		NumericalProperty edgeWeights = new NumericalProperty("Weight");
+		
 		// Add each edge from input file
 		for (String e : edgesList) {
 
@@ -134,6 +136,7 @@ public class Input {
 			e = e.substring(0, e.indexOf("]"));
 
 			int weight = Integer.parseInt(e);
+			
 			// Add edge to graph
 			int newEdge = outputGraph.addSimpleEdge(nodesToId.get(srcNode), nodesToId.get(destNode), true);
 
@@ -141,9 +144,11 @@ public class Input {
 			edgeWeights.setValue(newEdge, weight);
 
 		}
+		
 		input.close();
 		outputGraph.setEdgeWeightProperty(edgeWeights);
-
+		
+		// 'outputGraph' is now populated with the information retrieved from the .DOT file. 
 		return outputGraph;
 	}
 
