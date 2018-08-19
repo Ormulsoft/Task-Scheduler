@@ -24,13 +24,19 @@ public class DFSAlgorithm implements Algorithm {
 	private ScheduleListener _listen;
 	private int _iterations = 0;
 	
-	public DFSAlgorithm(ScheduleGrph input, CostFunction cost, int numProcessors, ScheduleListener listen) {
+	public DFSAlgorithm(ScheduleGrph input, CostFunction cost, int numProcessors,ScheduleListener listen) {
 		this._cost = cost;
 		this._input = input;
 		this._numProcessors = numProcessors;
 		this._listen = listen;
 	}
-
+	
+	public DFSAlgorithm(ScheduleGrph input, CostFunction cost, int numProcessors) {
+		this._cost = cost;
+		this._input = input;
+		this._numProcessors = numProcessors;
+		
+	}
 	private void getSetupOutput(PartialScheduleGrph finished) {
 		finished.setEdgeWeightProperty(_input.getEdgeWeightProperty());
 		for (int edge : _input.getEdges()) {

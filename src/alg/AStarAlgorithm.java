@@ -205,7 +205,7 @@ public class AStarAlgorithm implements Algorithm {
 				// puts the edges and edge weights back into the graph.
 				getSetupOutput(s);
 				executor.shutdown();
-				_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations,s);
+				//_listen.updateGraph(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations,s);
 				return s;
 
 			} else if (!this.storedInClosedSet(parentSerialized)) {
@@ -218,7 +218,7 @@ public class AStarAlgorithm implements Algorithm {
 						info.setIterations(statesVisited);
 						double memory = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024.0 * 1024.0 * 1024.0 ));						
 
-						_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations, memory);
+					//	_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), iterations, memory);
 						counter++;
 
 						PartialScheduleGrph next = s.copy();

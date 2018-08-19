@@ -91,12 +91,10 @@ public class GanttChart<X,Y> extends XYChart<X,Y> {
 	protected void layoutPlotChildren() {
 
 		Consumer<Series<X,Y>> c = new Consumer<Series<X,Y>>(){
-			@Override
 			public void accept(javafx.scene.chart.XYChart.Series<X, Y> e) {
 
 				getDisplayedDataIterator(e).forEachRemaining(new Consumer<Data<X,Y>>(){
 
-					@Override
 					public void accept(javafx.scene.chart.XYChart.Data<X, Y> n) {
 						double x, y;
 						x = getXAxis().getDisplayPosition(n.getXValue());

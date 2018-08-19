@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Properties;
-
+import javafx.embed.swing.JFXPanel;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import alg.AStarAlgorithm;
+import alg.DFSAlgorithm;
 import alg.DFSParallel;
 import alg.cost.AStarCostFunction;
 import gui.Controller;
@@ -38,7 +39,6 @@ public class Main extends Application {
 	private static int numOfCores;
 	private static int numOfProcessers;
 	private static String _outputFile;
-	
 	final static Logger log = Logger.getLogger(Main.class);
 
 	private static ScheduleListener listen;
@@ -54,6 +54,9 @@ public class Main extends Application {
 	 */
 
 	public static void main(String[] args) throws URISyntaxException {
+		
+
+
 		listen = new Controller();
 		log.info("Task scheduler launched");
 		boolean visualization = DEFAULT_VISUALISATION;
@@ -160,14 +163,14 @@ public class Main extends Application {
 
 
 		if(visualization == true){
-
-			gui.MainView.main(null);
+		
+		gui.MainView.main(null);
 
 		} else {
 			long start = System.currentTimeMillis();
 			PartialScheduleGrph out;
 			if(numCores == 1){
-				out = new AStarAlgorithm(in, new AStarCostFunction(in), numProcessors).runAlg();
+				out = new DFSAlgorithm(in, new AStarCostFunction(in), numProcessors).runAlg();
 			}else{
 				out = new DFSParallel(in, new AStarCostFunction(in), numProcessors, numCores).runAlg();
 			}

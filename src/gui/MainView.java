@@ -1,8 +1,12 @@
 package gui;
+import javafx.embed.swing.JFXPanel;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import javax.swing.JFrame;
+
 import gui.GanttChart.ExtraData;
 import cnrs.i3s.papareto.demo.function.Main;
 import javafx.application.Application;
@@ -30,6 +34,7 @@ public class MainView extends Application {
     final static GanttChart<Number,String> chart = new GanttChart<Number,String>(xAxis,yAxis);
 	@Override
 	public void start(Stage primaryStage) {
+		
 		try {
 			FXMLLoader loader = new FXMLLoader(
 					  getClass().getResource(

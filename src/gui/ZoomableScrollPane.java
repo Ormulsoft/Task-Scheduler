@@ -62,7 +62,6 @@ public class ZoomableScrollPane extends ScrollPane {
         ScrollEvent e;
         outerNode.setOnScroll(new EventHandler<ScrollEvent>(){
 
-			@Override
 			public void handle(ScrollEvent e) {
 				 e.consume();
 		         onScroll(e.getTextDeltaY(), new Point2D(e.getX(), e.getY()));

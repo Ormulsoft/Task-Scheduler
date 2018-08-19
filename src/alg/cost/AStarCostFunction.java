@@ -1,7 +1,6 @@
 package alg.cost;
 
 import grph.properties.NumericalProperty;
-import pt.*;
 import toools.collections.primitive.LucIntSet;
 import util.PartialScheduleGrph;
 import util.ScheduleGrph;

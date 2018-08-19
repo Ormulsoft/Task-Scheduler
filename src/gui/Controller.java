@@ -142,7 +142,7 @@ public class Controller implements ScheduleListener{
 	@FXML
 	private void startAlgorithm() {
 		myTimer = new Timer();
-		TimerTask cpuTask = new TimerTask(){
+		final TimerTask cpuTask = new TimerTask(){
 
 			@Override
 			public void run() {
@@ -168,7 +168,7 @@ public class Controller implements ScheduleListener{
 
 		};
 
-		TimerTask task = new TimerTask(){
+		final TimerTask task = new TimerTask(){
 
 			@Override
 			public void run() {
