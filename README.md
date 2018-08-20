@@ -9,7 +9,7 @@
 
 This an implementation of the task scheduling system for SOFTENG306 Assignment 1.
 
-[Javadocs here](https://eugene-bulog.github.io/Softeng-306-Group-15/)
+[Javadocs here](https://eugene-bulog.github.io/Softeng-306-Group-15/overview-summary.html)
 
 ## Brief
 
