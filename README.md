@@ -25,12 +25,12 @@ The design of this system uses dedicated IO classes, and object-oriented hierarc
 The currently implemented branch-and-bound algorithm uses a cost function calculated by computational bottom level, idle time and
 lastest finishing time when finding an optimal schedule.
 
-# Running
+## Running
 To install this project, please download the runnable JAR File submitted.<br/> Enter the following on the command line: `java -jar <filename.jar> <input_graph.DOT> <num_processors> <options...>`
 
 NOTE: On Canvas, the submitted .jar file is named `Scheduler-2.jar`.
 
-# Building from source
+## Building from source
 To build from source, run a maven update command on the project, then run the io.main class (make sure the command-line arguments from the Running/Options section are specified in the run configuration)
 
 ## Options
