@@ -32,7 +32,19 @@ public class DFSTask extends RecursiveAction {
 	private ScheduleListener _listen;
 	private boolean _vis = false;
 
-	// No vis
+	/**
+	 * Sets up the DFS task without visualization
+	 * 
+	 * @param input The input graph to run the algorithm on
+	 * @param current The current partial schedule to explore
+	 * @param best The current best schedule found
+	 * @param cost The cost function being used
+	 * @param closed The set of closed states
+	 * @param numProcessors The number of available processors to schedule tasks on
+	 * @param lastAdded The most recently added task on the  current schedule
+	 * @param lowerBound The current lower bound estimate
+	 * @param iterations The current number of iterations
+	 */
 	public DFSTask(ScheduleGrph input, PartialScheduleGrph current, PartialScheduleGrph best, CostFunction cost,
 			HashSet<String> closed, int numProcessors, int lastAdded, AtomicLong lowerBound, AtomicLong iterations) {
 		_input = input;
@@ -46,7 +58,20 @@ public class DFSTask extends RecursiveAction {
 		_iterations = iterations;
 	}
 
-	// With vis
+	/**
+	 * Sets up the DFS task with visualization
+	 * 
+	 * @param input The input graph to run the algorithm on
+	 * @param current The current partial schedule to explore
+	 * @param best The current best schedule found
+	 * @param cost The cost function being used
+	 * @param closed The set of closed states
+	 * @param numProcessors The number of available processors to schedule tasks on
+	 * @param lastAdded The most recently added task on the  current schedule
+	 * @param lowerBound The current lower bound estimate
+	 * @param iterations The current number of iterations
+	 * @param listen The ScheduleListener to register with this object
+	 */
 	public DFSTask(ScheduleGrph input, PartialScheduleGrph current, PartialScheduleGrph best, CostFunction cost,
 			HashSet<String> closed, int numProcessors, int lastAdded, AtomicLong lowerBound, AtomicLong iterations, ScheduleListener listen) {
 		this(input, current, best, cost, closed, numProcessors, lastAdded, lowerBound, iterations);
@@ -96,6 +121,11 @@ public class DFSTask extends RecursiveAction {
 		this.invokeAll(tasks);
 	}
 
+	/**
+	 * Updates the current best schedulegrph, if it is better than the current.
+	 * 
+	 * @param s The partial schedule to update to
+	 */
 	private void updateCurrentBest(PartialScheduleGrph s) {
 		int underestimate = s.getScore();
 

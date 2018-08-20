@@ -23,11 +23,6 @@ public interface Algorithm {
 	 * This function is used to run any algorithm. It produces a schedule of
 	 * tasks, based on task dependencies and a number of processors to schedule
 	 * on.
-	 * 
-	 * @param input
-	 * @param numCores
-	 * @param numProcessors
-	 * @return
 	 */
 	public PartialScheduleGrph runAlg();
 

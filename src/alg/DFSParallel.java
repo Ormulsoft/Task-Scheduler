@@ -37,11 +37,12 @@ public class DFSParallel implements Algorithm {
 	private PartialScheduleGrph _start = new PartialScheduleGrph(0);
 
 	/**
+	 * Sets up the DFS algorithm without visualization
 	 * 
-	 * @param input
-	 * @param cost
-	 * @param numProcessors
-	 * @param numCores
+	 * @param input The input graph to run the algorithm on
+	 * @param cost The costfunction to use for this algorithm
+	 * @param numProcessors The number of available processors to schedule tasks on
+	 * @param numCores The number of cores to run the algorithm on
 	 */
 	public DFSParallel(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores) {
 		this.forkJoinPool = new ForkJoinPool(numCores);
@@ -60,12 +61,13 @@ public class DFSParallel implements Algorithm {
 	}
 
 	/**
+	 * Sets up the DFS alg with visualization
 	 * 
-	 * @param input
-	 * @param cost
-	 * @param numProcessors
-	 * @param numCores
-	 * @param listen
+	 * @param input The input graph to run the algorithm on
+	 * @param cost The costfunction to use for this algorithm
+	 * @param numProcessors The number of available processors to schedule tasks on
+	 * @param numCores The number of cores to run the algorithm on
+	 * @param listen The ScheduleListener to register with this object
 	 */
 	public DFSParallel(ScheduleGrph input, CostFunction cost, int numProcessors, int numCores,
 			ScheduleListener listen) {
@@ -75,8 +77,9 @@ public class DFSParallel implements Algorithm {
 	}
 
 	/**
+	 * Sets up the finished output with dependencies.
 	 * 
-	 * @param finished
+	 * @param finished The partial schedule that the algorithm believes is the best complete solution
 	 */
 	private void getSetupOutput(PartialScheduleGrph finished) {
 		finished.setEdgeWeightProperty(_input.getEdgeWeightProperty());
@@ -87,9 +90,6 @@ public class DFSParallel implements Algorithm {
 		}
 	}
 
-	/**
-	 * 
-	 */
 	public PartialScheduleGrph runAlg() {
 		ScheduledExecutorService executor = null;
 		if (_vis) {
@@ -117,9 +117,7 @@ public class DFSParallel implements Algorithm {
 		return _bestState;
 	}
 
-	/**
-	 * 
-	 */
+	// The runnable to call the listener stats update via
 	Runnable statsRunnable = new Runnable() {
 		public void run() {
 

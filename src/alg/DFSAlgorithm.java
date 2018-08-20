@@ -34,10 +34,10 @@ public class DFSAlgorithm implements Algorithm {
 	/**
 	 * Sets up the DFS alg with visualization
 	 * 
-	 * @param input
-	 * @param cost
-	 * @param numProcessors
-	 * @param listen
+	 * @param input The input graph to run the algorithm on
+	 * @param cost The costfunction to use for this algorithm
+	 * @param numProcessors The number of available processors to schedule tasks on
+	 * @param listen The ScheduleListener to register with this object
 	 */
 	public DFSAlgorithm(ScheduleGrph input, CostFunction cost, int numProcessors, ScheduleListener listen) {
 		this._cost = cost;
@@ -50,9 +50,9 @@ public class DFSAlgorithm implements Algorithm {
 	/**
 	 * Sets up the DFS algorithm without visualization
 	 * 
-	 * @param input
-	 * @param cost
-	 * @param numProcessors
+	 * @param input The input graph to run the algorithm on
+	 * @param cost The costfunction to use for this algorithm
+	 * @param numProcessors The number of available processors to schedule tasks on
 	 */
 	public DFSAlgorithm(ScheduleGrph input, CostFunction cost, int numProcessors) {
 		this._cost = cost;
@@ -66,7 +66,7 @@ public class DFSAlgorithm implements Algorithm {
 	/**
 	 * Sets up the finished output with dependencies.
 	 * 
-	 * @param finished
+	 * @param finished The partial schedule that the algorithm believes is the best complete solution
 	 */
 	private void getSetupOutput(PartialScheduleGrph finished) {
 		finished.setEdgeWeightProperty(_input.getEdgeWeightProperty());
@@ -107,10 +107,8 @@ public class DFSAlgorithm implements Algorithm {
 	 * algorithm recursive method - performs the DFS traversal of the state
 	 * space
 	 * 
-	 * @param p
-	 *            The current partial schedule graph
-	 * @param lastAdded
-	 *            The last added task
+	 * @param p The current partial schedule graph
+	 * @param lastAdded The last added task
 	 */
 	private void recursiveSolve(PartialScheduleGrph p, int lastAdded) {
 		_iterations++;
@@ -144,7 +142,7 @@ public class DFSAlgorithm implements Algorithm {
 	/**
 	 * Updates the current best schedulegrph, if it is better than the current.
 	 * 
-	 * @param s
+	 * @param s The partial schedule to update to
 	 */
 	private void updateCurrentBest(PartialScheduleGrph s) {
 
@@ -159,9 +157,7 @@ public class DFSAlgorithm implements Algorithm {
 		}
 	}
 
-	/**
-	 * T
-	 */
+	// The runnable to call the listener stats update via
 	Runnable statsRunnable = new Runnable() {
 		public void run() {
 			_listen.update(new ScheduleEvent(ScheduleEvent.EventType.NewState), _iterations,

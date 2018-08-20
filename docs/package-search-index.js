@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"alg"},{"l":"alg.cost"},{"l":"gui"},{"l":"io"},{"l":"test.java"},{"l":"util"}]
