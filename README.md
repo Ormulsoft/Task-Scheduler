@@ -30,6 +30,9 @@ To install this project, please download the runnable JAR File submitted.<br/> E
 
 NOTE: On Canvas, the submitted .jar file is named `Scheduler-2.jar`.
 
+# Building from source
+To build from source, run a maven update command on the project, then run the io.main class (make sure the command-line arguments from the Running/Options section are specified in the run configuration)
+
 ## Options
 The following options are supported by the system: 
 - `-p <numberCores>`       The number of processor cores to use
