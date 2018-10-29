@@ -12,7 +12,7 @@
 
 ## Brief
 
-The purpose of this project is to create a system that schedules a set of tasks onto an abitrary number of processors.
+The purpose of this project is to create a system that schedules a set of tasks onto an arbitrary number of processors.
 The input is in the form of a .DOT file, which contains a directed acyclic graph of all the tasks and their dependencies. 
 The system is required to output an **optimal** schedule, that is, a valid schedule with the earliest finishing time, while retaining all the dependencies of the original graph.
 
