@@ -8,7 +8,7 @@
 # Group 15 - Task Scheduling Project
 
 
-[Javadocs here](https://eugene-bulog.github.io/Softeng-306-Group-15/overview-summary.html)
+[Javadocs here](https://Ormulsoft.github.io/Task-Scheduler/)
 
 ## Brief
 
@@ -26,8 +26,6 @@ lastest finishing time when finding an optimal schedule.
 
 ## Running
 To install this project, please download the runnable JAR File submitted.<br/> Enter the following on the command line: `java -jar <filename.jar> <input_graph.DOT> <num_processors> <options...>`
-
-NOTE: On Canvas, the submitted .jar file is named `Scheduler-2.jar`.
 
 ## Building from source
 To build from source, run a maven update command on the project, then run the io.main class (make sure the command-line arguments from the Running/Options section are specified in the run configuration)
